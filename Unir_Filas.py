@@ -9,7 +9,7 @@ arcpy.CreateTable_management(os.path.dirname(tablaSalida),os.path.basename(tabla
 
 rows = arcpy.SearchCursor(tablaEntrada)
 uniqueValue={}
-
+uniqueValue["not"]="valor"
 for row in rows:
     uniqueValue[row.getValue ("codigo")]="valor"
 
@@ -24,7 +24,6 @@ for key,value in uniqueValue.items():
     pagina=""
     codigo=""
     for rowq in rowsq:
-
         if "@" in str(rowq.ContacInfo):
             if email=="":
                 email=str(rowq.ContacInfo)
@@ -48,7 +47,10 @@ for key,value in uniqueValue.items():
     rowin.Pagina=pagina
     rowin.Codigo=codigo
     rowsIns.insertRow(rowin)
-    print key
+    print str(email)
+del rowin,rowsIns
+del row,rows
+
 
 
 
