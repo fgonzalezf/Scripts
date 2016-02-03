@@ -4,7 +4,7 @@
 import arcpy, os, sys
 
 arcpy.env.overwriteOutput=True
-Carpeta=r"C:\Users\fgonzalezf\Documents\Muestras"
+Carpeta=r"C:\Users\Fernando\Documents\Muestras"
 arcpy.CreatePersonalGDB_management(Carpeta, "Muestras.mdb")
 Geodatabase= Carpeta +os.sep+"Muestras.mdb"
 
@@ -17,7 +17,7 @@ Muestra= arcpy.CreateFeatureclass_management(dataset,"Muestra","POINT")
 arcpy.AlterAliasName(Muestra,"Muestra")
 Municipios=arcpy.CreateFeatureclass_management(dataset,"Municipios","POLYGON")
 Resultado = arcpy.CreateTable_management(Geodatabase,"Resultado")
-Muestra_Laboratorio = arcpy.CreateTable_management(Geodatabase,"Muestra_Laboroatorio")
+Muestra_Laboratorio = arcpy.CreateTable_management(Geodatabase,"Muestra_Laboratorio")
 Elemento_Propiedad = arcpy.CreateTable_management(Geodatabase,"Elemento_Propiedad")
 
 
@@ -105,4 +105,5 @@ arcpy.AddField_management(Elemento_Propiedad,"ID_ELEMENTO_PROPIEDAD","SHORT","",
 arcpy.AddField_management(Elemento_Propiedad,"DESCRIPCION","TEXT","","","50","Descripcion")
 arcpy.AddField_management(Elemento_Propiedad,"PK_ID_UNIDAD","SHORT","","","","Identificador de Unidad")
 
+arcpy.CreateRelationshipClass_management(Muestra,Muestra_Laboratorio,Geodatabase+ os.sep+"Muestra_Resultado_Rel","SIMPLE","Atributos de Muestra","Atributos de Muestra Laboratorio","NONE","ONE_TO_MANY","NONE","ID_MUESTRA", "FK_ID_MUESTRA")
 
