@@ -4,7 +4,7 @@
 import arcpy, os, sys
 
 arcpy.env.overwriteOutput=True
-Carpeta=r"C:\Users\Fernando\Documents\Muestras"
+Carpeta=r"C:\Users\fgonzalezf\Documents\Muestras"
 arcpy.CreatePersonalGDB_management(Carpeta, "Muestras.mdb")
 Geodatabase= Carpeta +os.sep+"Muestras.mdb"
 
@@ -20,12 +20,26 @@ Resultado = arcpy.CreateTable_management(Geodatabase,"Resultado")
 Muestra_Laboratorio = arcpy.CreateTable_management(Geodatabase,"Muestra_Laboratorio")
 Elemento_Propiedad = arcpy.CreateTable_management(Geodatabase,"Elemento_Propiedad")
 
+#tablas opcionales
+Detalle_Muestra = arcpy.CreateTable_management(Geodatabase,"Detalle_Muestra")
+Tipo_Muestra = arcpy.CreateTable_management(Geodatabase,"Tipo_Muestra")
+Caracteristica = arcpy.CreateTable_management(Geodatabase,"Caracteristica")
+Caracteristica_Dominio = arcpy.CreateTable_management(Geodatabase,"Caracteristica_Dominio")
+Pozo = arcpy.CreateTable_management(Geodatabase,"Pozo")
+Litologia_Pozo = arcpy.CreateTable_management(Geodatabase,"Litologia_Pozo")
+Estructura = arcpy.CreateTable_management(Geodatabase,"Estructura")
+Survey = arcpy.CreateTable_management(Geodatabase,"Survey")
+Assay = arcpy.CreateTable_management(Geodatabase,"Assay")
+Detalle_Registro_Pozo = arcpy.CreateTable_management(Geodatabase,"Detalle_Registro_Pozo")
+Recovery = arcpy.CreateTable_management(Geodatabase,"Recovery")
+
 
 
 #CREACION DE CAMPOS
 
 arcpy.AddMessage("creando campos Muestra....")
 arcpy.AddField_management(Muestra,"ID_MUESTRA","LONG","","","","Identificador Único de la muestra")
+arcpy.AddField_management(Muestra,"IGM","TEXT","","","30","Código IGM")
 arcpy.AddField_management(Muestra,"COD_MUESTRA_SGC","TEXT","","","30","Código de Muestra SGC")
 arcpy.AddField_management(Muestra,"COD_MUESTRA_LABORATORIO","TEXT","","","20","Código de Muestra Laboratorio")
 arcpy.AddField_management(Muestra,"FECHA_INGRESO","DATE","","","","Fecha de Ingreso")
@@ -105,5 +119,45 @@ arcpy.AddField_management(Elemento_Propiedad,"ID_ELEMENTO_PROPIEDAD","SHORT","",
 arcpy.AddField_management(Elemento_Propiedad,"DESCRIPCION","TEXT","","","50","Descripcion")
 arcpy.AddField_management(Elemento_Propiedad,"PK_ID_UNIDAD","SHORT","","","","Identificador de Unidad")
 
-arcpy.CreateRelationshipClass_management(Muestra,Muestra_Laboratorio,Geodatabase+ os.sep+"Muestra_Resultado_Rel","SIMPLE","Atributos de Muestra","Atributos de Muestra Laboratorio","NONE","ONE_TO_MANY","NONE","ID_MUESTRA", "FK_ID_MUESTRA")
+arcpy.AddMessage("creando campos Detalle Muestra....")
 
+arcpy.AddField_management(Elemento_Propiedad,"ID_DETALLE_MUESTRA","LONG","","","","Identificador del Elemento propiedad")
+arcpy.AddField_management(Elemento_Propiedad,"FK_ID_MUESTRA","LONG","","","","Descripcion")
+arcpy.AddField_management(Elemento_Propiedad,"FK_CARACTERISTICA","SHORT","","","","Identificador Caracteristica")
+arcpy.AddField_management(Elemento_Propiedad,"DA_VALOR","DATE","","","","Valor Fecha")
+arcpy.AddField_management(Elemento_Propiedad,"NU_VALOR","DOUBLE","","","","Valor Númerico")
+arcpy.AddField_management(Elemento_Propiedad,"VA_VALOR","TEXT","","","255","valor Texto")
+arcpy.AddField_management(Elemento_Propiedad,"FK_DOMINIO_CARACTERISTICA","SHORT","","","","Identificador dominio Caracteristica")
+arcpy.AddField_management(Elemento_Propiedad,"FECHA","DATE","","","","Fecha")
+
+arcpy.AddMessage("creando campos Tipo Muestra....")
+
+arcpy.AddField_management(Tipo_Muestra,"ID_TIPO_MUESTRA ","SHORT","","","","Identificador Tipo de Muestra")
+arcpy.AddField_management(Tipo_Muestra,"TIPO_MUESTRA","TEXT","","","50","Tipo de Muestra")
+
+arcpy.AddMessage("creando campos Caracteristica....")
+
+arcpy.AddField_management(Caracteristica,"ID_CARACTERISTICA","SHORT","","","","Identificador Caracteristica")
+arcpy.AddField_management(Caracteristica,"DESCRIPCION","TEXT","","","","Descripción")
+arcpy.AddField_management(Caracteristica,"FK_TIPO_MUESTRA","SHORT","","","","Tipo Muestra")
+arcpy.AddField_management(Caracteristica,"FK_PADRE_CARAC","SHORT","","","255","Caracteristica Padre")
+
+arcpy.AddMessage("creando campos Caracteristica Dominio....")
+
+arcpy.AddField_management(Caracteristica_Dominio,"ID_CARACTERISTICA","SHORT","","","","Identificador Caracteristica")
+arcpy.AddField_management(Caracteristica_Dominio,"DESCRIPCION","TEXT","","","","Descripción")
+arcpy.AddField_management(Caracteristica_Dominio,"FK_TIPO_MUESTRA","SHORT","","","","Tipo Muestra")
+
+
+
+arcpy.AddField_management(Elemento_Propiedad,"FK_DOMINIO_CARACTERISTICA","SHORT","","","","Identificador dominio Caracteristica")
+arcpy.AddField_management(Elemento_Propiedad,"FECHA","DATE","","","","Fecha")
+
+
+
+
+
+arcpy.CreateRelationshipClass_management(Muestra,Muestra_Laboratorio,Geodatabase+ os.sep+"Muestra_Resultado_Rel","SIMPLE","Atributos de Muestra","Atributos de Muestra Laboratorio","NONE","ONE_TO_MANY","NONE","ID_MUESTRA", "FK_ID_MUESTRA")
+arcpy.CreateRelationshipClass_management(Muestra_Laboratorio,Resultado,Geodatabase+ os.sep+"Muestra_Laboratorio_Resultado_Rel","SIMPLE","Atributos de Muestra laboratorio","Atributos de Resultado","NONE","ONE_TO_MANY","NONE","ID_MUESTRA_LABORATORIO", "FK_MUESTRA_LABORATORIO")
+arcpy.CreateRelationshipClass_management(Elemento_Propiedad,Resultado,Geodatabase+ os.sep+"Elemento_Propiedad_Resultado_Rel","SIMPLE","Atributos de Propiedad","Atributos de Resultado","NONE","ONE_TO_MANY","NONE","ID_ELEMENTO_PROPIEDAD", "FK_ELEMENTO_PROPIEDAD")
+arcpy.CreateRelationshipClass_management(Elemento_Propiedad,Resultado,Geodatabase+ os.sep+"Elemento_Propiedad_Resultado_Rel","SIMPLE","Atributos de Propiedad","Atributos de Resultado","NONE","ONE_TO_MANY","NONE","ID_ELEMENTO_PROPIEDAD", "FK_ELEMENTO_PROPIEDAD")
