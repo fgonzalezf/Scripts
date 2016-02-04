@@ -33,5 +33,4 @@ for field in fieldList:
         elif field.name=="CAPA_INCONCISTENCIA":
             fieldmapping= Mapa(fieldmapping,featIn, "CAPA_INCONCISTENCIA" ,  "CAPA_INCONSISTENCIA")
 arcpy.Append_management(featIn, featOut, "NO_TEST",fieldmapping)
-
 arcpy.TableToTable_conversion("in_memory/tabla", r"D:\Proyecto\fernando.gonzalez\Fernando\enviar_igac\enviar21.mdb", "prueba")
