@@ -19,6 +19,10 @@ for dataset in ListaDatasets:
             if Exportar=="true":
                 print "Exportando" + fc
                 Layer=arcpy.MakeFeatureLayer_management(fc,fc+"Lyr")
+                try:
+                    arcpy.SetLayerRepresentation_cartography(fc+"Lyr",fc+"_Rep")
+                except:
+                    pass
                 arcpy.SaveToLayerFile_management(fc+"Lyr",Carpetalayers+os.sep+fc+"Lyr")
                 arcpy.Delete_management(Layer)
             else:
