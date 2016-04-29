@@ -1,8 +1,8 @@
 __author__ = 'alberto'
 import arcpy,os,sys
 
-Geodatabase =r"X:\MODELOS DEFINITIVOS\GEODATABASE_V10.0_02_03_2016\10K_Gobernacion\GEODATABASE_VECTORES\CON_ANOTACIONES\V10\10K_V9.2_BOGOTA_CON_ANOTACIONES.mdb"
-Carpetalayers=r"X:\MODELOS DEFINITIVOS\GEODATABASE_V10.0_02_03_2016\10K_Gobernacion\GEODATABASE_VECTORES\CON_ANOTACIONES\Layers"
+Geodatabase =r"X:\MODELOS DEFINITIVOS\GEODATABASE_V10.3_08_04_2016\25K\25K_08_04_2016_GEODATABASE_CARGUE.mdb"
+Carpetalayers=r"X:\MODELOS DEFINITIVOS\GEODATABASE_V10.2_17_12_2016\proyectadas\25k_Sin_anotaciones\layers"
 Exportar="false"
 
 arcpy.env.workspace=Carpetalayers
@@ -38,8 +38,3 @@ for dataset in ListaDatasets:
                             arcpy.AddRepresentation_cartography(Geodatabase+os.sep+dataset+os.sep+fc,fc+"_Rep","RuleID","Override","STORE_CHANGE_AS_OVERRIDE",Carpetalayers+os.sep+layer,"ASSIGN")
                         except Exception as ex:
                             print "Error "+ ex.message
-
-
-
-
-

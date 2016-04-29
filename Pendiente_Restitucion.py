@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# -*- coding: ISO-8859-1 -*-
+#################
+############################
 __author__ = 'fernando.gonzalez'
 class LicenseError(Exception):
     pass
@@ -7,19 +7,19 @@ class LicenseError(Exception):
 import arcpy, os, sys, arcinfo
 from arcpy.sa import *
 
-#DGN = sys.argv[1]
-#Carpeta= sys.argv[2]
-#PoligonoArea=sys.argv[3]
-#Archivo=sys.argv[4]
+DGN = sys.argv[1]
+Carpeta= sys.argv[2]
+PoligonoArea=sys.argv[3]
+Archivo=sys.argv[4]
 
-DGN = r"X:\Cuentas Restitucion\Prueba_Aplicativo\Prueba_original\ANT_10000_OESTE_145IIA4_P.dgn"
-Carpeta= r"X:\Cuentas Restitucion\Prueba_Aplicativo\Prueba_toolbox"
-PoligonoArea=r"X:\Cuentas Restitucion\Prueba_Aplicativo\Prueba_toolbox\CORTE2.shp"
-Archivo=r"X:\Cuentas Restitucion\Prueba_Aplicativo\Prueba_toolbox\areas.txt"
+#######################################################################################
+######################################################################
+################################################################################
+###########################################################################
 
 
 arcpy.env.overwriteOutput=True
-####Variables######
+###################
 
 strShape=Carpeta+os.sep+"Shape.shp"
 strShape2=Carpeta+os.sep+"Shape2.shp"
@@ -36,7 +36,7 @@ strEliminate4 = Carpeta+os.sep+ "Eliminate4.shp"
 strEliminate5 = Carpeta+os.sep+ "Eliminate5.shp"
 strEliminateF = Carpeta+os.sep+ "EliminateF.shp"
 
-RECLASIFICAR = "0.000000 7.000000 1; 7.000001 12.000000 2; 12.000001 9999999999.0000 3"
+RECLASIFICAR = "0.000000 3.000000 1; 3.000001 12.000000 2; 12.000001 9999999999.0000 3"
 
 strDissolve=Carpeta+os.sep+"Dissolve.shp"
 
@@ -79,10 +79,11 @@ try:
     for fc in ListaFeat:
         if fc == "Polyline":
             arcpy.FeatureClassToFeatureClass_conversion(fc,Carpeta,"Shape.shp")
+            arcpy.Clip_analysis(strShape,PoligonoArea,strShape2)
     try:
         CalcularArea(PoligonoArea)
         ##Conversion Tin
-        arcpy.CreateTin_3d(strTin,"","'"+strShape+"'" +" Shape.Z masspoints <None>","DELAUNAY")
+        arcpy.CreateTin_3d(strTin,"","'"+strShape2+"'" +" Shape.Z masspoints <None>","DELAUNAY")
         ## Tin a Raster
         arcpy.TinRaster_3d(strTin,strRaster,"INT", "LINEAR", "OBSERVATIONS 250")
         ##Cortando raster
@@ -166,12 +167,12 @@ try:
         montanosoT=str(round(montanoso,1))
         Fileprj = open (Archivo, "w")
         Fileprj.write("Reporte de areas" + "\n")
-        Fileprj.write("Area en Zona Plana: " + planoT +"\n")
-        Fileprj.write("Area en Zona Ondulada: " + onduladoT+"\n")
-        Fileprj.write("Area en Zona Montañosa: " + montanosoT +"\n")
+        Fileprj.write("Area en Zona Plana: " + planoT+ " Ha" +"\n")
+        Fileprj.write("Area en Zona Ondulada: " + onduladoT+ " Ha"+"\n")
+        Fileprj.write("Area en Zona Montañosa: " + montanosoT + " Ha"+"\n")
         Fileprj.close()
     except Exception as ex:
-        print "Error en el proceso: "+ ex.message
+        arcpy.AddError( "Error en el proceso: "+ ex.message)
 
 except LicenseError:
     arcpy.AddError("Se requieren de 3D Analisys y Spatial Analysis para esta Herramienta")
@@ -182,5 +183,6 @@ finally:
     #
     arcpy.CheckInExtension("3D")
     arcpy.CheckInExtension("Spatial")
+
 
 
