@@ -16,7 +16,6 @@ dataset= Geodatabase+ os.sep+"Muestras"
 arcpy.AddMessage("creando featuare Class...")
 Muestra= arcpy.CreateFeatureclass_management(dataset,"Muestra","POINT")
 arcpy.AlterAliasName(Muestra,"Muestra")
-Municipios=arcpy.CreateFeatureclass_management(dataset,"Municipios","POLYGON")
 Resultado = arcpy.CreateTable_management(Geodatabase,"Resultado")
 Muestra_Laboratorio = arcpy.CreateTable_management(Geodatabase,"Muestra_Laboratorio")
 Elemento_Propiedad = arcpy.CreateTable_management(Geodatabase,"Elemento_Propiedad")
@@ -58,12 +57,6 @@ arcpy.AddField_management(Muestra,"FK_AFLUENTE_PRINCIPAL","SHORT","","","","Aflu
 arcpy.AddField_management(Muestra,"COORDENADAS_X_ORIGEN","SHORT","","","","Coordenadas X de Origen")
 arcpy.AddField_management(Muestra,"COORDENADAS_Y_ORIGEN","SHORT","","","","Coordenadas Y de Origen")
 arcpy.AddField_management(Muestra,"ORIGEN_GEOGRAFICO","SHORT","","","","Origen Geografico")
-
-arcpy.AddMessage("creando campos Municipios....")
-arcpy.AddField_management(Municipios,"NOMBRE_DEPARTAMENTO","SHORT","","","","Nombre Departamento")
-arcpy.AddField_management(Municipios,"NOMBRE_MUNICIPIO","SHORT","","","","Nombre Municipio")
-arcpy.AddField_management(Municipios,"CODIGO_DEPARTAMENTO","SHORT","","","","Código Departamento")
-arcpy.AddField_management(Municipios,"CODIGO_MUNICIPIO","SHORT","","","","Código Municipio")
 
 arcpy.AddMessage("creando campos Resultados....")
 
