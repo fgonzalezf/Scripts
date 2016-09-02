@@ -4,7 +4,7 @@ import arcpy, os,sys
 Geodatabase=sys.argv[1]
 Hoja=sys.argv[2]
 arcpy.env.workspace=Geodatabase
-ListaDatasets = arcpy.ListDatasets()
+ListaDatasets = arcpy.ListDatasets("*","Feature")
 for dataset in ListaDatasets:
     arcpy.env.workspace=Geodatabase +os.sep+ dataset
     ListaFeatures= arcpy.ListFeatureClasses()

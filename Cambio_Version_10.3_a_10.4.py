@@ -68,5 +68,7 @@ for dataset in ListaDatasets:
                 arcpy.AddFeatureClassToTopology_management(Topologia,nuevo)
                 arcpy.AddRuleToTopology_management(Topologia,"Must Not Overlap (Area)",nuevo,"","","" )
                 arcpy.AddRuleToTopology_management(Topologia,"Must Not Have Gaps (Area)",nuevo,"","","" )
+                arcpy.AddRuleToTopology_management(Topologia,"Must Not Have Gaps (Area)",nuevo,"","","" )
+
 
 
