@@ -1,4 +1,5 @@
 import arcpy,os,sys
+
 def arrayCamposFeat(FeatuareClass):
     listaCampos=arcpy.ListFields(FeatuareClass)
     listaNombres=[]
@@ -49,14 +50,14 @@ def appendOutTestFeat(FeatIn, FeatOut,workspace):
     del cursor2
     del row
     return OBIDS
-def appendOutTestAnot(FeatIn, FeatOut,workspace):
+
+def appendOutTestAnot(FeatIn, FeatOut, workspace):
     CamposIn= arrayCamposAnot(FeatIn)
     CamposOut= arrayCamposAnot(FeatOut)
     print CamposIn
     print CamposOut
     #igualacion de campos
     camposIguales=[]
-
     for camposEnt in CamposIn:
         for camposSal in CamposOut:
             if camposEnt==camposSal:
@@ -73,14 +74,12 @@ def appendOutTestAnot(FeatIn, FeatOut,workspace):
                 cursor2.insertRow(row)
     edit.stopOperation()
     edit.stopEditing(True)
-
     del cursor2
     del row
 
-Entrada= r"D:\Proyecto\fernando.gonzalez\PRUEBAS\Cargue\YIMI\Prueba3\249IIC.mdb\Relieve\Curva_Nivel_Anot"
-salida= r"D:\Proyecto\fernando.gonzalez\PRUEBAS\Cargue\YIMI\Prueba3\25K_29_04_2016_GEODATABASE_ANOTACIONES.mdb\Relieve\Curva_Nivel_Anot"
-work=r"D:\Proyecto\fernando.gonzalez\PRUEBAS\Cargue\YIMI\Prueba3\25K_29_04_2016_GEODATABASE_ANOTACIONES.mdb"
+Entrada= r"D:\Proyecto\EDICION\INTEGRADAS_25K_BORRAR\Prueba\193IVA_Pru2.mdb\Relieve\Curva_Nivel_Anot"
+salida= r"D:\Proyecto\EDICION\INTEGRADAS_25K_BORRAR\Prueba\193IVA.mdb\Relieve\Curva_Nivel_Anot"
+work=r"D:\Proyecto\EDICION\INTEGRADAS_25K_BORRAR\Prueba\193IVA.mdb"
 #print arrayCampos(Entrada)
-
 print appendOutTestAnot(Entrada,salida,work)
 

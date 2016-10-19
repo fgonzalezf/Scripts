@@ -12,8 +12,7 @@ from comtypes.client import CreateObject
 GeodatabaseEntrada=sys.argv[1]
 GeodatabaseSalida=sys.argv[2]
 ShapefileCorte=sys.argv[3]
-LinkAnnotation=sys.argv[4]
-Query=sys.argv[5]
+Query=sys.argv[4]
 #BufferSeleccion= sys.argv[6]
 
 arcpy.env.overwriteOutput=True
@@ -53,6 +52,88 @@ def CType(obj, interface):
         return None 
 def CLSID(MyClass):
     return str(MyClass._reg_clsid_)
+
+def arrayCamposFeat(FeatuareClass):
+    listaCampos=arcpy.ListFields(FeatuareClass)
+    listaNombres=[]
+    for field in listaCampos:
+        if field.name.upper()==u'SHAPE'.upper():
+            listaNombres.append("SHAPE@")
+        elif field.name.upper()=='OBJECTID'.upper():
+            listaNombres.append(u"OID@")
+        elif  field.name.upper()=='SHAPE_Length'.upper() or field.name.upper()=='SHAPE_Area'.upper() or field.name.upper()=='OVERRIDE'.upper():
+            pass
+        else:
+            listaNombres.append(field.name.upper())
+    return listaNombres
+
+def arrayCamposAnot(FeatuareClass):
+    listaCampos=arcpy.ListFields(FeatuareClass)
+    listaNombres=[]
+    for field in listaCampos:
+        if field.name.upper()==u'SHAPE'.upper():
+            listaNombres.append("SHAPE@")
+        elif field.name.upper()=='OBJECTID'.upper():
+            listaNombres.append(u"OID@")
+        elif  field.name.upper()=='SHAPE_Length'.upper() or field.name.upper()=='SHAPE_Area'.upper():
+            pass
+        else:
+            listaNombres.append(field.name.upper())
+    return listaNombres
+
+def appendOutTestFeat(FeatIn, FeatOut,workspace):
+    OBIDS={}
+    CamposIn= arrayCamposFeat(FeatIn)
+    CamposOut= arrayCamposFeat(FeatOut)
+    camposIguales=[]
+    for camposEnt in CamposIn:
+        for camposSal in CamposOut:
+            if camposEnt==camposSal:
+                camposIguales.append(camposEnt)
+    edit = arcpy.da.Editor(workspace)
+    edit.startEditing(True, False)
+    edit.startOperation()
+    cursor2 = arcpy.da.InsertCursor(FeatOut,camposIguales)
+    with arcpy.da.SearchCursor(FeatIn,camposIguales) as cursor:
+        for row in cursor:
+            IdNuevo=cursor2.insertRow(row)
+            OBIDS[int(row[0])]=int(IdNuevo)
+    edit.stopOperation()
+    edit.stopEditing(True)
+    del cursor2
+    del row
+    return OBIDS
+
+def appendOutTestAnot(FeatIn, FeatOut, workspace,Diccionario):
+    CamposIn= arrayCamposAnot(FeatIn)
+    CamposOut= arrayCamposAnot(FeatOut)
+    print CamposIn
+    print CamposOut
+    #igualacion de campos
+    camposIguales=[]
+    for camposEnt in CamposIn:
+        for camposSal in CamposOut:
+            if camposEnt==camposSal:
+                camposIguales.append(camposEnt)
+    print camposIguales
+    #with arcpy.da.Editor(workspace) as edit:
+        #print edit.isEditing
+    edit = arcpy.da.Editor(workspace)
+    edit.startEditing(True, False)
+    edit.startOperation()
+    cursor2 = arcpy.da.InsertCursor(FeatOut,camposIguales)
+    with arcpy.da.SearchCursor(FeatIn,camposIguales) as cursor:
+            for row in cursor:
+                #rwint=int(row[0])
+                #arcpy.AddMessage(str(int(row[0])))
+                #row[0]=Diccionario[rwint]
+                cursor2.insertRow(row)
+    edit.stopOperation()
+    edit.stopEditing(True)
+    del cursor2
+    del row
+
+
 
 def exportar (db, xmlFile,type):
     esriGeodatabase= GetModule(r"C:\ArcGIS\Desktop10.3\com\esriGeoDatabase.olb")
@@ -108,35 +189,26 @@ def Mapa(fieldmappings,FeatEntrada, CampoEntrada , CampoSalida):
         #fieldmappings.removeFieldMap(fieldmappings.findFieldMapIndex(CampoEntrada))
         return fieldmappings
 
-def seleccion(Entrada,FeatSelect,Salida,workspace):
+def seleccionAnot(Entrada,FeatSelect,Salida,Diccionario):
 
     layer1=arcpy.MakeFeatureLayer_management(Entrada, "Entrada_lyr")
     layer2=arcpy.SelectLayerByLocation_management ("Entrada_lyr", "INTERSECT",FeatSelect,"-1 Centimeters","NEW_SELECTION")
 
     AutoCreateAnnot(Salida)
-    arcpy.Append_management("Entrada_lyr",Salida,"TEST")
+    appendOutTestAnot("Entrada_lyr",Salida,GeodatabaseSalida,Diccionario)
     del layer1
     del layer2
 
-def seleccionCalc(Entrada,FeatSelect,Salida,workspace,FielMapping):
+def seleccionFeat(Entrada,FeatSelect,Salida):
 
     layer1=arcpy.MakeFeatureLayer_management(Entrada, "Entrada_lyr")
     layer2=arcpy.SelectLayerByLocation_management ("Entrada_lyr", "INTERSECT",FeatSelect,"-1 Centimeters","NEW_SELECTION")
 
-    fieldmp=Mapa(FielMapping,"Entrada_lyr","OBJECTID","TempId")
-    arcpy.Append_management("Entrada_lyr",Salida,"NO_TEST",fieldmp)
+    Diccionario=appendOutTestFeat("Entrada_lyr",Salida,GeodatabaseSalida)
 
     del layer1
     del layer2
-def seleccionFeat(Entrada,FeatSelect,Salida,workspace):
-
-    layer1=arcpy.MakeFeatureLayer_management(Entrada, "Entrada_lyr")
-    layer2=arcpy.SelectLayerByLocation_management ("Entrada_lyr", "INTERSECT",FeatSelect,"-1 Centimeters","NEW_SELECTION")
-
-    arcpy.Append_management("Entrada_lyr",Salida,"NO_TEST")
-
-    del layer1
-    del layer2
+    return Diccionario
 
 
 
@@ -166,72 +238,16 @@ for dataset in datasetList:
                     desc = arcpy.Describe(fc)
 
                     if(desc.featureType!="Annotation"):
+                        Diccionario = seleccionFeat(GeodatabaseEntrada+os.sep+dataset+os.sep+fc,CORTE,fcSal)
                         if(arcpy.Exists(fc+"_Anot")):
-                            seleccion(GeodatabaseEntrada+os.sep+dataset+os.sep+fc+"_Anot", CORTE , fcSal+"_Anot",GeodatabaseEntrada + "/" + dataset)
-                        if (LinkAnnotation=="true"):
-                            try:
-                                arcpy.AddField_management(fcSal,"TempId","LONG")
-                            except:
-                                arcpy.AddMessage("Campo ya creado")
-                        if (LinkAnnotation=="true"):
-                            fieldmapping = arcpy.FieldMappings()
-                            fieldmapping.addTable(fc)
-                            fieldmapping.addTable(fcSal)
-                            seleccionCalc(GeodatabaseEntrada+os.sep+dataset+os.sep+fc, CORTE , fcSal,GeodatabaseEntrada + "/" + dataset,fieldmapping)
-                        else:
-                            seleccionFeat(GeodatabaseEntrada+os.sep+dataset+os.sep+fc, CORTE , fcSal,GeodatabaseEntrada + "/" + dataset)
+                            seleccionAnot(GeodatabaseEntrada+os.sep+dataset+os.sep+fc+"_Anot", CORTE , fcSal+"_Anot",Diccionario)
 
             except Exception as ex:
                 arcpy.AddMessage("Error..."+ex.message)
-                Fileprj.write("Error Cortando: "+ fc + "\n")                               
+                Fileprj.write("Error Seleccionando: "+ fc + "\n")
 del datasetList
 del fcList
 
-if (LinkAnnotation=="true"): 
-    arcpy.AddMessage("Relacionando Anotaciones")
-    arcpy.Delete_management(CORTE)
-    arcpy.env.workspace = GeodatabaseSalida
-    datasetList = arcpy.ListDatasets()
-    for dataset in datasetList:
-        arcpy.env.workspace = GeodatabaseSalida + "/" + dataset
-        fcList = arcpy.ListFeatureClasses()
-        for fc in fcList:
-            try:    
-                desc = arcpy.Describe(fc)
-                result = int(arcpy.GetCount_management(fc).getOutput(0))
-                if(result>0):
-                    if(desc.featureType=="Annotation"):                  
-                        Annotacion=fc
-                        Feature=GeodatabaseSalida + "/" + dataset+"/"+fc.replace("_Anot","")
-                        arcpy.AddMessage("Relacionado: " + fc + " Con " + fc.replace("_Anot",""))
-                        layer=arcpy.MakeFeatureLayer_management(fc)
-                        layer2=arcpy.MakeFeatureLayer_management(Feature)                    
-                        arcpy.AddJoin_management(layer,"FeatureID",layer2,"TempId")
-                        arcpy.CalculateField_management(layer, fc+".FeatureID","["+fc.replace("_Anot","")+".OBJECTID]","VB")                          
-                        del layer
-                        del layer2
-            except Exception as ex:
-                arcpy.AddMessage("Error Relacionado Campos.."+ ex.message)               
-    del datasetList
-    del fcList
-    arcpy.AddMessage("Borrando Campos Temporales")
-    arcpy.env.workspace = GeodatabaseEntrada
-    datasetList = arcpy.ListDatasets()
-    for dataset in datasetList:
-        arcpy.env.workspace = GeodatabaseEntrada + "/" + dataset
-        fcList = arcpy.ListFeatureClasses()
-        for fc in fcList:
-            try:
-                desc = arcpy.Describe(fc)
-                result = int(arcpy.GetCount_management(fc).getOutput(0))
-                if result>0: 
-                    if(desc.featureType!="Annotation"):
-                        arcpy.AddMessage(fc)
-                        fcSal=GeodatabaseSalida + "/" + dataset + "/" + fc
-                        arcpy.DeleteField_management(fc,"TempId")
-                        arcpy.DeleteField_management(fcSal,"TempId")
-            except Exception as ex:
-                arcpy.AddMessage("Error Borrando Campos Temporales..."+ ex.message) 
 if Query != "":
     try:
         arcpy.env.workspace = GeodatabaseEntrada
