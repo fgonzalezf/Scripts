@@ -1,6 +1,4 @@
 import arcpy, os,sys
-
-import arcpy, os,sys
 #Geodatabase =r"D:\Proyecto\EDICION\INTEGRADAS_25K_BORRAR\PRUEBAS_PLANCHA\92IVA.mdb"
 #Hoja="92IVA_R"
 Geodatabase=sys.argv[1]
@@ -48,6 +46,7 @@ for dataset in ListaDatasets:
                 arcpy.AddRuleToTopology_management(Topologia,"Must Not Self-Overlap (Line)",nuevo,"","","" )
                 arcpy.AddRuleToTopology_management(Topologia,"Must Not Self-Intersect (Line))",nuevo,"","","" )
                 arcpy.AddRuleToTopology_management(Topologia,"Must Be Single Part (Line)",nuevo,"","","" )
+
     elif dataset=="Indice_Mapas":
         Topologia=Geodatabase +os.sep+ dataset+os.sep+"Indice_Mapas_Topology"
         for fc in ListaFeatures:
@@ -58,6 +57,7 @@ for dataset in ListaDatasets:
                 arcpy.AddFeatureClassToTopology_management(Topologia,nuevo)
                 arcpy.AddRuleToTopology_management(Topologia,"Must Not Overlap (Area)",nuevo,"","","" )
                 arcpy.AddRuleToTopology_management(Topologia,"Must Not Have Gaps (Area)",nuevo,"","","" )
+
     elif dataset=="Indice_Mapas":
         Topologia=Geodatabase +os.sep+ dataset+os.sep+"Indice_Mapas_Topology"
         for fc in ListaFeatures:

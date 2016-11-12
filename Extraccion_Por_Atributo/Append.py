@@ -1,5 +1,4 @@
 import arcpy,os,sys
-
 def arrayCamposFeat(FeatuareClass):
     listaCampos=arcpy.ListFields(FeatuareClass)
     listaNombres=[]
