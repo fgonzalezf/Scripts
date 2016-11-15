@@ -3,9 +3,9 @@ import arcpy, os,sys
 reload(sys)
 sys.setdefaultencoding('latin1')
 
-TablaEntrada=r'C:\Users\fernando.gonzalez\Documents\PlanView\PLANVIEW\PLANVIEW.mdb'
+TablaEntrada=r'C:\Users\Equipo\Documents\ArcGIS\PLANVIEW.mdb'
 TablaEntradaFin = os.path.join(TablaEntrada,"VSIG_Proyectos")
-TablaSalida =r"C:\Users\fernando.gonzalez\Documents\PlanView\PLANVIEW\PLANVIEW.mdb\prueba"
+TablaSalida =r"C:\Users\Equipo\Documents\ArcGIS\PLANVIEW.mdb\prueba"
 arcpy.env.workspace=TablaEntrada
 #ListaCamposEntrada=arcpy.ListFields(TablaEntrada)
 #ListaCamposSalida= arcpy.ListFields(TablaSalida)
@@ -42,16 +42,23 @@ for valor in unicos:
                 for i in range(len(row)):
                     rowIns.append([])
             for i in range(len(row)):
-                if str(row[i]) not in rowIns[i]:
-                    rowIns[i].append(str(row[i]))
+                if row[i] not in rowIns[i]:
+                    rowIns[i].append(row[i])
             estado=1
     #Conversion en tupla
     campIn=[]
     for val in rowIns:
         temStr=""
+        valfin=None
         for valint in val:
-            temStr=temStr+valint
-        campIn.append(temStr)
+            if isinstance(valint, basestring):
+                temStr=temStr+valint
+            else:
+                valfin= valint
+        if temStr!="":
+            campIn.append(temStr)
+        else:
+            campIn.append(valfin)
     rowFin=tuple(campIn)
     print rowFin
     cursorIns.insertRow(rowFin)
