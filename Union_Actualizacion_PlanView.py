@@ -3,9 +3,9 @@ import arcpy, os,sys
 reload(sys)
 sys.setdefaultencoding('latin1')
 
-TablaEntrada=r'C:\Users\Equipo\Documents\ArcGIS\PLANVIEW.mdb'
+TablaEntrada=r'C:\Users\fernando.gonzalez\Documents\PlanView\PlanVie2\PLANVIEW.mdb'
 TablaEntradaFin = os.path.join(TablaEntrada,"VSIG_Proyectos")
-TablaSalida =r"C:\Users\Equipo\Documents\ArcGIS\PLANVIEW.mdb\prueba"
+TablaSalida =r"C:\Users\fernando.gonzalez\Documents\PlanView\PlanVie2\PLANVIEW.mdb\prueba"
 arcpy.env.workspace=TablaEntrada
 #ListaCamposEntrada=arcpy.ListFields(TablaEntrada)
 #ListaCamposSalida= arcpy.ListFields(TablaSalida)
@@ -31,6 +31,7 @@ fields=["ProjectKey",
         "LineaTematica",
         "URL_Shape"]
 unicos = unique_values(TablaEntradaFin,"SGCCode")
+unicosSalida = unique_values(TablaSalida,"SGCCode")
 cursorIns = arcpy.da.InsertCursor(TablaSalida,fields)
 for valor in unicos:
     expression = arcpy.AddFieldDelimiters(TablaEntradaFin, "SGCCode") + "= '"+ valor +"'"
@@ -52,7 +53,7 @@ for valor in unicos:
         valfin=None
         for valint in val:
             if isinstance(valint, basestring):
-                temStr=temStr+valint
+                temStr=temStr+valint+" , "
             else:
                 valfin= valint
         if temStr!="":
@@ -60,15 +61,19 @@ for valor in unicos:
         else:
             campIn.append(valfin)
     rowFin=tuple(campIn)
-    print rowFin
-    cursorIns.insertRow(rowFin)
-
-
+    if valor in unicosSalida:
+        expressionSal = arcpy.AddFieldDelimiters(TablaEntradaFin, "SGCCode") + "= '"+ valor +"'"
+        with arcpy.da.UpdateCursor(TablaSalida, fields ,expressionSal) as cursor2:
+            for rowS in cursor2:
+                for i in range(len(rowS)):
+                    rowS[i]=rowFin[i]
+                cursor2.updateRow(rowS)
+    else:
+        print rowFin
+        cursorIns.insertRow(rowFin)
 
 #cursor = arcpy.da.InsertCursor(TablaSalida, fields)
 print unique_values(TablaEntradaFin,"SGCCode")
-
-
 
 print "Terminado"
 
