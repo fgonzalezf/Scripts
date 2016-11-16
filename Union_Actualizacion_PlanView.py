@@ -68,6 +68,7 @@ for valor in unicos:
                 for i in range(len(rowS)):
                     rowS[i]=rowFin[i]
                 cursor2.updateRow(rowS)
+
     else:
         print rowFin
         cursorIns.insertRow(rowFin)
