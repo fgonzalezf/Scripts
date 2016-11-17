@@ -65,16 +65,19 @@ for valor in unicos:
         expressionSal = arcpy.AddFieldDelimiters(TablaEntradaFin, "SGCCode") + "= '"+ valor +"'"
         with arcpy.da.UpdateCursor(TablaSalida, fields ,expressionSal) as cursor2:
             for rowS in cursor2:
-                for i in range(len(rowS)):
-                    rowS[i]=rowFin[i]
-                cursor2.updateRow(rowS)
+                try:
+                    for i in range(len(rowS)):
+                        rowS[i]=rowFin[i]
+                    cursor2.updateRow(rowS)
+                except Exception as ex:
+                    print "Error Actualizando Fila " + valor + "...." +ex.message
 
     else:
-        print rowFin
-        cursorIns.insertRow(rowFin)
-
-#cursor = arcpy.da.InsertCursor(TablaSalida, fields)
-print unique_values(TablaEntradaFin,"SGCCode")
+        try:
+            print rowFin
+            cursorIns.insertRow(rowFin)
+        except Exception as ex:
+                    print "Error Insertando Fila " + valor + "...." +ex.message
 
 print "Terminado"
 
