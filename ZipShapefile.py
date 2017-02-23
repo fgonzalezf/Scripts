@@ -2,22 +2,29 @@ import zipfile
 import sys
 import os
 import glob
-wellsShapeFile = sys.argv[1]
+
+import arcpy
+FeatureClass=sys.argv[1]
+CarpetaZip=sys.argv[2]
+
+wellsShapeFile=CarpetaZip+ os.sep+ os.path.basename(FeatureClass)+".shp"
+arcpy.FeatureClassToFeatureClass_conversion(FeatureClass,CarpetaZip,os.path.basename(FeatureClass)+".shp")
+
 wellsZipFile = wellsShapeFile[:-4]+"Zip"+".zip"
 
 def zipShapefile(inShapefile, newZipFN):
-    print 'Starting to Zip '+inShapefile+' to '+newZipFN
+    print 'Comprimiendo '+inShapefile+' to '+newZipFN
 
     if not (os.path.exists(inShapefile)):
        print inShapefile + ' Does Not Exist'
        return False
 
     if (os.path.exists(newZipFN)):
-       print 'Deleting '+newZipFN
+       print 'Borrando '+newZipFN
        os.remove(newZipFN)
 
     if (os.path.exists(newZipFN)):
-       print 'Unable to Delete'+newZipFN
+       print 'No se puede borrar'+newZipFN
        return False
 
     zipobj = zipfile.ZipFile(newZipFN,'w')
@@ -30,4 +37,4 @@ def zipShapefile(inShapefile, newZipFN):
     return True
 
 zipShapefile(wellsShapeFile,wellsZipFile)
-print "done!"
+print "Terminado!"
