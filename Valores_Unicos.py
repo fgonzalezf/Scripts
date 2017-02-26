@@ -13,7 +13,7 @@ Fields=FieldsStr.split(";")
 arcpy.env.overwriteOutput=True
 #Join spatial
 Join=os.path.dirname(Entrada1)+os.sep+"JoinTemporal"
-arcpy.SpatialJoin_analysis(Entrada1,Entrada2,os.path.dirname(Entrada1)+os.sep+"JoinTemporal","JOIN_ONE_TO_MANY","KEEP_COMMON","","INTERSECT","-100 METERS")
+arcpy.SpatialJoin_analysis(Entrada1,Entrada2,os.path.dirname(Entrada1)+os.sep+"JoinTemporal","JOIN_ONE_TO_MANY","KEEP_COMMON","","INTERSECT","-10 METERS")
 TablaSalida= os.path.dirname(Entrada2)+os.sep+os.path.basename(Entrada1)+"_"+os.path.basename(Entrada2)
 print TablaSalida
 print os.path.basename(Entrada1)+"_"+os.sep+os.path.basename(Entrada2)
