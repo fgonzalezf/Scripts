@@ -1,7 +1,8 @@
 import arcpy, os,sys
 
-ExcelEntrada= r"D:\APN\Excelpoligono\Poligono.xls"
-PesonalGeodatabase=r"D:\APN\Excelpoligono\Prueba.mdb"
+ExcelEntrada= sys.argv[1]
+PesonalGeodatabase=sys.argv[2]
+NombreSalida=sys.argv[3]
 
 arcpy.env.overwriteOutput=True
 
@@ -13,9 +14,13 @@ arcpy.ExcelToTable_conversion(ExcelEntrada,Tabla)
 arcpy.env.workspace=Tabla
 sr = arcpy.SpatialReference(4326)
 
-arcpy.CreateFeatureclass_management(PesonalGeodatabase,"Poligono","POLYGON","","","",sr)
-arcpy.AddField_management(PesonalGeodatabase+os.sep+"Poligono","ID_POLIGONO","LONG")
-Poligono = PesonalGeodatabase+os.sep+"Poligono"
+Poligono = PesonalGeodatabase+os.sep+NombreSalida
+
+arcpy.AddMessage(Poligono)
+arcpy.CreateFeatureclass_management(PesonalGeodatabase,os.path.basename(Poligono),"POLYGON","","","",sr)
+arcpy.AddField_management(Poligono,"ID_POLIGONO","LONG")
+
+
 #Valores unicos "Lista"
 def unique_values(table, field):
     with arcpy.da.SearchCursor(table, [field]) as cursor:
@@ -23,52 +28,41 @@ def unique_values(table, field):
 
 ListaPoligonos =unique_values(Tabla,"ID_POLIGONO")
 print ListaPoligonos
-
+delimeter=arcpy.AddFieldDelimiters(PesonalGeodatabase+os.sep+"TempTab","ID_POLIGONO")
 #print coordsList
 fields=["No_VERTICE","X","Y"]
 cur = None
 try:
     for pol in ListaPoligonos:
-        arcpy.AddFieldDelimiters()
         coordsList = arcpy.da.TableToNumPyArray(Tabla, fields, null_value=0,
-                                                where_clause= """{0} = {1}""".format(arcpy.AddFieldDelimiters(PesonalGeodatabase, "ID_POLIGONO"),str(pol)))
-
+                                                where_clause= delimeter+"="+str(pol))
+        arcpy.AddMessage(delimeter+"="+str(pol))
         coordsList.sort()
         print coordsList
         cur = arcpy.da.InsertCursor(Poligono, ['SHAPE@','ID_POLIGONO'])
 
-        # Create an array object needed to create features
-        #
         array = arcpy.Array()
-
-        # Initialize a variable for keeping track of a feature's ID.
-        #
         ID = -1
         for coords in coordsList:
             print coords[0]
             if ID == -1:
                 ID = pol
 
-            # Add the point to the feature's array of points
-            #   If the ID has changed, create a new feature
-            #
             if ID != pol:
                 cur.insertRow([arcpy.Polygon(array,sr),ID])
                 array.removeAll()
             array.add(arcpy.Point(float(coords[1]), float(coords[2])))
             ID = pol
 
-        # Add the last feature
-        #
         cur.insertRow([arcpy.Polygon(array,sr),ID])
 
 
 except Exception as e:
-   print e.message
+   print arcpy.AddMessage(e.message)
 finally:
-    # Cleanup the cursor if necessary
-    #
+
     if cur:
         del cur
-#leer tabla
+
+arcpy.Delete_management(Tabla)
 
