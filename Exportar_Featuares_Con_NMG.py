@@ -1,7 +1,7 @@
 import arcpy,os,sys
 
-datasetEntrada =r"D:\SGC\100K_IGAC.gdb\Mapa_Base_IGAC_100K"
-datasetSalida =r"D:\SGC\100KE.gdb\EXCEL"
+datasetEntrada =r"C:\Users\fgonzalezf\Documents\Pruebas\Caren_22_02_2017\100K_IGAC.gdb\Mapa_Base_IGAC_100K"
+datasetSalida =r"C:\Users\fgonzalezf\Documents\Pruebas\Caren_22_02_2017\EXCEL.gdb\Mapa_Base_Igac"
 
 arcpy.env.workspace=datasetEntrada
 
