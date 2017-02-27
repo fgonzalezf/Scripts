@@ -1,17 +1,19 @@
 __author__ = 'fgonzalezf'
 import arcpy, os,sys
 
-Entrada1=r"C:\Users\fgonzalezf\Documents\DIVIPOLA\DIVIPOLA_DANE.mdb\METADATO_POL_ORIG2"#Metadatos
-Entrada2=r"C:\Users\fgonzalezf\Documents\DIVIPOLA\DIVIPOLA_DANE.mdb\GRILLA_100K"#Municipios,departametos, planchas
+Entrada1=sys.argv[1]
+Entrada2=sys.argv[2]
 #Salida=r"Join"
 
-Fields=["MD_METADATA_ID","PLANCHA"]
-FieldUnico="MD_METADATA_ID"
+FieldsStr=sys.argv[3]
+FieldUnico=sys.argv[4]
+
+Fields=FieldsStr.split(";")
 
 arcpy.env.overwriteOutput=True
 #Join spatial
 Join=os.path.dirname(Entrada1)+os.sep+"JoinTemporal"
-arcpy.SpatialJoin_analysis(Entrada1,Entrada2,os.path.dirname(Entrada1)+os.sep+"JoinTemporal","JOIN_ONE_TO_MANY","KEEP_COMMON","","INTERSECT","-3500 METERS")
+arcpy.SpatialJoin_analysis(Entrada1,Entrada2,os.path.dirname(Entrada1)+os.sep+"JoinTemporal","JOIN_ONE_TO_MANY","KEEP_COMMON","","INTERSECT","-10 METERS")
 TablaSalida= os.path.dirname(Entrada2)+os.sep+os.path.basename(Entrada1)+"_"+os.path.basename(Entrada2)
 print TablaSalida
 print os.path.basename(Entrada1)+"_"+os.sep+os.path.basename(Entrada2)

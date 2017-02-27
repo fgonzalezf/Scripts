@@ -1,5 +1,6 @@
 import arcpy
-RutaConexion='Database Connections/SDE_PRUB.sde'
+RutaConexion=r'Database Connections/Connection to SIGPRU_ODA.sde'
+conexiones=[r'Database Connections/Connection to SIGPRU_ODA.sde',r'Database Connections/Connection to SIGPRU_ODA.sde']
 LogReconciliacion=r"c:/temp/reconcilelog.txt"
 
 arcpy.env.workspace = RutaConexion
@@ -18,15 +19,23 @@ print "Reconciliando"
 arcpy.ReconcileVersions_management(RutaConexion, "ALL_VERSIONS", "sde.DEFAULT", versionList, "LOCK_ACQUIRED", "NO_ABORT", "BY_OBJECT", "FAVOR_TARGET_VERSION", "POST", "DELETE_VERSION",LogReconciliacion)
 print "Realizando Compress"
 arcpy.Compress_management(RutaConexion)
-print "Aceptando conexiones"
 arcpy.AcceptConnections(RutaConexion, True)
 
-dataList = arcpy.ListTables() + arcpy.ListFeatureClasses() + arcpy.ListRasters()
+for simma in conexiones:
+    try:
+        userName = arcpy.Describe(simma).connectionProperties.user.lower()
+        dataList = arcpy.ListTables( userName + '.') + arcpy.ListFeatureClasses(userName + '.') + arcpy.ListRasters(userName + '.')
+        #userDataList = [ds for ds in dataList if ds.lower().find(".%s." % userName) > -1]
 
-for dataset in arcpy.ListDatasets():
-    dataList += arcpy.ListFeatureClasses(feature_dataset=dataset)
-    print arcpy.ListFeatureClasses(feature_dataset=dataset)
-print "Indexando"
-#arcpy.RebuildIndexes_management(workspace, "SYSTEM", dataList, "ALL")
-print "Analizando"
-arcpy.AnalyzeDatasets_management(workspace, "SYSTEM", dataList, "ANALYZE_BASE", "ANALYZE_DELTA", "ANALYZE_ARCHIVE")
+        for dataset in arcpy.ListDatasets():
+            dataList += arcpy.ListFeatureClasses(feature_dataset=dataset)
+            print arcpy.ListFeatureClasses(feature_dataset=dataset)
+        print "Indexando"
+        arcpy.RebuildIndexes_management(simma, "NO_SYSTEM", dataList, "ALL")
+        print "Analizando"
+        arcpy.AnalyzeDatasets_management(simma, "NO_SYSTEM", dataList, "ANALYZE_BASE", "ANALYZE_DELTA", "ANALYZE_ARCHIVE")
+    except Exception as ex:
+        print "Error en "+simma+" "+ex.message
+
+print "Aceptando conexiones"
+arcpy.AcceptConnections(RutaConexion, True)
