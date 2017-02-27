@@ -6,6 +6,18 @@ NombreSalida=sys.argv[3]
 
 arcpy.env.overwriteOutput=True
 
+#Valores unicos "Lista"
+def unique_values(table, field):
+    with arcpy.da.SearchCursor(table, [field]) as cursor:
+        return sorted({row[0] for row in cursor})
+
+def ListFields (Tabla):
+    ListFieldsIn=arcpy.ListFields(Tabla)
+    ListaFinal =[]
+    for field in ListFieldsIn:
+        ListaFinal.append(field.name)
+    return ListaFinal
+
 Tabla=PesonalGeodatabase+os.sep+"TempTab"
 arcpy.ExcelToTable_conversion(ExcelEntrada,Tabla)
 
@@ -15,31 +27,29 @@ arcpy.env.workspace=Tabla
 sr = arcpy.SpatialReference(4326)
 
 Poligono = PesonalGeodatabase+os.sep+NombreSalida
-
+fieldsTable = ListFields(Tabla)
+fieldsPoligono =["SHAPE@"]
 arcpy.AddMessage(Poligono)
 arcpy.CreateFeatureclass_management(PesonalGeodatabase,os.path.basename(Poligono),"POLYGON","","","",sr)
-arcpy.AddField_management(Poligono,"ID_POLIGONO","LONG")
 
-
-#Valores unicos "Lista"
-def unique_values(table, field):
-    with arcpy.da.SearchCursor(table, [field]) as cursor:
-        return sorted({row[0] for row in cursor})
+for fieldname in fieldsTable:
+    if fieldname!="No_VERTICE" and fieldname!="Y" and fieldname!="X":
+        arcpy.AddField_management(Poligono,"ID_POLIGONO","LONG")
+        fieldsPoligono.append(fieldname)
 
 ListaPoligonos =unique_values(Tabla,"ID_POLIGONO")
 print ListaPoligonos
 delimeter=arcpy.AddFieldDelimiters(PesonalGeodatabase+os.sep+"TempTab","ID_POLIGONO")
 #print coordsList
-fields=["No_VERTICE","X","Y"]
+fields=fieldsTable
 cur = None
 try:
     for pol in ListaPoligonos:
-        coordsList = arcpy.da.TableToNumPyArray(Tabla, fields, null_value=0,
-                                                where_clause= delimeter+"="+str(pol))
+        coordsList = arcpy.da.TableToNumPyArray(Tabla, fields, null_value=0,                                                where_clause= delimeter+"="+str(pol))
         arcpy.AddMessage(delimeter+"="+str(pol))
         coordsList.sort()
         print coordsList
-        cur = arcpy.da.InsertCursor(Poligono, ['SHAPE@','ID_POLIGONO'])
+        cur = arcpy.da.InsertCursor(Poligono, fieldsPoligono)
 
         array = arcpy.Array()
         ID = -1
@@ -53,7 +63,7 @@ try:
                 array.removeAll()
             array.add(arcpy.Point(float(coords[1]), float(coords[2])))
             ID = pol
-
+        arcpy.Polygon(array,sr)
         cur.insertRow([arcpy.Polygon(array,sr),ID])
 
 
