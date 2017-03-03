@@ -45,18 +45,15 @@ fields=fieldsTable
 cur = None
 #try:
 for pol in ListaPoligonos:
-        coordsList = arcpy.da.TableToNumPyArray(Tabla, fields, null_value=0,                                                where_clause= delimeter+"="+str(pol))
+        coordsList = arcpy.da.TableToNumPyArray(Tabla, fields, null_value=0,where_clause= delimeter+"="+str(pol))
         arcpy.AddMessage(delimeter+"="+str(pol))
         coordsList.sort()
         cur = arcpy.da.InsertCursor(Poligono, fieldsPoligono)
-
         array = arcpy.Array()
         ID = -1
         for coords in coordsList:
             arcpy.AddMessage(coords)
             row=[]
-
-
             if ID == -1:
                 ID = pol
 
@@ -76,8 +73,6 @@ for pol in ListaPoligonos:
                         row.append(coords[i])
         arcpy.AddMessage(len(row))
         cur.insertRow(row)
-
-
 #except Exception as e:
    ##finally:
 if cur:
