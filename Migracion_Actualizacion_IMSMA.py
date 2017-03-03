@@ -28,9 +28,10 @@ def actualizarValores(Featin, FeatOut, fields):
     # For each row, evaluate the WELL_YIELD value (index position
     # of 0), and update WELL_CLASS (index position of 1)
         for row in cursor:
-            for rowvalue in row:
+            for i in range(len(row)):
+                row[i]
             # Update the cursor with the updated list
-                cursor.updateRow(row)
+            cursor.updateRow(row)
 
 arcpy.env.workspace=GeodatabaseIMSMA
 ListaFeatEntrada= arcpy.ListFeatureClasses()
