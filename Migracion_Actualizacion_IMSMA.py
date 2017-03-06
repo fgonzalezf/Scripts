@@ -8,7 +8,7 @@
 
 import arcpy, os, sys
 GeodatabaseIMSMA=r"C:\Users\FernandoW7\Desktop\SIMMA\IMSMA.gdb"
-GeodatabaseSDEImsma=r"C:\Users\FernandoW7\Desktop\SIMMA\Prueba_Final.gdb"
+GeodatabaseSDEImsma=r"C:\Users\FernandoW7\Desktop\SIMMA\Prueba_Final_1.gdb"
 
 #Configuracion
 Actualizar=True
@@ -42,7 +42,6 @@ def ValoresEntrada(Feat,fields):
 
 def actualizarValores(Featin, FeatOut, fields):
         valoresEntrada = ValoresEntrada(Featin,fields)
-        ListaKeys=valoresEntrada.keys()
         Numerador=0
         result = arcpy.GetCount_management(Featin)
         count = int(result.getOutput(0))
@@ -65,14 +64,16 @@ def actualizarValores(Featin, FeatOut, fields):
         edit.startEditing()
         edit.startOperation()
         cursor3 = arcpy.da.InsertCursor(FeatOut, fields)
-        for keyvaluein,row in valoresEntrada.items():
+        for keyvaluein in valoresEntrada:
             Numerador= Numerador+1
-            if keyvaluein not in valoresSalida.keys():
-                print "Ingresando Valor..." + row[2] + "....(" + str(Numerador) + " de " + str(count) + ")"
-                cursor3.insertRow(row)
+            if keyvaluein not in valoresSalida:
+                print "Ingresando Valor..." + keyvaluein + "....(" + str(Numerador) + " de " + str(count) + ")"
+                cursor3.insertRow(valoresEntrada[keyvaluein])
         edit.stopOperation()
         edit.stopEditing("True")
         del cursor3
+        del valoresEntrada
+        del valoresSalida
 
 
                 # Update the cursor with the updated list
