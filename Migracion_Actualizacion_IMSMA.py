@@ -7,8 +7,8 @@
 #-------------------------------------------------------------------------------
 
 import arcpy, os, sys
-GeodatabaseIMSMA=r"D:\APN\Pruebas_Cargue_IMSMA\IMSMA.gdb"
-GeodatabaseSDEImsma=r"D:\APN\Pruebas_Cargue_IMSMA\PRUEBACARGUE.gdb"
+GeodatabaseIMSMA=r"C:\Users\FernandoW7\Desktop\SIMMA\IMSMA.gdb"
+GeodatabaseSDEImsma=r"C:\Users\FernandoW7\Desktop\SIMMA\Prueba_Final.gdb"
 
 #Configuracion
 Actualizar=True
@@ -41,35 +41,41 @@ def ValoresEntrada(Feat,fields):
     return datos
 
 def actualizarValores(Featin, FeatOut, fields):
-        valores = ValoresEntrada(Featin,fields)
+        valoresEntrada = ValoresEntrada(Featin,fields)
+        ListaKeys=valoresEntrada.keys()
         Numerador=0
         result = arcpy.GetCount_management(Featin)
         count = int(result.getOutput(0))
-        expresion=arcpy.AddFieldDelimiters(GeodatabaseIMSMA,fields[2])
         edit = arcpy.da.Editor (GeodatabaseSDEImsma)
         edit.startEditing ()
         edit.startOperation()
-        for id, row in valores.items():
-            query= expresion+"='"+row[2]+"'"
-            estado=False
-            Numerador=Numerador+1
-            with arcpy.da.UpdateCursor(FeatOut, fields, query) as cursor2:
+        if Actualizar == True:
+            with arcpy.da.UpdateCursor(FeatOut, fields) as cursor2:
                 for row2 in cursor2:
-                    estado=True
-                    if Actualizar==True:
-                        print "Actualizando Valor..."+ row[2]+ "....("+str(Numerador)+ " de "+str(count)+")"
-                        if row[2]==row2[2]:
-                            for i in range(len(row)):
-                                row2[i]=row[i]
-                        cursor2.updateRow(row2)
-            if estado==False:
-                if Insertar==True:
-                    print "Ingresando Valor Nuevo..."+ row[2]+ "....("+str(Numerador)+" de "+str(count)+")"
-                    cursor3 = arcpy.da.InsertCursor(FeatOut, fields)
-                    cursor3.insertRow(row)
+                    Numerador = Numerador + 1
+                    keyvalue=row2[2]
+                    if keyvalue in valoresEntrada:
+                                print "Actualizando Valor..."+ row2[2]+ "....("+str(Numerador)+ " de "+str(count)+")"
+                                cursor2.updateRow(valoresEntrada[keyvalue])
+
         edit.stopOperation()
         edit.stopEditing("True")
-            # Update the cursor with the updated list
+        Numerador = 0
+        valoresSalida = ValoresEntrada(FeatOut,fields)
+        edit.startEditing()
+        edit.startOperation()
+        cursor3 = arcpy.da.InsertCursor(FeatOut, fields)
+        for keyvaluein,row in valoresEntrada.items():
+            Numerador= Numerador+1
+            if keyvaluein not in valoresSalida.keys():
+                print "Ingresando Valor..." + row[2] + "....(" + str(Numerador) + " de " + str(count) + ")"
+                cursor3.insertRow(row)
+        edit.stopOperation()
+        edit.stopEditing("True")
+        del cursor3
+
+
+                # Update the cursor with the updated list
 arcpy.env.workspace=GeodatabaseIMSMA
 ListaFeatEntrada= arcpy.ListFeatureClasses()
 
@@ -79,5 +85,4 @@ for fc in ListaFeatEntrada:
     listaF=ListaCampos(FeatEntrada)
     print fc
     actualizarValores(FeatEntrada,FeatSalida,listaF)
-
 
