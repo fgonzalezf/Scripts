@@ -6,16 +6,24 @@
 # Created:     03/03/2017
 #-------------------------------------------------------------------------------
 
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#-------------------------------------------------------------------------------
+# Name:        Actualización Geodatabase IMSMA a SDE Visores
+# Author:      fgonzalezf
+# Created:     03/03/2017
+#-------------------------------------------------------------------------------
+
 import arcpy, os, sys
-GeodatabaseIMSMA=r"C:\Users\FernandoW7\Desktop\SIMMA\IMSMA.gdb"
-GeodatabaseSDEImsma=r"C:\Users\FernandoW7\Desktop\SIMMA\Prueba_Final_1.gdb"
+GeodatabaseIMSMA=r"Z:\Pruebas_IMSMA\IMSMA.gdb"
+GeodatabaseSDEImsma=r"Z:\Pruebas_IMSMA\SDE.sde"
 
 #Configuracion
 Actualizar=True
 Insertar=True
 
-fcprueba= GeodatabaseIMSMA+ os.sep+ "Hazard_Reductions_polygon"
-fcpruebasalida=GeodatabaseSDEImsma+os.sep+"Hazard_Reductions_polygon"
+#fcprueba= GeodatabaseIMSMA+ os.sep+ "Hazard_Reductions_polygon"
+#fcpruebasalida=GeodatabaseSDEImsma+os.sep+"Hazard_Reductions_polygon"
 def ListaCampos(Feat):
     ListaFinal=[]
     ListaInit= arcpy.ListFields(Feat)
@@ -29,9 +37,9 @@ def ListaCampos(Feat):
         ListaFinal.append('SHAPE@')
     return ListaFinal
 
-def unique_values(table, field):
-    with arcpy.da.SearchCursor(table, [field]) as cursor:
-        return sorted({row[2] for row in cursor})
+def unique_values(table, fields):
+    with arcpy.da.SearchCursor(table, fields) as cursor:
+        return {row[2] for row in cursor}
 
 def ValoresEntrada(Feat,fields):
     datos = {}
@@ -46,29 +54,35 @@ def actualizarValores(Featin, FeatOut, fields):
         result = arcpy.GetCount_management(Featin)
         count = int(result.getOutput(0))
         edit = arcpy.da.Editor (GeodatabaseSDEImsma)
-        edit.startEditing ()
+        edit.startEditing (False,False)
         edit.startOperation()
         if Actualizar == True:
             with arcpy.da.UpdateCursor(FeatOut, fields) as cursor2:
                 for row2 in cursor2:
                     Numerador = Numerador + 1
                     keyvalue=row2[2]
-                    if keyvalue in valoresEntrada:
-                                print "Actualizando Valor..."+ row2[2]+ "....("+str(Numerador)+ " de "+str(count)+")"
-                                cursor2.updateRow(valoresEntrada[keyvalue])
+                    if keyvalue in valoresEntrada and row2!= valoresEntrada[keyvalue]:
+                        try:
+                            print "Actualizando Valor..."+ row2[2]+ "....("+str(Numerador)+ " de "+str(count)+")"
+                            cursor2.updateRow(valoresEntrada[keyvalue])
+                        except:
+                            pass
 
         edit.stopOperation()
         edit.stopEditing("True")
         Numerador = 0
-        valoresSalida = ValoresEntrada(FeatOut,fields)
-        edit.startEditing()
+        valoresSalida = unique_values(FeatOut,fields)
+        edit.startEditing(False,False)
         edit.startOperation()
         cursor3 = arcpy.da.InsertCursor(FeatOut, fields)
         for keyvaluein in valoresEntrada:
             Numerador= Numerador+1
             if keyvaluein not in valoresSalida:
-                print "Ingresando Valor..." + keyvaluein + "....(" + str(Numerador) + " de " + str(count) + ")"
-                cursor3.insertRow(valoresEntrada[keyvaluein])
+                try:
+                    print "Ingresando Valor..." + keyvaluein + "....(" + str(Numerador) + " de " + str(count) + ")"
+                    cursor3.insertRow(valoresEntrada[keyvaluein])
+                except:
+                    pass
         edit.stopOperation()
         edit.stopEditing("True")
         del cursor3
@@ -81,9 +95,9 @@ arcpy.env.workspace=GeodatabaseIMSMA
 ListaFeatEntrada= arcpy.ListFeatureClasses()
 
 for fc in ListaFeatEntrada:
-    FeatEntrada= GeodatabaseIMSMA+ os.sep+ fc
-    FeatSalida= GeodatabaseSDEImsma+ os.sep+ "IMSMA"+ os.sep+fc
-    listaF=ListaCampos(FeatEntrada)
-    print fc
-    actualizarValores(FeatEntrada,FeatSalida,listaF)
-
+    #if fc!="Hazard_Reductions_point":
+		FeatEntrada= GeodatabaseIMSMA+ os.sep+ fc
+		FeatSalida= GeodatabaseSDEImsma+ os.sep+ "SDE.DBO.CAPAS_IMSMA"+ os.sep+fc
+		listaF=ListaCampos(FeatEntrada)
+		print fc
+		actualizarValores(FeatEntrada,FeatSalida,listaF)
