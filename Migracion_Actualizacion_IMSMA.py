@@ -6,14 +6,6 @@
 # Created:     03/03/2017
 #-------------------------------------------------------------------------------
 
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#-------------------------------------------------------------------------------
-# Name:        Actualización Geodatabase IMSMA a SDE Visores
-# Author:      fgonzalezf
-# Created:     03/03/2017
-#-------------------------------------------------------------------------------
-
 import arcpy, os, sys
 GeodatabaseIMSMA=r"Z:\Pruebas_IMSMA\IMSMA.gdb"
 GeodatabaseSDEImsma=r"Z:\Pruebas_IMSMA\SDE.sde"
