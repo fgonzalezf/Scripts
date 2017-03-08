@@ -9,11 +9,9 @@
 import arcpy, os, sys
 GeodatabaseIMSMA=r"Z:\Pruebas_IMSMA\IMSMA.gdb"
 GeodatabaseSDEImsma=r"Z:\Pruebas_IMSMA\SDE.sde"
-
 #Configuracion
 Actualizar=True
 Insertar=True
-
 #fcprueba= GeodatabaseIMSMA+ os.sep+ "Hazard_Reductions_polygon"
 #fcpruebasalida=GeodatabaseSDEImsma+os.sep+"Hazard_Reductions_polygon"
 def ListaCampos(Feat):
