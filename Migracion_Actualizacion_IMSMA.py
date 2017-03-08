@@ -80,9 +80,7 @@ def actualizarValores(Featin, FeatOut, fields):
         del cursor3
         del valoresEntrada
         del valoresSalida
-
-
-                # Update the cursor with the updated list
+# Update the cursor with the updated list
 arcpy.env.workspace=GeodatabaseIMSMA
 ListaFeatEntrada= arcpy.ListFeatureClasses()
 
