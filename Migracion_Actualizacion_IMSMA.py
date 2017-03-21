@@ -62,10 +62,13 @@ def actualizarValores(Featin, FeatOut, fields):
                     keyvalue=row2[2]
                     if keyvalue in valoresEntrada:
                         if keyvalue not in Controlvalores:
+                            try:
                                 Numerador = Numerador + 1
                                 print "Actualizando Valor..."+ row2[2]+ "....("+str(Numerador)+ " de "+str(count)+")"
                                 cursor2.updateRow(valoresEntrada[keyvalue])
                                 Controlvalores.append(keyvalue)
+                            except Exception as e:
+                                print "Error..."+ e.message
 
 
         edit.stopOperation()
@@ -78,8 +81,11 @@ def actualizarValores(Featin, FeatOut, fields):
         for keyvaluein in valoresEntrada:
             Numerador= Numerador+1
             if keyvaluein not in valoresSalida:
-                print "Ingresando Valor..." + keyvaluein + "....(" + str(Numerador) + " de " + str(count) + ")"
-                cursor3.insertRow(valoresEntrada[keyvaluein])
+                try:
+                    print "Ingresando Valor..." + keyvaluein + "....(" + str(Numerador) + " de " + str(count) + ")"
+                    cursor3.insertRow(valoresEntrada[keyvaluein])
+                except  Exception as e:
+                    print  "Error... "+ e.message
         edit.stopOperation()
         edit.stopEditing("True")
         del cursor3
@@ -87,7 +93,7 @@ def actualizarValores(Featin, FeatOut, fields):
         del valoresSalida
 
 
-                # Update the cursor with the updated list
+        # Update the cursor with the updated list
 arcpy.env.workspace=GeodatabaseIMSMA
 ListaFeatEntrada= arcpy.ListFeatureClasses()
 
