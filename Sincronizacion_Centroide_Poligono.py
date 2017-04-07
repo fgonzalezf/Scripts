@@ -1,12 +1,11 @@
 import arcpy,os,sys
 
-Entrada=r"D:\APN\Pruebas_Cargue_IMSMA\IMSMA.gdb\Accidents_point"
-Salida=r"D:\APN\Pruebas_Cargue_IMSMA\Prueba2.gdb\Accidents_point"
-GeodatabaseSalida=r"D:\APN\Pruebas_Cargue_IMSMA\Prueba2.gdb"
-desc = arcpy.Describe(Entrada)
+EntradaPol=r"D:\APN\Pruebas_Cargue_IMSMA\Prueba_1.gdb\IMSMA\Hazards_polygon"
+SalidaPun=r"D:\APN\Pruebas_Cargue_IMSMA\Prueba_1.gdb\IMSMA\Hazards_polygon_Centroid"
+GeodatabaseSalida=r"D:\APN\Pruebas_Cargue_IMSMA\Prueba_1.gdb"
+desc = arcpy.Describe(EntradaPol)
 tipo= desc.dataType
 print tipo
-
 Actualizar=True
 Borrar=True
 
@@ -30,8 +29,8 @@ def ValoresEntrada(Feat,fields):
            datos[row[3]] =row
     return datos
 
-def actualizarValores(Featin, FeatOut, fields):
-        valoresEntrada = ValoresEntrada(Featin,fields)
+def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
+        valoresEntrada = ValoresEntrada(Featin,fieldsIn)
         Numerador=0
         result = arcpy.GetCount_management(Featin)
         count = int(result.getOutput(0))
@@ -40,9 +39,8 @@ def actualizarValores(Featin, FeatOut, fields):
         edit.startOperation()
         if Actualizar == True:
             Controlvalores = []
-            with arcpy.da.UpdateCursor(FeatOut, fields) as cursor2:
+            with arcpy.da.UpdateCursor(FeatOut, fieldsOut) as cursor2:
                 for row2 in cursor2:
-
                     keyvalue=row2[3]
                     if keyvalue in valoresEntrada:
                         if keyvalue not in Controlvalores:
@@ -53,7 +51,6 @@ def actualizarValores(Featin, FeatOut, fields):
                                 Controlvalores.append(keyvalue)
                             except Exception as e:
                                 print "Error..."+ e.message
-
 
         edit.stopOperation()
         edit.stopEditing("True")
@@ -79,7 +76,6 @@ def actualizarValores(Featin, FeatOut, fields):
             Controlvalores = []
             with arcpy.da.UpdateCursor(FeatOut, fields) as cursor2:
                 for row2 in cursor2:
-
                     keyvalue = row2[3]
                     if keyvalue not in valoresEntrada:
                         if keyvalue not in Controlvalores:
@@ -93,11 +89,9 @@ def actualizarValores(Featin, FeatOut, fields):
 
         edit.stopOperation()
         edit.stopEditing("True")
-
-
         del cursor3
         del valoresEntrada
         del valoresSalida
-print Campos(Entrada)
-Fields=Campos(Entrada)
-actualizarValores(Entrada,Salida,Fields)
+print Campos(EntradaPol)
+Fields=Campos(EntradaPol)
+actualizarValores(EntradaPol,SalidaPun,Fields)
