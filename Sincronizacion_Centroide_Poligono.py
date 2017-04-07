@@ -1,8 +1,8 @@
 import arcpy,os,sys
 
-EntradaPol=r"D:\APN\Pruebas_Cargue_IMSMA\Prueba_1.gdb\IMSMA\Hazards_polygon"
-SalidaPun=r"D:\APN\Pruebas_Cargue_IMSMA\Prueba_1.gdb\IMSMA\Hazards_polygon_Centroid"
-GeodatabaseSalida=r"D:\APN\Pruebas_Cargue_IMSMA\Prueba_1.gdb"
+EntradaPol=r"D:\APN\BK_05_04_2017.mdb\Hazard_AP_APC_Polygons_I_Visor"
+SalidaPun=r"D:\APN\BK_05_04_2017.mdb\DAICMA\Area_Peligrosa_Punto"
+GeodatabaseSalida=r"D:\APN\BK_05_04_2017.mdb"
 desc = arcpy.Describe(EntradaPol)
 tipo= desc.dataType
 print tipo
@@ -47,7 +47,14 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                             try:
                                 Numerador = Numerador + 1
                                 print "Actualizando Valor..."+ row2[3]+ "....("+str(Numerador)+ " de "+str(count)+")"
-                                cursor2.updateRow(valoresEntrada[keyvalue])
+                                rowin =valoresEntrada[keyvalue]
+                                rowin = list(rowin)
+                                pointCentroid= rowin[0].trueCentroid
+                                del rowin[0]
+                                rowin.insert(0,pointCentroid)
+                                rowin = tuple(rowin)
+                                print rowin
+                                cursor2.updateRow(rowin)
                                 Controlvalores.append(keyvalue)
                             except Exception as e:
                                 print "Error..."+ e.message
@@ -55,16 +62,23 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
         edit.stopOperation()
         edit.stopEditing("True")
         Numerador = 0
-        valoresSalida = ValoresEntrada(FeatOut,fields)
+        valoresSalida = ValoresEntrada(FeatOut,fieldsOut)
         edit.startEditing()
         edit.startOperation()
-        cursor3 = arcpy.da.InsertCursor(FeatOut, fields)
+        cursor3 = arcpy.da.InsertCursor(FeatOut, fieldsOut)
         for keyvaluein in valoresEntrada:
             Numerador= Numerador+1
             if keyvaluein not in valoresSalida:
                 try:
                     print "Ingresando Valor..." + keyvaluein + "....(" + str(Numerador) + " de " + str(count) + ")"
-                    cursor3.insertRow(valoresEntrada[keyvaluein])
+                    rowin = valoresEntrada[keyvaluein]
+                    rowin=list(rowin)
+                    pointCentroid = rowin[0].trueCentroid
+                    del rowin[0]
+                    rowin.insert(0, pointCentroid)
+                    rowin=tuple(rowin)
+                    print rowin
+                    cursor3.insertRow(rowin)
                 except  Exception as e:
                     print  "Error... "+ e.message
         edit.stopOperation()
@@ -74,7 +88,7 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
         edit.startOperation()
         if Borrar == True:
             Controlvalores = []
-            with arcpy.da.UpdateCursor(FeatOut, fields) as cursor2:
+            with arcpy.da.UpdateCursor(FeatOut, fieldsOut) as cursor2:
                 for row2 in cursor2:
                     keyvalue = row2[3]
                     if keyvalue not in valoresEntrada:
@@ -93,5 +107,8 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
         del valoresEntrada
         del valoresSalida
 print Campos(EntradaPol)
-Fields=Campos(EntradaPol)
-actualizarValores(EntradaPol,SalidaPun,Fields)
+FieldsIn=Campos(EntradaPol)
+FieldsOut=Campos(SalidaPun)
+print "entrada: "+ str(FieldsIn)
+print "salida: "+ str(FieldsOut)
+actualizarValores(EntradaPol,SalidaPun,FieldsIn,FieldsOut)
