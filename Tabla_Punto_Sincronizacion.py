@@ -1,9 +1,9 @@
 import arcpy,os,sys
 
-EntradaPol=r"D:\APN\BK_05_04_2017.mdb\Hazard_AP_APC_Polygons_I_Visor"
-SalidaPun=r"D:\APN\BK_05_04_2017.mdb\DAICMA\Area_Peligrosa_Punto"
+EntradaPol=r"D:\APN\BK_05_04_2017.mdb\daicmatbl_hazard_Eventos"
+SalidaPun=r"D:\APN\BK_05_04_2017.mdb\DAICMA\Eventos"
 GeodatabaseSalida=r"D:\APN\BK_05_04_2017.mdb"
-CampoUnico="FeatureID"
+CampoUnico="id_imsma_evento"
 
 
 Actualizar=True
@@ -19,6 +19,9 @@ def Campos(Feat):
             Lista.append('SHAPE@XY')
         else:
             Lista.append('SHAPE@')
+
+
+
     for fld in ListaCampos:
         if fld.editable==True and fld.type!="Geometry":
             Lista.append(fld.name)
@@ -27,7 +30,7 @@ def Campos(Feat):
 def normalizarCampos(camposEntrada, camposSalida):
 
     for fieldEnt in camposEntrada:
-        if fieldEnt != 'SHAPE@' and fieldEnt != 'SHAPE@XY':
+        if fieldEnt != 'SHAPE@' and fieldEnt != 'SHAPE@XY'and fieldEnt != 'TEMP':
             if fieldEnt not in camposSalida:
                 camposEntrada.remove(fieldEnt)
     for fieldSal in camposSalida:
@@ -50,8 +53,11 @@ def ValoresEntrada(Feat,fields,indexEnt):
     return datos
 
 def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
-        indx=indexUnico(fieldsOut,CampoUnico)
-        valoresEntrada = ValoresEntrada(Featin,fieldsIn,indx)
+        indxOut=indexUnico(fieldsOut,CampoUnico)
+        indxIn=indexUnico(fieldsIn,CampoUnico)
+        indxLogX=indexUnico(fieldsOut,"longitude")
+        indxLatY=indexUnico(fieldsOut,"latitude")
+        valoresEntrada = ValoresEntrada(Featin,fieldsIn,indxIn)
         Numerador=0
         result = arcpy.GetCount_management(Featin)
         count = int(result.getOutput(0))
@@ -62,16 +68,16 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
             Controlvalores = []
             with arcpy.da.UpdateCursor(FeatOut, fieldsOut) as cursor2:
                 for row2 in cursor2:
-                    keyvalue=row2[indx]
+                    keyvalue=row2[indxOut]
                     if keyvalue in valoresEntrada:
                         if keyvalue not in Controlvalores:
                             try:
                                 Numerador = Numerador + 1
-                                print "Actualizando Valor..."+ row2[indx]+ "....("+str(Numerador)+ " de "+str(count)+")"
+                                print "Actualizando Valor..."+ row2[indxOut]+ "....("+str(Numerador)+ " de "+str(count)+")"
                                 rowin =valoresEntrada[keyvalue]
                                 rowin = list(rowin)
-                                pointCentroid= rowin[0].trueCentroid
-                                del rowin[0]
+                                pointCentroid= arcpy.Point(rowin[indxLogX], rowin[indxLatY])
+                                #del rowin[0]
                                 rowin.insert(0,pointCentroid)
                                 rowin = tuple(rowin)
                                 print rowin
@@ -83,7 +89,7 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
         edit.stopOperation()
         edit.stopEditing("True")
         Numerador = 0
-        valoresSalida = ValoresEntrada(FeatOut,fieldsOut,indx)
+        valoresSalida = ValoresEntrada(FeatOut,fieldsOut,indxOut)
         edit.startEditing()
         edit.startOperation()
         cursor3 = arcpy.da.InsertCursor(FeatOut, fieldsOut)
@@ -94,8 +100,8 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                     print "Ingresando Valor..." + keyvaluein + "....(" + str(Numerador) + " de " + str(count) + ")"
                     rowin = valoresEntrada[keyvaluein]
                     rowin=list(rowin)
-                    pointCentroid = rowin[0].trueCentroid
-                    del rowin[0]
+                    pointCentroid= arcpy.Point(rowin[indxLogX], rowin[indxLatY])
+                    #del rowin[0]
                     rowin.insert(0, pointCentroid)
                     rowin=tuple(rowin)
                     print rowin
@@ -112,12 +118,12 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
             Controlvalores = []
             with arcpy.da.UpdateCursor(FeatOut, fieldsOut) as cursor2:
                 for row2 in cursor2:
-                    keyvalue = row2[indx]
+                    keyvalue = row2[indxOut]
                     if keyvalue not in valoresEntrada:
                         if keyvalue not in Controlvalores:
                             try:
                                 Numerador = Numerador + 1
-                                print "Borrando Valor..." + row2[indx] + "....(" + str(Numerador) + " de " + str(count) + ")"
+                                print "Borrando Valor..." + row2[indxOut] + "....(" + str(Numerador) + " de " + str(count) + ")"
                                 cursor2.deleteRow()
                                 Controlvalores.append(keyvalue)
                             except Exception as e:
