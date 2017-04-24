@@ -1,9 +1,16 @@
 import arcpy,os,sys
 
-EntradaPol=r"D:\APN\BK_05_04_2017.mdb\Hazard_AP_APC_Polygons_I_Visor"
-SalidaPun=r"D:\APN\BK_05_04_2017.mdb\DAICMA\Area_Peligrosa_Punto"
-GeodatabaseSalida=r"D:\APN\BK_05_04_2017.mdb"
+
+
+
+
+GeodatabaseSalida=r"C:\Users\Desarrollo\Documents\APN\BK_Geodatabase.gdb"
 CampoUnico="FeatureID"
+
+Capas = {}
+Capas[r"C:\Users\Desarrollo\Documents\APN\BK_Geodatabase.gdb\Hazard_AP_APC_Polygons_I_Visor"] =r"C:\Users\Desarrollo\Documents\APN\BK_Geodatabase.gdb\DAICMA\Area_Peligrosa_Punto"
+Capas[r"C:\Users\Desarrollo\Documents\APN\BK_Geodatabase.gdb\ENT_Polygons_VIEJO_I_Visor"] =r"C:\Users\Desarrollo\Documents\APN\BK_Geodatabase.gdb\DAICMA\Estudios_No_Tecnicos_Punto"
+Capas[r"C:\Users\Desarrollo\Documents\APN\BK_Geodatabase.gdb\HazardReduction_ET_Des_I_Visor"] =r"C:\Users\Desarrollo\Documents\APN\BK_Geodatabase.gdb\DAICMA\Estudios_Tecnicos_Punto"
 
 
 Actualizar=True
@@ -129,9 +136,10 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
         del valoresEntrada
         del valoresSalida
 #print Campos(EntradaPol)
-FieldsIn=Campos(EntradaPol)
-FieldsOut=Campos(SalidaPun)
-normalizarCampos(FieldsIn,FieldsOut)
-print "entrada: "+ str(FieldsIn)
-print "salida: "+ str(FieldsOut)
-actualizarValores(EntradaPol,SalidaPun,FieldsIn,FieldsOut)
+for POLIGONO, PUNTOS in Capas.items():
+    FieldsIn=Campos(POLIGONO)
+    FieldsOut=Campos(PUNTOS)
+    normalizarCampos(FieldsIn,FieldsOut)
+    print "entrada: "+ str(FieldsIn)
+    print "salida: "+ str(FieldsOut)
+    actualizarValores(POLIGONO,PUNTOS,FieldsIn,FieldsOut)

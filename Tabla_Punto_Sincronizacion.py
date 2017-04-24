@@ -1,9 +1,9 @@
 import arcpy,os,sys
 
-EntradaPol=r"D:\APN\BK_05_04_2017.mdb\daicmatbl_hazard_Eventos"
-SalidaPun=r"D:\APN\BK_05_04_2017.mdb\DAICMA\Eventos"
-GeodatabaseSalida=r"D:\APN\BK_05_04_2017.mdb"
-CampoUnico="id_imsma_evento"
+EntradaPol=r"C:\Users\Desarrollo\Documents\APN\BK_Geodatabase.gdb\daicmatbl_hazard_Eventos"
+SalidaPun=r"C:\Users\Desarrollo\Documents\APN\BK_Geodatabase.gdb\DAICMA\Eventos"
+GeodatabaseSalida=r"C:\Users\Desarrollo\Documents\APN\BK_Geodatabase.gdb"
+CampoUnico="hazard_guid"
 
 
 Actualizar=True
@@ -55,8 +55,8 @@ def ValoresEntrada(Feat,fields,indexEnt):
 def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
         indxOut=indexUnico(fieldsOut,CampoUnico)
         indxIn=indexUnico(fieldsIn,CampoUnico)
-        indxLogX=indexUnico(fieldsOut,"longitude")
-        indxLatY=indexUnico(fieldsOut,"latitude")
+        indxLogX=indexUnico(fieldsIn,"longitude")
+        indxLatY=indexUnico(fieldsIn,"latitude")
         valoresEntrada = ValoresEntrada(Featin,fieldsIn,indxIn)
         Numerador=0
         result = arcpy.GetCount_management(Featin)
@@ -80,7 +80,7 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                                 #del rowin[0]
                                 rowin.insert(0,pointCentroid)
                                 rowin = tuple(rowin)
-                                print rowin
+                                #print rowin
                                 cursor2.updateRow(rowin)
                                 Controlvalores.append(keyvalue)
                             except Exception as e:
@@ -104,7 +104,7 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                     #del rowin[0]
                     rowin.insert(0, pointCentroid)
                     rowin=tuple(rowin)
-                    print rowin
+                    #print rowin
                     cursor3.insertRow(rowin)
                 except  Exception as e:
 

@@ -53,11 +53,11 @@ for valor in unicos:
         valfin=None
         for valint in val:
             if isinstance(valint, basestring):
-                temStr=temStr+valint+" , "
+                temStr=temStr+valint+";"
             else:
                 valfin= valint
         if temStr!="":
-            campIn.append(temStr)
+            campIn.append(temStr[:-1])
         else:
             campIn.append(valfin)
     rowFin=tuple(campIn)

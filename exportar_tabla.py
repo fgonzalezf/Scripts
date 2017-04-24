@@ -21,6 +21,7 @@ def Mapa(fieldmappings,FeatEntrada, CampoEntrada , CampoSalida):
         fieldmap.addInputField(FeatEntrada, CampoEntrada)
         fieldmappings.replaceFieldMap(fieldmappings.findFieldMapIndex(CampoSalida), fieldmap)
         fieldmappings.removeFieldMap(fieldmappings.findFieldMapIndex(CampoEntrada))
+
         return fieldmappings
 
 fieldmapping = arcpy.FieldMappings()
@@ -31,6 +32,6 @@ for field in fieldList:
         if field.name=="TIPO_INCONCISTENCIA":
             fieldmapping= Mapa(fieldmapping,featIn, "TIPO_INCONCISTENCIA" ,  "TIPO_INCONSISTENCIA")
         elif field.name=="CAPA_INCONCISTENCIA":
-            fieldmapping= Mapa(fieldmapping,featIn, "CAPA_INCONCISTENCIA" ,  "CAPA_INCONSISTENCIA")
+            fieldmapping= Mapa(fieldmapping,featIn,"CAPA_INCONCISTENCIA" ,"CAPA_INCONSISTENCIA")
 arcpy.Append_management(featIn, featOut, "NO_TEST",fieldmapping)
 arcpy.TableToTable_conversion("in_memory/tabla", r"D:\Proyecto\fernando.gonzalez\Fernando\enviar_igac\enviar21.mdb", "prueba")
