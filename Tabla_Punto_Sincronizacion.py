@@ -1,13 +1,14 @@
 import arcpy,os,sys
 
-EntradaPol=r"D:\APN\BK_05_04_2017.mdb\daicmatbl_hazard_Eventos"
-SalidaPun=r"D:\APN\BK_05_04_2017.mdb\DAICMA\Eventos"
-GeodatabaseSalida=r"D:\APN\BK_05_04_2017.mdb"
+EntradaPol=r"D:\APN\BK_Prueba.gdb\daicmatbl_hazard_Eventos"
+SalidaPun=r"D:\APN\BK_Prueba.gdb\DAICMA\Eventos"
+GeodatabaseSalida=r"D:\APN\BK_Prueba.gdb"
 CampoUnico="id_imsma_evento"
 
 
 Actualizar=True
 Borrar=True
+sr = arcpy.SpatialReference(4326)
 
 def Campos(Feat):
     desc = arcpy.Describe(Feat)
@@ -19,8 +20,6 @@ def Campos(Feat):
             Lista.append('SHAPE@XY')
         else:
             Lista.append('SHAPE@')
-
-
 
     for fld in ListaCampos:
         if fld.editable==True and fld.type!="Geometry":
@@ -76,9 +75,13 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                                 print "Actualizando Valor..."+ row2[indxOut]+ "....("+str(Numerador)+ " de "+str(count)+")"
                                 rowin =valoresEntrada[keyvalue]
                                 rowin = list(rowin)
-                                pointCentroid= arcpy.Point(rowin[indxLogX], rowin[indxLatY])
+                                pointCentroid= arcpy.Point(0,0)
+                                pointCentroid.X =float(rowin[indxLogX])
+                                pointCentroid.Y = float(rowin[indxLatY])
                                 #del rowin[0]
-                                rowin.insert(0,pointCentroid)
+                                ptGeometry = arcpy.PointGeometry(pointCentroid,sr)
+
+                                rowin.insert(0,ptGeometry)
                                 rowin = tuple(rowin)
                                 print rowin
                                 cursor2.updateRow(rowin)
@@ -100,9 +103,13 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                     print "Ingresando Valor..." + keyvaluein + "....(" + str(Numerador) + " de " + str(count) + ")"
                     rowin = valoresEntrada[keyvaluein]
                     rowin=list(rowin)
-                    pointCentroid= arcpy.Point(rowin[indxLogX], rowin[indxLatY])
-                    #del rowin[0]
-                    rowin.insert(0, pointCentroid)
+                    pointCentroid = arcpy.Point(0, 0)
+                    pointCentroid.X = float(rowin[indxLogX])
+                    pointCentroid.Y = float(rowin[indxLatY])
+                    # del rowin[0]
+                    ptGeometry = arcpy.PointGeometry(pointCentroid, sr)
+
+                    rowin.insert(0, ptGeometry)
                     rowin=tuple(rowin)
                     print rowin
                     cursor3.insertRow(rowin)
