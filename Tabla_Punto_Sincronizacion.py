@@ -1,14 +1,13 @@
 import arcpy,os,sys
 
-EntradaPol=r"D:\APN\BK_Prueba.gdb\daicmatbl_hazard_Eventos"
-SalidaPun=r"D:\APN\BK_Prueba.gdb\DAICMA\Eventos"
-GeodatabaseSalida=r"D:\APN\BK_Prueba.gdb"
-CampoUnico="id_imsma_evento"
+EntradaPol=r"C:\Users\Desarrollo\Documents\APN\BK_Geodatabase.gdb\daicmatbl_hazard_Eventos"
+SalidaPun=r"C:\Users\Desarrollo\Documents\APN\BK_Geodatabase.gdb\DAICMA\Eventos"
+GeodatabaseSalida=r"C:\Users\Desarrollo\Documents\APN\BK_Geodatabase.gdb"
+CampoUnico="hazard_guid"
 
 
 Actualizar=True
 Borrar=True
-sr = arcpy.SpatialReference(4326)
 
 def Campos(Feat):
     desc = arcpy.Describe(Feat)
@@ -20,6 +19,8 @@ def Campos(Feat):
             Lista.append('SHAPE@XY')
         else:
             Lista.append('SHAPE@')
+
+
 
     for fld in ListaCampos:
         if fld.editable==True and fld.type!="Geometry":
@@ -54,8 +55,8 @@ def ValoresEntrada(Feat,fields,indexEnt):
 def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
         indxOut=indexUnico(fieldsOut,CampoUnico)
         indxIn=indexUnico(fieldsIn,CampoUnico)
-        indxLogX=indexUnico(fieldsOut,"longitude")
-        indxLatY=indexUnico(fieldsOut,"latitude")
+        indxLogX=indexUnico(fieldsIn,"longitude")
+        indxLatY=indexUnico(fieldsIn,"latitude")
         valoresEntrada = ValoresEntrada(Featin,fieldsIn,indxIn)
         Numerador=0
         result = arcpy.GetCount_management(Featin)
@@ -75,15 +76,11 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                                 print "Actualizando Valor..."+ row2[indxOut]+ "....("+str(Numerador)+ " de "+str(count)+")"
                                 rowin =valoresEntrada[keyvalue]
                                 rowin = list(rowin)
-                                pointCentroid= arcpy.Point(0,0)
-                                pointCentroid.X =float(rowin[indxLogX])
-                                pointCentroid.Y = float(rowin[indxLatY])
+                                pointCentroid= arcpy.Point(rowin[indxLogX], rowin[indxLatY])
                                 #del rowin[0]
-                                ptGeometry = arcpy.PointGeometry(pointCentroid,sr)
-
-                                rowin.insert(0,ptGeometry)
+                                rowin.insert(0,pointCentroid)
                                 rowin = tuple(rowin)
-                                print rowin
+                                #print rowin
                                 cursor2.updateRow(rowin)
                                 Controlvalores.append(keyvalue)
                             except Exception as e:
@@ -103,15 +100,11 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                     print "Ingresando Valor..." + keyvaluein + "....(" + str(Numerador) + " de " + str(count) + ")"
                     rowin = valoresEntrada[keyvaluein]
                     rowin=list(rowin)
-                    pointCentroid = arcpy.Point(0, 0)
-                    pointCentroid.X = float(rowin[indxLogX])
-                    pointCentroid.Y = float(rowin[indxLatY])
-                    # del rowin[0]
-                    ptGeometry = arcpy.PointGeometry(pointCentroid, sr)
-
-                    rowin.insert(0, ptGeometry)
+                    pointCentroid= arcpy.Point(rowin[indxLogX], rowin[indxLatY])
+                    #del rowin[0]
+                    rowin.insert(0, pointCentroid)
                     rowin=tuple(rowin)
-                    print rowin
+                    #print rowin
                     cursor3.insertRow(rowin)
                 except  Exception as e:
 
