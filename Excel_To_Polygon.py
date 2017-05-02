@@ -43,40 +43,40 @@ delimeter=arcpy.AddFieldDelimiters(PesonalGeodatabase+os.sep+"TempTab","ID_POLIG
 #print coordsList
 fields=fieldsTable
 cur = None
-#try:
-for pol in ListaPoligonos:
-        coordsList = arcpy.da.TableToNumPyArray(Tabla, fields, null_value=0,where_clause= delimeter+"="+str(pol))
-        arcpy.AddMessage(delimeter+"="+str(pol))
-        coordsList.sort()
-        cur = arcpy.da.InsertCursor(Poligono, fieldsPoligono)
-        array = arcpy.Array()
-        ID = -1
-        for coords in coordsList:
-            arcpy.AddMessage(coords)
-            row=[]
-            if ID == -1:
-                ID = pol
+try:
+    for pol in ListaPoligonos:
+            coordsList = arcpy.da.TableToNumPyArray(Tabla, fields, null_value=0,where_clause= delimeter+"="+str(pol))
+            arcpy.AddMessage(delimeter+"="+str(pol))
+            coordsList.sort()
+            cur = arcpy.da.InsertCursor(Poligono, fieldsPoligono)
+            array = arcpy.Array()
+            ID = -1
+            for coords in coordsList:
+                arcpy.AddMessage(coords)
+                row=[]
+                if ID == -1:
+                    ID = pol
 
-            if ID != pol:
-                row.append(arcpy.Polygon(array,sr))
-                row.append(coords[0])
-                for i in range(len(fields)):
-                    if i>3:
-                        row.append(coords[i])
-                array.removeAll()
-            array.add(arcpy.Point(float(coords[2]), float(coords[3])))
-            ID = pol
-        row.append(arcpy.Polygon(array,sr))
-        row.append(coords[0])
-        for i in range(len(fields)):
-                    if i>3:
-                        row.append(coords[i])
-        arcpy.AddMessage(len(row))
-        cur.insertRow(row)
-#except Exception as e:
-   ##finally:
+                if ID != pol:
+                    row.append(arcpy.Polygon(array,sr))
+                    row.append(coords[0])
+                    for i in range(len(fields)):
+                        if i>3:
+                            row.append(coords[i])
+                    array.removeAll()
+                array.add(arcpy.Point(float(coords[2]), float(coords[3])))
+                ID = pol
+            row.append(arcpy.Polygon(array,sr))
+            row.append(coords[0])
+            for i in range(len(fields)):
+                        if i>3:
+                            row.append(coords[i])
+            arcpy.AddMessage(len(row))
+            cur.insertRow(row)
+except Exception as e:
+   arcpy.AddMessage("Error en el proceso..."+ e.message)
 if cur:
-        del cur
+    del cur
 
 arcpy.Delete_management(Tabla)
 
