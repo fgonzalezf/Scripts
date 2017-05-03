@@ -11,7 +11,7 @@ campoEstadisticas=arcpy.GetParameterAsText(2)
 Distancia=arcpy.GetParameterAsText(3)
 Clases=arcpy.GetParameterAsText(4)
 
-Carpeta =r"\\FGF\Plantillas"
+Carpeta =r"\\SRVAGSPRU\Temp"
 
 
 arcpy.env.overwriteOutput=True
@@ -80,9 +80,15 @@ fields.append("Scope")
 CalculoScorpe(EstadisticasJoin,fields)
 normalizar(EstadisticasJoin,"Scope",Clases)
 nombreShape= "Salida.shp"
+poligono= Carpeta+os.sep+nombreShape
+
+if arcpy.Exists(poligono):
+    arcpy.Delete_management(poligono)
+
 arcpy.FeatureClassToFeatureClass_conversion(EstadisticasJoin,Carpeta,nombreShape)
 arcpy.AddMessage(Carpeta+os.sep+nombreShape)
-poligono= Carpeta+os.sep+nombreShape
+
+
 feature_set = arcpy.FeatureSet()
 feature_set.load(poligono)
 Poligonos=arcpy.SetParameterAsText(5,feature_set)
