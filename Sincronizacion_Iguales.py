@@ -1,9 +1,11 @@
 import arcpy,os,sys
 
-Entrada=r"D:\APN\Pruebas_Cargue_IMSMA\IMSMA.gdb\Accidents_point"
-Salida=r"D:\APN\Pruebas_Cargue_IMSMA\Prueba2.gdb\Accidents_point"
-GeodatabaseSalida=r"D:\APN\Pruebas_Cargue_IMSMA\Prueba2.gdb"
-desc = arcpy.Describe(Entrada)
+Entrada=r"C:\Users\Desarrollo\AppData\Roaming\ESRI\Desktop10.3\ArcCatalog\epis.odc\.view_informes"
+Salida=r'C:/Users/Desarrollo/Documents/EPIS/EPIS_ODA_PROD.sde/EPIS.T_view_informes'
+GeodatabaseSalida=r'C:/Users/Desarrollo/Documents/EPIS/EPIS_ODA_PROD.sde'
+
+arcpy.env.workspace=GeodatabaseSalida
+desc = arcpy.Describe(r'C:\Users\Desarrollo\Documents\EPIS\EPIS_ODA_PROD.sde\EPIS.T_view_informes')
 tipo= desc.dataType
 print tipo
 
