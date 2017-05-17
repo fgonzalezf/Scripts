@@ -12,8 +12,7 @@ campoEstadisticas=arcpy.GetParameterAsText(2)
 Distancia=arcpy.GetParameterAsText(3)
 #Clases=arcpy.GetParameterAsText(4)
 
-Carpeta =r"C:\temp"
-arcpy.env.workspace=Carpeta
+Carpeta =r'D:\APN\Priorizacion\Geoprocesos'
 arcpy.env.overwriteOutput=True
 
 def normalizar(feat, field , fieldSal):
@@ -87,6 +86,7 @@ def CalculoScorpe(feat, fields):
                 cursor.updateRow(row)
 
 def borrarTemporales():
+    arcpy.env.workspace = Carpeta
     featureclasses = arcpy.ListFeatureClasses()
     for fc in featureclasses:
         try:
@@ -101,10 +101,11 @@ arcpy.MakeFeatureLayer_management(capaParametro,"ParametroLyr")
 
 #buffer en memoria
 bufferParameter = "in_memory/parameter"
-estadisticas = "in_memory/estadisticas"
+nombreEstadisticas = "Estadisticas_"+str(uuid.uuid4()).replace("-","")[:10]+".shp"
+estadisticas = Carpeta+ os.sep+ nombreEstadisticas
 EstadisticasJoin = "in_memory/estadisticasJoin"
 
-arcpy.FeatureClassToFeatureClass_conversion(capaEstadisticas,"in_memory","estadisticas")
+arcpy.FeatureClassToFeatureClass_conversion(capaEstadisticas,Carpeta,nombreEstadisticas)
 
 arcpy.SelectLayerByLocation_management("ParametroLyr","INTERSECT","EstadisticasLyr",Distancia)
 if campoEstadisticas != "":
@@ -142,8 +143,8 @@ poligono= Carpeta+os.sep+nombreShape
 arcpy.FeatureClassToFeatureClass_conversion(EstadisticasJoin,Carpeta,nombreShape)
 arcpy.AddMessage(Carpeta+os.sep+nombreShape)
 
-feature_set = arcpy.FeatureSet()
-feature_set.load(poligono)
-Poligonos=arcpy.SetParameterAsText(4,feature_set)
+#feature_set = arcpy.FeatureSet()
+#feature_set.load(poligono)
+arcpy.SetParameterAsText(4,arcpy.FeatureSet(poligono))
 
 #arcpy.FeatureClassToFeatureClass_conversion(EstadisticasJoin,"C:\Users\Equipo\Documents\APN\Output","Salida")
