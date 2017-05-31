@@ -1,17 +1,19 @@
 import arcpy,os,sys
 
-Entrada=r"C:\Users\Desarrollo\AppData\Roaming\ESRI\Desktop10.3\ArcCatalog\epis.odc\.view_informes"
-Salida=r'C:/Users/Desarrollo/Documents/EPIS/EPIS_ODA_PROD.sde/EPIS.T_view_informes'
-GeodatabaseSalida=r'C:/Users/Desarrollo/Documents/EPIS/EPIS_ODA_PROD.sde'
+Entrada=r"D:\APN\ZONAS_DESMINADO\Municipios_Visor.mdb\Municipios_Campos_Nuevos"
+Salida=r'D:\APN\ZONAS_DESMINADO\Municipios_Visor.mdb\Municipios_Campos_Nuevos_Cargue'
+GeodatabaseSalida=r'D:\APN\ZONAS_DESMINADO\Municipios_Visor.mdb'
+
+CampoIdentificador='CODIGO_DANE'
 
 arcpy.env.workspace=GeodatabaseSalida
-desc = arcpy.Describe(r'C:\Users\Desarrollo\Documents\EPIS\EPIS_ODA_PROD.sde\EPIS.T_view_informes')
+desc = arcpy.Describe(Entrada)
 tipo= desc.dataType
 print tipo
 
 Actualizar=True
 Borrar=True
-
+indx = 0
 def Campos(Feat):
     Lista=[]
     ListaCampos=arcpy.ListFields(Feat)
@@ -27,9 +29,15 @@ def Campos(Feat):
 
 def ValoresEntrada(Feat,fields):
     datos = {}
+    tindx=0
+    indx = 0
+    for field in fields:
+        if field==CampoIdentificador:
+            indx=tindx
+        tindx=tindx+1
     with arcpy.da.SearchCursor(Feat, fields) as cursor:
         for row in cursor:
-           datos[row[3]] =row
+           datos[row[indx]] =row
     return datos
 
 def actualizarValores(Featin, FeatOut, fields):
@@ -45,12 +53,12 @@ def actualizarValores(Featin, FeatOut, fields):
             with arcpy.da.UpdateCursor(FeatOut, fields) as cursor2:
                 for row2 in cursor2:
 
-                    keyvalue=row2[3]
+                    keyvalue=row2[indx]
                     if keyvalue in valoresEntrada:
                         if keyvalue not in Controlvalores:
                             try:
                                 Numerador = Numerador + 1
-                                print "Actualizando Valor..."+ row2[3]+ "....("+str(Numerador)+ " de "+str(count)+")"
+                                print "Actualizando Valor..."+ str(row2[indx])+ "....("+str(Numerador)+ " de "+str(count)+")"
                                 cursor2.updateRow(valoresEntrada[keyvalue])
                                 Controlvalores.append(keyvalue)
                             except Exception as e:
@@ -68,7 +76,7 @@ def actualizarValores(Featin, FeatOut, fields):
             Numerador= Numerador+1
             if keyvaluein not in valoresSalida:
                 try:
-                    print "Ingresando Valor..." + keyvaluein + "....(" + str(Numerador) + " de " + str(count) + ")"
+                    print "Ingresando Valor..." + str(keyvaluein) + "....(" + str(Numerador) + " de " + str(count) + ")"
                     cursor3.insertRow(valoresEntrada[keyvaluein])
                 except  Exception as e:
                     print  "Error... "+ e.message
@@ -82,12 +90,12 @@ def actualizarValores(Featin, FeatOut, fields):
             with arcpy.da.UpdateCursor(FeatOut, fields) as cursor2:
                 for row2 in cursor2:
 
-                    keyvalue = row2[3]
+                    keyvalue = row2[indx]
                     if keyvalue not in valoresEntrada:
                         if keyvalue not in Controlvalores:
                             try:
                                 Numerador = Numerador + 1
-                                print "Borrando Valor..." + row2[3] + "....(" + str(Numerador) + " de " + str(count) + ")"
+                                print "Borrando Valor..." + str(row2[indx]) + "....(" + str(Numerador) + " de " + str(count) + ")"
                                 cursor2.deleteRow()
                                 Controlvalores.append(keyvalue)
                             except Exception as e:
@@ -95,8 +103,6 @@ def actualizarValores(Featin, FeatOut, fields):
 
         edit.stopOperation()
         edit.stopEditing("True")
-
-
         del cursor3
         del valoresEntrada
         del valoresSalida
