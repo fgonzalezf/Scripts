@@ -16,4 +16,4 @@ with arcpy.da.SearchCursor(CapaExtent, fields) as cursor:
         kwargs = {'layers': 'exclude: 0,2', 'layerDefs': "1:MTER.F22FUG_FUM_GEOMETRIA.ID_FUMAROLA = "+str(row[0]) + ";3:MTER.F22FUG_FUM_GEOMETRIA.ID_FUMAROLA = "+str(row[0])}
         png= CarpetaSalida+ os.sep+str(row[0])+".png"
         print png
-        mapService.export(png, bbox=envelope, bboxSR=mapService.spatialReference,size="273,200",dpi=300,**kwargs)
+        mapService.export(png, bbox=envelope, bboxSR=mapService.spatialReference,size="600,400",dpi=96,**kwargs)
