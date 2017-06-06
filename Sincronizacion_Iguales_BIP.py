@@ -1,11 +1,12 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 import arcpy,os,sys
 
 Entrada=r"C:\Users\Desarrollo\Documents\EPIS\epis.odc\.view_informes"
 Salida=r'C:\Users\Desarrollo\Documents\EPIS\Tablas.gdb\T_view_informes'
 GeodatabaseSalida=r'C:\Users\Desarrollo\Documents\EPIS\Tablas.gdb'
 
-CampoIdentificador='CONTRATO'
-
+CampoIdentificador=""
 arcpy.env.workspace=GeodatabaseSalida
 desc = arcpy.Describe(Salida)
 tipo= desc.dataType
@@ -40,8 +41,23 @@ def ValoresEntrada(Feat,fields):
            datos[row[indx]] =row
     return datos
 
+def ValoresEntradaTotales(Feat,fields):
+    datos = {}
+
+    identificador=""
+
+    with arcpy.da.SearchCursor(Feat, fields) as cursor:
+        for row in cursor:
+            for field in fields:
+                if row[fields.index(field)]== None:
+                    identificador="None"+"_"
+                else:
+                    identificador=row[fields.index(field)]+"_"
+            datos[identificador[:-1]] =row
+    return datos
+
 def actualizarValores(Featin, FeatOut, fields):
-        valoresEntrada = ValoresEntrada(Featin,fields)
+        valoresEntrada = ValoresEntradaTotales(Featin,fields)
         Numerador=0
         result = arcpy.GetCount_management(Featin)
         count = int(result.getOutput(0))
@@ -52,8 +68,12 @@ def actualizarValores(Featin, FeatOut, fields):
             Controlvalores = []
             with arcpy.da.UpdateCursor(FeatOut, fields) as cursor2:
                 for row2 in cursor2:
-
-                    keyvalue=row2[indx]
+                    for field in fields:
+                        if row2[fields.index(field)]== None:
+                            identificadorOut="None"+"_"
+                        else:
+                            identificadorOut=row2[fields.index(field)]+"_"
+                    keyvalue=identificadorOut[:-1]
                     if keyvalue in valoresEntrada:
                         if keyvalue not in Controlvalores:
                             try:
@@ -68,7 +88,7 @@ def actualizarValores(Featin, FeatOut, fields):
         edit.stopOperation()
         edit.stopEditing("True")
         Numerador = 0
-        valoresSalida = ValoresEntrada(FeatOut,fields)
+        valoresSalida = ValoresEntradaTotales(FeatOut,fields)
         edit.startEditing()
         edit.startOperation()
         cursor3 = arcpy.da.InsertCursor(FeatOut, fields)
@@ -89,8 +109,12 @@ def actualizarValores(Featin, FeatOut, fields):
             Controlvalores = []
             with arcpy.da.UpdateCursor(FeatOut, fields) as cursor2:
                 for row2 in cursor2:
-
-                    keyvalue = row2[indx]
+                    for field in fields:
+                        if row2[fields.index(field)]== None:
+                            identificadorOut="None"+"_"
+                        else:
+                            identificadorOut=row2[fields.index(field)]+"_"
+                    keyvalue=identificadorOut[:-1]
                     if keyvalue not in valoresEntrada:
                         if keyvalue not in Controlvalores:
                             try:
