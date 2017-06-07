@@ -2,20 +2,12 @@
 # -*- coding: utf-8 -*-
 import arcpy,os,sys
 
-Entrada=r"C:\Users\Desarrollo\Documents\EPIS\epis.odc\.view_informes"
-Salida=r'C:\Users\Desarrollo\Documents\EPIS\Tablas.gdb\T_view_informes'
-GeodatabaseSalida=r'C:\Users\Desarrollo\Documents\EPIS\Tablas.gdb'
-
-CampoIdentificador=""
-arcpy.env.workspace=GeodatabaseSalida
-desc = arcpy.Describe(Salida)
-tipo= desc.dataType
-print tipo
-
 Actualizar=True
 Borrar=True
 indx = 0
-def Campos(Feat):
+
+
+def Campos(Feat,tipo):
     Lista=[]
     ListaCampos=arcpy.ListFields(Feat)
     if tipo=="FeatureClass":
@@ -48,12 +40,13 @@ def ValoresEntradaTotales(Feat,fields):
 
     with arcpy.da.SearchCursor(Feat, fields) as cursor:
         for row in cursor:
+            identificador=""
             for field in fields:
                 if row[fields.index(field)]== None:
-                    identificador="None"+"_"
+                    identificador=identificador+"_"+"None"
                 else:
-                    identificador=row[fields.index(field)]+"_"
-            datos[identificador[:-1]] =row
+                    identificador=identificador+"_"+row[fields.index(field)]
+            datos[identificador]=row
     return datos
 
 def actualizarValores(Featin, FeatOut, fields):
@@ -68,17 +61,18 @@ def actualizarValores(Featin, FeatOut, fields):
             Controlvalores = []
             with arcpy.da.UpdateCursor(FeatOut, fields) as cursor2:
                 for row2 in cursor2:
+                    identificadorOut=""
                     for field in fields:
                         if row2[fields.index(field)]== None:
-                            identificadorOut="None"+"_"
+                            identificadorOut=identificadorOut+"_"+"None"
                         else:
-                            identificadorOut=row2[fields.index(field)]+"_"
-                    keyvalue=identificadorOut[:-1]
+                            identificadorOut=identificadorOut+"_"+row2[fields.index(field)]
+                    keyvalue=identificadorOut
                     if keyvalue in valoresEntrada:
                         if keyvalue not in Controlvalores:
                             try:
                                 Numerador = Numerador + 1
-                                print "Actualizando Valor..."+ str(row2[indx])+ "....("+str(Numerador)+ " de "+str(count)+")"
+                                print "Actualizando Valor..."+ str(keyvalue)+ "....("+str(Numerador)+ " de "+str(count)+")"
                                 cursor2.updateRow(valoresEntrada[keyvalue])
                                 Controlvalores.append(keyvalue)
                             except Exception as e:
@@ -109,17 +103,18 @@ def actualizarValores(Featin, FeatOut, fields):
             Controlvalores = []
             with arcpy.da.UpdateCursor(FeatOut, fields) as cursor2:
                 for row2 in cursor2:
+                    identificadorOut=""
                     for field in fields:
                         if row2[fields.index(field)]== None:
-                            identificadorOut="None"+"_"
+                            identificadorOut=identificadorOut+"_"+"None"
                         else:
-                            identificadorOut=row2[fields.index(field)]+"_"
-                    keyvalue=identificadorOut[:-1]
+                            identificadorOut=identificadorOut+"_"+row2[fields.index(field)]
+                    keyvalue=identificadorOut
                     if keyvalue not in valoresEntrada:
                         if keyvalue not in Controlvalores:
                             try:
                                 Numerador = Numerador + 1
-                                print "Borrando Valor..." + str(row2[indx]) + "....(" + str(Numerador) + " de " + str(count) + ")"
+                                print "Borrando Valor..." + str(keyvalue) + "....(" + str(Numerador) + " de " + str(count) + ")"
                                 cursor2.deleteRow()
                                 Controlvalores.append(keyvalue)
                             except Exception as e:
@@ -130,6 +125,29 @@ def actualizarValores(Featin, FeatOut, fields):
         del cursor3
         del valoresEntrada
         del valoresSalida
-print Campos(Entrada)
-Fields=Campos(Entrada)
-actualizarValores(Entrada,Salida,Fields)
+
+Tablas=[]
+
+Tablas.append([r"C:\Users\fgonzalezf\Desktop\Conexiones\epis.odc\.view_informes",r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde\EPIS.T_view_informes',r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde'])
+Tablas.append([r"C:\Users\fgonzalezf\Desktop\Conexiones\epis.odc\.view_contratos",r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde\EPIS.T_view_contratos',r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde'])
+Tablas.append([r"C:\Users\fgonzalezf\Desktop\Conexiones\epis.odc\.view_pozos",r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde\EPIS.T_view_pozos',r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde'])
+Tablas.append([r"C:\Users\fgonzalezf\Desktop\Conexiones\epis.odc\.view_sismica2d",r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde\EPIS.T_view_sismica2d',r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde'])
+Tablas.append([r"C:\Users\fgonzalezf\Desktop\Conexiones\epis.odc\.view_sismica3d",r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde\EPIS.T_view_sismica3d',r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde'])
+
+
+for tabla in Tablas:
+    Entrada=tabla[0]
+    Salida=tabla[1]
+    GeodatabaseSalida=tabla[2]
+
+
+    CampoIdentificador=""
+    arcpy.env.workspace=GeodatabaseSalida
+    desc = arcpy.Describe(Salida)
+    tipo= desc.dataType
+    print tipo
+
+
+    print Campos(Entrada, tipo)
+    Fields=Campos(Entrada, tipo)
+    actualizarValores(Entrada,Salida,Fields)
