@@ -1,20 +1,11 @@
 import arcpy,os,sys
 
-Entrada=r"C:\Users\Desarrollo\Documents\EPIS\epis.odc\.view_informes"
-Salida=r'C:\Users\Desarrollo\Documents\EPIS\Tablas.gdb\T_view_informes'
-GeodatabaseSalida=r'C:\Users\Desarrollo\Documents\EPIS\Tablas.gdb'
-
-CampoIdentificador='CONTRATO'
-
-arcpy.env.workspace=GeodatabaseSalida
-desc = arcpy.Describe(Salida)
-tipo= desc.dataType
-print tipo
-
 Actualizar=True
 Borrar=True
-indx = 0
-def Campos(Feat):
+
+
+
+def Campos(Feat,tipo,desc):
     Lista=[]
     ListaCampos=arcpy.ListFields(Feat)
     if tipo=="FeatureClass":
@@ -40,7 +31,7 @@ def ValoresEntrada(Feat,fields):
            datos[row[indx]] =row
     return datos
 
-def actualizarValores(Featin, FeatOut, fields):
+def actualizarValores(Featin, FeatOut, fields,indx):
         valoresEntrada = ValoresEntrada(Featin,fields)
         Numerador=0
         result = arcpy.GetCount_management(Featin)
@@ -106,6 +97,28 @@ def actualizarValores(Featin, FeatOut, fields):
         del cursor3
         del valoresEntrada
         del valoresSalida
-print Campos(Entrada)
-Fields=Campos(Entrada)
-actualizarValores(Entrada,Salida,Fields)
+
+Tablas=[]
+
+Tablas.append([r"C:\Users\fgonzalezf\Desktop\Conexiones\epis.odc\.view_informes",r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde\EPIS.T_view_informes',r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde'])
+Tablas.append([r"C:\Users\fgonzalezf\Desktop\Conexiones\epis.odc\.view_contratos",r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde\EPIS.T_view_contratos',r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde'])
+Tablas.append([r"C:\Users\fgonzalezf\Desktop\Conexiones\epis.odc\.view_pozos",r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde\EPIS.T_view_pozos',r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde'])
+Tablas.append([r"C:\Users\fgonzalezf\Desktop\Conexiones\epis.odc\.view_sismica2d",r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde\EPIS.T_view_sismica2d',r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde'])
+Tablas.append([r"C:\Users\fgonzalezf\Desktop\Conexiones\epis.odc\.view_sismica3d",r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde\EPIS.T_view_sismica3d',r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde'])
+
+for tabla in Tablas:
+    Entrada=r"C:\Users\Desarrollo\Documents\EPIS\epis.odc\.view_informes"
+    Salida=r'C:\Users\Desarrollo\Documents\EPIS\Tablas.gdb\T_view_informes'
+    GeodatabaseSalida=r'C:\Users\Desarrollo\Documents\EPIS\Tablas.gdb'
+    CampoIdentificador='CONTRATO'
+
+    arcpy.env.workspace=GeodatabaseSalida
+    desc = arcpy.Describe(Salida)
+    tipo= desc.dataType
+    print tipo
+
+    print Campos(Entrada)
+    Fields=Campos(Entrada,tipo,desc)
+    indx = Campos.index(CampoIdentificador)
+
+    actualizarValores(Entrada,Salida,Fields,indx)

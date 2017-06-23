@@ -134,7 +134,9 @@ Tablas.append([r"C:\Users\fgonzalezf\Desktop\Conexiones\epis.odc\.view_pozos",r'
 Tablas.append([r"C:\Users\fgonzalezf\Desktop\Conexiones\epis.odc\.view_sismica2d",r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde\EPIS.T_view_sismica2d',r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde'])
 Tablas.append([r"C:\Users\fgonzalezf\Desktop\Conexiones\epis.odc\.view_sismica3d",r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde\EPIS.T_view_sismica3d',r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde'])
 
-
+ListaFeatures= arcpy.ListFeatureClasses()
+for fc in ListaFeatures:
+    arcpy.RepairGeometry_management(fc)
 for tabla in Tablas:
     Entrada=tabla[0]
     Salida=tabla[1]
