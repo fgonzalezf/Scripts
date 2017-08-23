@@ -3,8 +3,6 @@ import arcpy,os,sys
 Actualizar=True
 Borrar=True
 
-
-
 def Campos(Feat,tipo,desc):
     Lista=[]
     ListaCampos=arcpy.ListFields(Feat)
@@ -73,14 +71,12 @@ def actualizarValores(Featin, FeatOut, fields,indx):
                     print  "Error... "+ e.message
         edit.stopOperation()
         edit.stopEditing("True")
-
         edit.startEditing()
         edit.startOperation()
         if Borrar == True:
             Controlvalores = []
             with arcpy.da.UpdateCursor(FeatOut, fields) as cursor2:
                 for row2 in cursor2:
-
                     keyvalue = row2[indx]
                     if keyvalue not in valoresEntrada:
                         if keyvalue not in Controlvalores:

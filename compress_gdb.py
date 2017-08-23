@@ -1,7 +1,7 @@
 import arcpy
-RutaConexion=r'Database Connections/Connection to SIGPRU_ODA.sde'
-conexiones=[r'Database Connections/Connection to SIGPRU_ODA.sde',r'Database Connections/Connection to SIGPRU_ODA.sde']
-LogReconciliacion=r"c:/temp/reconcilelog.txt"
+RutaConexion=r'Database Connections/SDE.sde'
+conexiones=[r'Database Connections/SDE.sde']
+LogReconciliacion=r"C:/Temp"
 
 arcpy.env.workspace = RutaConexion
 workspace = arcpy.env.workspace

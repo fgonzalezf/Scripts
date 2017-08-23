@@ -56,6 +56,7 @@ try:
                 row=[]
                 if ID == -1:
                     ID = pol
+
                 if ID != pol:
                     row.append(arcpy.Polygon(array,sr))
                     row.append(coords[0])
@@ -78,4 +79,5 @@ if cur:
     del cur
 
 arcpy.Delete_management(Tabla)
+
 
