@@ -6,6 +6,10 @@ ruta=r"C:\Temp"
 arcpy.env.overwriteOutput=True
 arcpy.CreatePersonalGDB_management(ruta,"borrar")
 
+
+
+#http://cors-proxy.htmldriven.com/?url=http://www.htmldriven.com/sample.json
+
 target_urls=["http://bdrsnc.sgc.gov.co/sismologia1/service_web/estaciones_hibridas.php",
 "http://bdrsnc.sgc.gov.co/sismologia1/service_web/estaciones_rnac.php",
 "http://bdrsnc.sgc.gov.co/sismologia1/service_web/estaciones_rsnc.php",
