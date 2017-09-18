@@ -14,7 +14,6 @@ target_urls=["http://bdrsnc.sgc.gov.co/sismologia1/service_web/estaciones_hibrid
 for target_url in target_urls:
     arcpy.CreateTable_management(os.path.join(ruta,"borrar.mdb"),os.path.basename(target_url).split(".")[0])
     tabla=os.path.join(ruta,"borrar.mdb",os.path.basename(target_url).split(".")[0])
-
     vjson = requests.get(target_url).json()
     print(vjson[0])
     X=0
@@ -37,13 +36,6 @@ for target_url in target_urls:
                 row.setValue(key, value)
              print(str(key) +":"+str(value))
          rows.insertRow(row)
-
          del row
          del rows
-
-
-
-
-
-
 #print json
