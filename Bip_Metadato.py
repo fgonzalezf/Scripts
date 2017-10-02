@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
-import arcpy, os, sys, sqlite3, json
+import arcpy, os, sys, sqlite3, json,time
 
 def MetadatoConstante( **parametros):
     dic={}
@@ -8,6 +8,27 @@ def MetadatoConstante( **parametros):
         dic[parametro]=[str((parametros[parametro]))]
     return dic
 
+def convertirDato(key, dato, form,nomform):
+    datofinal = ""
+    for dto in dato:
+        datofinal = datofinal + dto + ","
+    form.fields[nomform].initial = datofinal[:-1]
+def convertirDatoNum(key, dato, form,nomform):
+    datofinal = 0
+    for dto in dato:
+        datofinal =  float(dto.replace(",","."))
+    form.fields[nomform].initial = datofinal
+def convertirDate(datoin):
+    datofinal = ""
+    dato = str(datoin).split(" ")[0]
+    datofinal = dato.split("-")[2]+"/"+dato.split("-")[1]+"/"+dato.split("-")[0]
+    return datofinal
+
+def convertirFloat(datoin):
+    datofinal = ""
+    dato = str(datoin)
+    datofinal = dato.replace(".",",")
+    return datofinal
 
 
 con =sqlite3.connect(r'C:\Users\Equipo\Documents\matadato_BIP\MOAI.db')
@@ -173,10 +194,9 @@ def ConvertToJSon( **parametros):
             dic[parametro]=str((parametros[parametro])).split(";")
     stringJson =json.dumps(dic,separators=(',', ': '),sort_keys=True)
     return stringJson
-
-print "INSERT INTO records (record_id , modified , metadata) VALUES ('BASIN_01_SSJN_SGC','2017-09-01',"+'"'+ConvertToJSon()+'")'
-cursor.execute("INSERT INTO records (record_id , modified , metadata) VALUES ('BASIN_01_SSJN_SGC','2017-09-01',"+"'"+ConvertToJSon()+"')")
-cursor.execute("""INSERT INTO setrefs (record_id , set_id) VALUES ('BASIN_01_SSJN_SGC','geoportal')""")
+print "INSERT INTO records (record_id , modified, metadata) VALUES ('BASIN_04_SSJN_SGC',"+ time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())+",'"+ConvertToJSon()+"')"
+cursor.execute("INSERT INTO records (record_id , modified, metadata) VALUES ('BASIN_04_SSJN_SGC',"+"'"+time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())+"','"+ConvertToJSon()+"')")
+cursor.execute("""INSERT INTO setrefs (record_id , set_id) VALUES ('BASIN_04_SSJN_SGC','geoportal')""")
 
 print "coneccion"
 con.commit()
