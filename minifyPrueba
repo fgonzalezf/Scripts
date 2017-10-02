@@ -1,0 +1,25 @@
+import logging as log
+import os
+from css_html_js_minify import process_single_html_file, process_single_js_file, process_single_css_file, html_minify, js_minify, css_minify
+
+
+
+carpeta=r"C:\Temp"
+
+principal=carpeta+os.sep+"VisorVolcanes"
+os.mkdir(principal)
+os.mkdir(principal+os.sep+"js")
+os.mkdir(principal+os.sep+"css")
+os.mkdir(principal+os.sep+"images")
+print (principal)
+
+
+##
+#process_single_html_file(r"C:\Users\Equipo\WebstormProjects\visorsismicosgc2\Visor_sismos_v5.html",overwrite=True,output_path=principal+os.sep+"index.html")
+
+#process_single_css_file(r"C:\Users\Equipo\WebstormProjects\visorsismicosgc2\css\app.css",overwrite=True,output_path=principal+os.sep+"css"+os.sep+"app.css")
+#process_single_css_file(r"C:\Users\Equipo\WebstormProjects\visorsismicosgc2\css\style.css",overwrite=True,output_path=principal+os.sep+"css"+os.sep+"style.css")
+
+#process_single_js_file(r"C:\Users\Equipo\WebstormProjects\visorsismicosgc2\js\app_v5.js",overwrite=True,output_path=principal+os.sep+"js"+os.sep+"app_v5.js")
+#process_single_js_file(r"C:\Users\Equipo\WebstormProjects\visorsismicosgc2\js\EstacionesLayer.js",overwrite=True,output_path=principal+os.sep+"js"+os.sep+"EstacionesLayer.js")
+#process_single_js_file(r"C:\Users\Equipo\WebstormProjects\visorsismicosgc2\js\ModConsulta.js",overwrite=True,output_path=principal+os.sep+"js"+os.sep+"ModConsulta.js")
