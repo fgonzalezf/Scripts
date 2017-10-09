@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #-*- coding: utf-8 -*-
 import arcpy, os, sys, sqlite3, json,time
 
@@ -30,10 +29,16 @@ def convertirFloat(datoin):
     datofinal = dato.replace(".",",")
     return datofinal
 
+def metadatovariable(metadatoConstante,**parametros):
+    dic = metadatoConstante
+    for parametro in parametros:
+        dic[parametro] = [str((parametros[parametro]))]
+    return dic
 
-con =sqlite3.connect(r'C:\Users\Equipo\Documents\matadato_BIP\MOAI.db')
+Tabla=r"C:\Users\Equipo\Documents\MetadatoBip\tablas.gdb\POZOS"
+con =sqlite3.connect(r'C:\Users\Equipo\Documents\MetadatoBip\MOAI.db')
 
-cursor=con.cursor()
+cursorSQL=con.cursor()
 
 METADATO_CONSTANTE=MetadatoConstante(
 AreaConocim="Hidrocarburos",
@@ -91,10 +96,9 @@ electronicMailAddress="sgc_epis.dir@sgc.gov.co",
 electronicMailAddress1="sgc_epis.dir@sgc.gov.co",
 electronicMailAddress2="sgc_epis.dir@sgc.gov.co",
 fees="Información sin costo monetario",
-fileName="http://srvags.sgc.gov.co/JSViewer/GEOVISOR_BIP/",
+
 format="SHP",
-identifier="http://srvags.sgc.gov.co/JSViewer/GEOVISOR_BIP/",
-identifier1="http://srvags.sgc.gov.co/JSViewer/GEOVISOR_BIP/",
+
 language="spa",
 language1="spa",
 level="Conjunto de datos",
@@ -150,12 +154,12 @@ rights="""El usuario reconoce que la información geocientífica a que tenga acc
 role="Autor",
 role1="Punto de Contacto",
 role2="Punto de Contacto",
-source1="http://srvags.sgc.gov.co/JSViewer/GEOVISOR_BIP/",
+
 spatialRepresentationType="Tabla de Texto",
 statement="No definido",
 status="Servicio",
-subject="Cuenca, Pozo, Colombia,petroleo, BIP, hidrocarburos",
-title1="Banco de Información Petrolero",
+
+
 topicCategory="Información Geocientífica",
 type="No Definido",
 type1="Tema",
@@ -166,40 +170,64 @@ version="No aplica",
 voice="(571) 2200200-3037 - lunes a viernes 8.00 a.m. a 5 p.m. para todas nuestras sedes.",
 voice1="(571) 2200200-3037 - lunes a viernes 8.00 a.m. a 5 p.m. para todas nuestras sedes.",
 voice2="(571) 2200200-3037 - lunes a viernes 8.00 a.m. a 5 p.m. para todas nuestras sedes.",
-title="Información EPIS de la Cuenca SINU-SAN JACINTO",
-abstract="La cuenca SINU-SAN JACINTO Tiene: 66 Contratos y 241 Pozos, de los cuales 155 están disponibles en el Servicio Geológico, el listado de los pozos es el siguiente: CHINU-4 / CHINU-6 / P6-3S HACIENDA LA ESTANCIA / LOS ANGELES-12 / BULLERENGUE-1 / CURRULAO-1 / P-5  CARACOLI / BARU-1 / P-7 ARROYO ARENA / COLONCITOS-1 / CORRALITO-1 / EL CARMEN-1 (ZAMBRANO-1) / EL CARMEN-2 / PORQUERA-1 / SAN JACINTO-1 (ZAMBRANO-2) / SAN JACINTO-2 / ANH-LA-CANTERA-1 / TURBACO-1 / ANH-VILLANUEVA-1 / TURBACO-2 / TURBACO-3 / TURBACO-4 / TURBACO-6 / PCH-1 / P-15 EL CONTENTO / P-26 VEREDA EL PALMAR / P-28 FINCA VILLA HERMOSA / P-16 FINCA EL PARAISO / P-18 FINCA VILLA AURA / P-13 NUEVA ESTRELLA / P-11  SAN SEBASTIAN / P-27 VEREDA LAS PINTURAS / ANH SSJ-10 ST R S / ANH SSJ-2 ST R S / ANH SSJ-4 ST R S / ANH SSJ-4A ST R S / ANH SSJ-8 ST R S / ANH SSJ-8A ST R S / TURBO-1 / PCH-2 / PCH-3 / PCH-5 / PCH-6 / PCH-7 / PCH-4 / TUCURA-1 / BONE-1 / EL FARO-1 / JARAGUAY NORTE-1 / JARAGUAY NORTE-2 / JARAGUAY NORTE-3 / JARAGUAY NORTE-4 / JARAGUAY NORTE-5 / PARUMAS-1 / PIRU-1 / SAN RAFAEL-1 / GERMAN-2 (LOBO-1) / GERMAN-3 (LOBO-2) / GERMAN-4 (LOBO-3) / LORICA-1 / LA RADA-1 / SAN SEBASTIAN-2 / SOLEDAD-1 / BOLIVAR SOUTH-4 / BOLIVAR SOUTH-1 / BOLIVAR SOUTH-2 / BOLIVAR SOUTH-3 / BOLIVAR SOUTH-5 / BOLIVAR SOUTH-6 / SANTA SUSANA-1 / BOLIVAR WEST-12 / CLARO-1 / BOLIVAR WEST-13 / COLOMBOY-1 / AGUAS PRIETAS-1 / FLORESANTO-6 / AGUAS PRIETAS-2 / FLORESANTO-7 / ARBOLETES-1X / FLORESANTO-8 / CHINU-1 / FLORESANTO-9 / CHINU-2 / FLORESANTO-10 / CHINU-3 / FLORESANTO-11 / CHINU-5 / RIO NUEVO-1 / CHINU-7 / SAN ANDRES-1 / CORDOBA-1 / SAHAGUN-1 / DELTA-1 / ANH-SSJ-015-STR-S / CARMEN-1 / DELTA-2 / ANH-SSJ-15-SSR-S / CURRAMBA EST-1 / EL DESEO-1 / ANH-SSJ-17-SSR-S / CAMPITO-1 / EL PENON-1 / ANH-SSJ-17-STR-S / TOLU-1 / CAMPITO-2 / FLORESANTO-1 / LIMON-2 / ANH-SSJ-18-SSR-S / TOLU-2 / CAMPITO-3 / FLORESANTO-1G / EL FARO-1 ST / ANH-SSJ-18-STR-S / TOLU-3 / CAMPECHE-1 / FLORESANTO-1V / FLORESANTO-1C / ANH-SSJ-20A-STR-S / NUEVA ERA-1 / BARANOA-1 / FLORESANTO-2 / SAN ANDRES-2 / P-8(2) (DON GABRIEL) / ANH-SSJ-20-SSR-S / CHINU-8 / ARENAL-1 / FLORESANTO-3 / ANH TIERRALTA 2-X-P / P-8(1) (OVEJAS) / ANH-SSJ-20-STR-S / CHINU-9 / ARROYO COCAMBA-1 / FLORESANTO-4 / SAN SEBASTIAN-1 / P-8 / ANH-SAN-ANTERO-1 / PORVENIR-2 / CARACOLI-1 / FLORESANTO-5 / P-14 EL VARAL / ANH-LOS-PAJAROS-1 / LA ESPERANZA-1 / CARMEN-2 / FLORESANTO-12 / ANH-MOAMBO-1 / LA ARENA-1 / CIBARCO-1 / GERMAN-1 / ANH-LA X-1 / ANH-COSTA-AZUL-1 / GALAPA-1 / GUIBERSON-1 / GALAPA-2 / GUIBERSON-2 / GUARUCO-1 / HECHIZO-1 / GUARUCO-2 / JARAGUAY SUR-1 / GUARUCO-3 / LA RISA-1 / LAS PERDICES-1 / LA YE-1 / LAS PERDICES-1A / LIMON-1 / LAS PERDICES-2 / LIMON-1 (LORENCITO) / BUENAVISTA-1 / GEMINIS-15 / LAS PERDICES-3 / LIMON-2 (LORENCITO) / BALSAMO-2 / LAS PERDICES-4 / LA MORA-1 / GUAMO-1 / LAS PERDICES-4A / MORROCOY-1 / MEDIALUNA-1 / LAS PERDICES-5 / REMOLINO-1 / LAS PERDICES-6 / SAN ANDRES A-1 / SALAMANCA-1 / LAS PERDICES-7 / SANTA RITA-1 / LAS PERDICES-8 / SAN SEBASTIAN-3 / LAS PERDICES-9 / SAN SEBASTIAN-3ST / LAS PERDICES-10 / SINU-1 / MANATI-1 / SINU-2 / MOLINERO-1 / SINU-3 / MOLINERO-2 / MOLINERO-3X / PERDICES WEST-1 / POLONUEVO-1 (ARROYO GRANDE-1) (PALONUEVO 105-1) / REPELON-1 / REPELON-2 / REPELON-3 / TUBARA-1 / TUBARA-2 / TUBARA-3 / TUBARA-4 / USIACURI-1 / USIACURI-1A / STRAT GX-1 / USIACURI-1B / STRAT GX-2 / USIACURI-1C / APOLO-1 / CALIPSO-1 / CORDOBA SOUTH-1 / ANH CONUCO-1 / FLORESANTO-2G / ANH JUAN DE ACOSTA-1 / NECOCLI-1 / ANH EL PABILO-1 / PIEDRECITA-1X (1570-1X) / ANH SSJ LAS LAURAS-1X / PORQUERIA-1X (1609-1X) / ANH-SSJ-NUEVA ESPERANZA-1X / ANH-SSJ-LA-ESTRELLA-1X / BULLERENGUE SUR-1 / P-12 ALMAGRA / P-2 CHALAN / P-4A OVEJAS VIA CHALAN / SAMAN EST-1 / TOLU-4 / ANH-SAN CAYETANO-1 / TOLU-5 / ANH-PIEDRA BLANCA-1 / TOLU-6 / ANH-SAN JACINTO-1 / P-10 TORRENTE / BULLERENGUE SUR-3 / P-3 TOLU VIEJO / BETULIA-1",
+
 DescripMetEvConsDom="Método de evaluación de la calidad basado en la inspección del contenido de valores de atributos de metadatos diligenciados pertinentes  respecto al universo del conjunto de datos",
 TipEvaluaMet="Directo Externo",
 ZonaPais="No definido",
-date="39083",
-date1="39083",
-date2="39083",
-dateType="A\u00f1o",
-datestamp="39083",
-datestamp1="39083",
-datestamp2="39083",
-description1="No definido",
-eastBoundLongitude="-73,94",
-northBoundLatitude="11,24",
-path="http://srvagspru.sgc.gov.co/oairequest?verb=GetRecord&identifier=BASIN_01_SSJN_SGC&metadataPrefix=oai_dc",
-source="",
-southBoundLatitude="7,03",
-westBoundLongitude="-77,13",
+source=" ",
 
 )
-
-def ConvertToJSon( **parametros):
-    dic= METADATO_CONSTANTE
+def ConvertToJSon( metadato,**parametros):
+    dic= metadato
     for parametro in parametros:
-            dic[parametro]=str((parametros[parametro])).split(";")
+            dic[parametro]=(parametros[parametro]).encode('utf-8').split(";")
     stringJson =json.dumps(dic,separators=(',', ': '),sort_keys=True)
     return stringJson
-print "INSERT INTO records (record_id , modified, metadata) VALUES ('BASIN_04_SSJN_SGC',"+ time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())+",'"+ConvertToJSon()+"')"
-cursor.execute("INSERT INTO records (record_id , modified, metadata) VALUES ('BASIN_04_SSJN_SGC',"+"'"+time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())+"','"+ConvertToJSon()+"')")
-cursor.execute("""INSERT INTO setrefs (record_id , set_id) VALUES ('BASIN_04_SSJN_SGC','geoportal')""")
+
+Campos=["record_id","fileName","identifier","identifier1",
+        "source1","subject","title1","title","abstract","date_","date1","date2","dateType","datestamp","datestamp1",
+        "datestamp2","description1","eastBoundLongitude","northBoundLatitude","southBoundLatitude","westBoundLongitude","path"]
+
+
+with arcpy.da.SearchCursor(Tabla, Campos) as cursor:
+    for row in cursor:
+        metadata= ConvertToJSon(METADATO_CONSTANTE,
+        fileName=row[1],
+        identifier=row[2],
+        identifier1=row[3],
+        source1=row[4],
+        subject=row[5],
+        title1=row[6],
+        title=row[7],
+        abstract=row[8],
+        date=row[9],
+        date1=row[10],
+        date2=row[11],
+        dateType=row[12],
+        datestamp=row[13],
+        datestamp1=row[14],
+        datestamp2=row[15],
+        description1=row[16],
+        eastBoundLongitude=row[17],
+        northBoundLatitude=row[18],
+        southBoundLatitude=row[19],
+        westBoundLongitude=row[20],
+        path=row[21]
+        )
+
+        try:
+            cursorSQL.execute('INSERT INTO records (record_id , modified, metadata) VALUES ('+'"'+str(row[0]) + '"'+",'" + time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + "','" + metadata + "')")
+            cursorSQL.execute("INSERT INTO setrefs (record_id , set_id) VALUES ("+'"'+str(row[0])+ '"'+",'geoportal')")
+        except:
+            llave = str(row[0])
+            metadato = metadata
+            cursor.execute('''UPDATE records SET metadata = ? WHERE record_id = ? ''', (metadato, llave))
+
+        con.commit()
+        print str(row[0])
 
 print "coneccion"
-con.commit()
+
 con.close()
 
 
