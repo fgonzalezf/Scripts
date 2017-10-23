@@ -7,6 +7,7 @@ borrar=r"C:\Users\fgonzalezf\Documents"
 urlBase="https://srvags.sgc.gov.co"
 
 for root, dirs, files in os.walk(CarpetaBase, topdown=False):
+
     for name in files:
         print(os.path.join(root, name)).replace(borrar,urlBase).replace("\\","/")
 
