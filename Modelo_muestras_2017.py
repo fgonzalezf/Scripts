@@ -1,12 +1,12 @@
 import arcpy,os, sys
 
-Geodatabase=r"D:\SGC\muestras\Muestras.gdb"
+Geodatabase=r"C:\Users\fgonzalezf\Downloads\Muestras.mdb"
 
-Excel=r"D:\SGC\muestras\MuestrasTablas.xls"
+Excel=r"C:\Users\fgonzalezf\Downloads\MuestrasTablas_23_9_2017.xls"
 
 hojas=["EstacionesGeologicas","DatosEstructurales",
 "SeccionesDelgada","SeccionPulida","MuestraFinos",
-"Concentrados","Litogeoquimica","Gravas","Suelos",
+"Concentrados","AnalisisQuimicoRocaTotal","Gravas","Suelos",
 "Arcillas","EsquirlasRoca","Palinologia","Foraminiferos",
 "Amonites","Bivalvos","Braquiopodos","OtroTipoFosil"]
 
