@@ -12,12 +12,10 @@ hojas=["EstacionesGeologicas","DatosEstructurales",
 
 arcpy.CreateFeatureDataset_management(Geodatabase,"Muestras","MAGNA")
 PathDataset= Geodatabase+ os.sep+ "Muestras"
-def crearPunto (Nombre):
+def crearPunto(Nombre):
     arcpy.CreateFeatureclass_management(PathDataset,Nombre,"Point")
     Rutafeature = PathDataset+ os.sep+ Nombre
     return Rutafeature
-
-
 
 for hoja in hojas:
     print hoja
@@ -43,14 +41,11 @@ for hoja in hojas:
                 Nulo = "NON_NULLABLE"
             elif row[4].upper() == "YES":
                 Nulo = "NULLABLE"
-
             Longitud=""
-
             if str(row[3]) =="None":
                 Longitud = ""
             else:
                 Longitud = str(row[3])
-
             print ("Capa: "+ CapaPunto)
             print ("Nombre: " + row[0])
             print ("Tipo: " + Tipo)
