@@ -1,12 +1,12 @@
 import arcpy,os, sys
 
-Geodatabase=r"C:\Users\fgonzalezf\Downloads\Muestras.mdb"
+Geodatabase=r"C:\Users\APN\Documents\SGC\Muestras\Muestras.gdb"
 
-Excel=r"C:\Users\fgonzalezf\Downloads\MuestrasTablas_23_9_2017.xls"
-
+Excel=r"C:\Users\APN\Documents\APN\Visores\MuestrasTablas_Fernando_10_10_17_Final.xls"
+arcpy.env.overwriteOutput=True
 hojas=["EstacionesGeologicas","DatosEstructurales",
-"SeccionesDelgada","SeccionPulida","MuestraFinos",
-"Concentrados","AnalisisQuimicoRocaTotal","Gravas","Suelos",
+"SeccionDelgada","SeccionPulida","MuestraFinos",
+"ConcentradosBatea","AnalisisQuimicoRocaTotal","Gravas","Suelos",
 "Arcillas","EsquirlasRoca","Palinologia","Foraminiferos",
 "Amonites","Bivalvos","Braquiopodos","OtroTipoFosil"]
 

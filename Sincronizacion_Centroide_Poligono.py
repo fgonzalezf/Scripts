@@ -1,9 +1,5 @@
 import arcpy,os,sys
 
-
-
-
-
 GeodatabaseSalida=r"C:\Users\Desarrollo\Documents\APN\BK_Geodatabase.gdb"
 CampoUnico="FeatureID"
 
