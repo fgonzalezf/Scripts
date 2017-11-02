@@ -73,7 +73,7 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                                 print "Actualizando Valor..."+ row2[indx]+ "....("+str(Numerador)+ " de "+str(count)+")"
                                 rowin =valoresEntrada[keyvalue]
                                 rowin = list(rowin)
-                                pointCentroid= rowin[0].trueCentroid
+                                pointCentroid= arcpy.Point(25282, 43770)
                                 del rowin[0]
                                 rowin.insert(0,pointCentroid)
                                 rowin = tuple(rowin)

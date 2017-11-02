@@ -23,7 +23,7 @@ def Campos(Feat):
     return Lista
 #Variables
 
-xlsFile=r"C:\Users\APN\Documents\SGC\Muestras\Excel\Libro_Indice_Cargue.xls"
+xlsFile=r"C:\Users\APN\Documents\SGC\Muestras\Excel\Libro_Indice_Cargue (1).xls"
 GeodatabaseModelo=r"C:\Users\APN\Documents\SGC\Muestras\Muestras.gdb\Muestras"
 
 print(getSheetName(xlsFile))
@@ -36,6 +36,19 @@ for hoja in ListaHojas:
     FeatureClassSalida=GeodatabaseModelo+os.sep+hoja
     camposEntrada=Campos(tablaEntrada)
     CamposSalida=Campos(FeatureClassSalida)
-    print camposEntrada
-    print CamposSalida
+    cursorIns = arcpy.da.InsertCursor(FeatureClassSalida, CamposSalida)
+    with arcpy.da.SearchCursor(tablaEntrada, camposEntrada) as cursor:
+        print cursor.fields
+        for row in cursor:
+            pass
+            #rowin=row
+            #rowin = list(rowin)
+            #rowin.insert(0,pointCentroid)
+            #rowin = tuple(rowin)
+            #cursorIns.insertRow(row)
+
+
+
+    #print camposEntrada
+    #print CamposSalida
     arcpy.Delete_management(tablaEntrada)
