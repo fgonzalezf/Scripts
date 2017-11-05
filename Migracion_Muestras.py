@@ -67,6 +67,7 @@ for hoja in ListaHojas:
             rowin = tuple(rowin)
             cursorIns.insertRow(rowin)
 
+
     #print camposEntrada
     #print CamposSalida
     edit.stopOperation()
