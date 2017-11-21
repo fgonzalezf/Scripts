@@ -9,7 +9,7 @@ def unique_values(table, field):
 
 
 ShapeFile=r"E:\Users\fgonzalezf\Documents\Visor_Volcanes_Portal\Volcanes_URL.shp"
-carpeta=r"C:\Temp"
+carpeta=r"C:\temp\images_03_10_2017"
 mxd = arcpy.mapping.MapDocument(r"C:\temp\Volacanes.mxd")
 df = arcpy.mapping.ListDataFrames(mxd, "*")[0]
 
@@ -19,8 +19,8 @@ for lyr in arcpy.mapping.ListLayers(mxd,"Volcanes_URL", df):
         print val
         lyr.definitionQuery=""""NOMBREVOLC" ="""+ "'"+val+"'"
         mxd.save()
-        arcpy.mapping.ExportToSVG(mxd,  carpeta+os.sep+val, df,df_export_width=2649,df_export_height=1896)
-        #arcpy.mapping.ExportToPNG(mxd,  carpeta+os.sep+val, df,df_export_width=2649,df_export_height=1896,resolution=96)
+        arcpy.mapping.ExportToSVG(mxd,  carpeta+os.sep+val, df,df_export_width=2649,df_export_height=1896,resolution=96)
+        arcpy.mapping.ExportToPNG(mxd,  carpeta+os.sep+val, df,df_export_width=2649,df_export_height=1896,resolution=96)
 
 
 del mxd

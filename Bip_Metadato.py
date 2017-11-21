@@ -35,8 +35,8 @@ def metadatovariable(metadatoConstante,**parametros):
         dic[parametro] = [str((parametros[parametro]))]
     return dic
 
-Tabla=r"C:\Users\Equipo\Documents\MetadatoBip\tablas.gdb\POZOS"
-con =sqlite3.connect(r'C:\Users\Equipo\Documents\MetadatoBip\MOAI.db')
+Tabla=r"C:\Users\Desarrollo\Documents\Bip_Metadato\Tablas.mdb\Metadato"
+con =sqlite3.connect(r'C:\Users\Desarrollo\Documents\Bip_Metadato\MOAI.db')
 
 cursorSQL=con.cursor()
 
@@ -49,9 +49,9 @@ DescMetEvMet="Método de evaluación de la calidad basado en la inspección de "
              "atributos de metadatos definidos en el esquema de metadatos al que pertenece el recurso",
 DescripMedidMet="Cantidad de atributos de metadatos diligenciados respecto al esquema de metadatos definido",
 DescripMedidMetConsLog="Valores de atributos de metadatos diligenciados corresponden a la abstracción del universo de conjunto de datos",
-EscalaProy="0,0423611111111111",
+EscalaProy="Sin Escala Definida",
 EstadProyect="Sin definir",
-LineaTemat="BIP",
+LineaTemat="Banco de Información Petrolera",
 Municip="No definido",
 NombMedMet="Calidad del contenido de valores de atributos de metadatos diligenciados",
 NombrMedMet="Totalidad de atributos de metadatos diligenciados",
@@ -200,7 +200,7 @@ with arcpy.da.SearchCursor(Tabla, Campos) as cursor:
         title1=row[6],
         title=row[7],
         abstract=row[8],
-        date=row[9],
+        date=str(row[9]).split("/")[2]+"-"+str(row[9]).split("/")[1]+"-"+str(row[9]).split("/")[0],
         date1=row[10],
         date2=row[11],
         dateType=row[12],
@@ -208,10 +208,10 @@ with arcpy.da.SearchCursor(Tabla, Campos) as cursor:
         datestamp1=row[14],
         datestamp2=row[15],
         description1=row[16],
-        eastBoundLongitude=row[17],
-        northBoundLatitude=row[18],
-        southBoundLatitude=row[19],
-        westBoundLongitude=row[20],
+        eastBoundLongitude=str(row[17]).replace(".",","),
+        northBoundLatitude=str(row[18]).replace(".",","),
+        southBoundLatitude=str(row[19]).replace(".",","),
+        westBoundLongitude=str(row[20]).replace(".",","),
         path=row[21]
         )
 
@@ -221,7 +221,7 @@ with arcpy.da.SearchCursor(Tabla, Campos) as cursor:
         except:
             llave = str(row[0])
             metadato = metadata
-            cursor.execute('''UPDATE records SET metadata = ? WHERE record_id = ? ''', (metadato, llave))
+            cursorSQL.execute('''UPDATE records SET metadata = ? WHERE record_id = ? ''', (metadato, llave))
 
         con.commit()
         print str(row[0])
