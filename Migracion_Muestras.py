@@ -75,8 +75,9 @@ def Campos(Feat):
     return Lista
 
 
-xlsFile=r"C:\Users\Equipo\Documents\Muestras\Libro_Indice_Cargue.xls"
-GeodatabaseModelo=r"C:\Users\Equipo\Documents\Muestras\mg100k.gdb\Muestras"
+
+GeodatabaseModelo=sys.argv[1]
+xlsFile=sys.argv[2]
 
 print(getSheetName(xlsFile))
 
@@ -86,8 +87,8 @@ ListaHojas = getSheetName(xlsFile)
 
 for hoja in ListaHojas:
 
-    arcpy.ExcelToTable_conversion(xlsFile,os.path.dirname(GeodatabaseModelo)+os.sep+"temp",hoja)
-    tablaEntrada= os.path.dirname(GeodatabaseModelo)+os.sep+"temp"
+    arcpy.ExcelToTable_conversion(xlsFile,os.path.dirname(GeodatabaseModelo)+os.sep+hoja+"tabla",hoja)
+    tablaEntrada= os.path.dirname(GeodatabaseModelo)+os.sep+hoja+"tabla"
     FeatureClassSalida=GeodatabaseModelo+os.sep+hoja
     camposEntrada=Campos(tablaEntrada)
     CamposSalida=Campos(FeatureClassSalida)
@@ -101,16 +102,24 @@ for hoja in ListaHojas:
     with arcpy.da.SearchCursor(tablaEntrada, camposEntrada) as cursor:
         #print cursor.fields
         for row in cursor:
-            indxX=getIndexField("Este",cursor.fields)
-            indxY=getIndexField("Norte",cursor.fields)
-            rowin=row
-            rowin = list(rowin)
-            pointCentroid=(float(row[indxX]),float(row[indxY]))
-            rowin.insert(0,pointCentroid)
-            rowin = tuple(rowin)
-            rowin=normalizarDatos(rowin,longitudCamposSal)
-            print rowin
-            cursorIns.insertRow(rowin)
+            try:
+                if hoja=="DatacionesRadiometricas":
+                    indxX=getIndexField("CoordenadaX",cursor.fields)
+                    indxY=getIndexField("CoordenadaY",cursor.fields)
+                else:
+                    indxX=getIndexField("Este",cursor.fields)
+                    indxY=getIndexField("Norte",cursor.fields)
+                rowin=row
+                rowin = list(rowin)
+                pointCentroid=(float(row[indxX]),float(row[indxY]))
+                rowin.insert(0,pointCentroid)
+                rowin = tuple(rowin)
+                rowin=normalizarDatos(rowin,longitudCamposSal)
+                print rowin
+                cursorIns.insertRow(rowin)
+            except Exception as ex:
+                arcpy.AddMessage(ex.message)
+
     #print camposEntrada
     #print CamposSalida
     #edit.stopOperation()
