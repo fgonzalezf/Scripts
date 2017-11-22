@@ -5,7 +5,7 @@ from openpyxl import Workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl import load_workbook
 wb = Workbook()
-dest_filename = r'C:\Users\APN\Documents\SGC\Muestras\Origen_Bogota\Libro1.xlsx'
+dest_filename = r'C:\Users\Fernando\Documents\Muestras\CARGUE\Origen_Bogota\Libro1.xlsx'
 wb.save(filename = dest_filename)
 def campos(Feat):
     listadoCampos=[]
@@ -59,9 +59,10 @@ def exportXLSX(Feat,ListFields,wb):
                 #print "Date"
             ws.cell(column=col, row=1, value="{0}".format(ListFields[col][0].encode('utf-8')))
             #dv.ranges.append()
-            for row in range(2,65563):
+            for row in range(2,3):
                 #ws.cell(column=col, row=row).number_format=""
-                dv.add(ws[ws.cell(column=col, row=row).coordinate])
+                print ws.cell(column=col, row=row).coordinate + ":" + ws.cell(column=col, row=row).coordinate[:-1] + "60000"
+                dv.ranges.append(ws.cell(column=col, row=row).coordinate+":"+ws.cell(column=col, row=row).coordinate[:-1]+"60000")
             ws.add_data_validation(dv)
     wb.save(filename = dest_filename)
 
@@ -70,13 +71,15 @@ def exportXLSX(Feat,ListFields,wb):
 
 
 
-arcpy.env.workspace = r"C:\Users\APN\Documents\SGC\Muestras\Origen_Bogota\mg100K_Sin_Rel.gdb\Muestras"
+arcpy.env.workspace = r"C:\Users\Fernando\Documents\Muestras\CARGUE\Origen_Bogota\mg100k.gdb\Muestras"
 featureclasses = arcpy.ListFeatureClasses()
 
 for fc in featureclasses:
+    desc=arcpy.Describe(fc)
+    if desc.shapeType=="Point":
     #FeatEntrada =r"C:\Users\APN\Documents\SGC\Muestras\Origen_Bogota\mg100K_Sin_Rel.gdb\Muestras\Gravas"
-    ListaCampos=campos(fc)
-    exportXLSX(fc,ListaCampos,wb)
+        ListaCampos=campos(fc)
+        exportXLSX(fc,ListaCampos,wb)
 
 #dest_filename = r'C:\Users\APN\Documents\SGC\Muestras\Origen_Bogota\Libro1.xlsx'
 #wb.save(filename = dest_filename)
