@@ -13,7 +13,6 @@ def getSheetName(file_name):
     pointSheetObj = []
     TeamPointWorkbook = xl.open_workbook(file_name)
     pointSheets = TeamPointWorkbook.sheet_names()
-
     return pointSheets
 def normalizarDatos(row,longitud):
     row=list(row)
@@ -74,31 +73,32 @@ def Campos(Feat):
             Lista.append(fld.name)
     return Lista
 
-
-
-GeodatabaseModelo=sys.argv[1]
-xlsFile=sys.argv[2]
+GeodatabaseModelo=r"C:\Users\APN\Documents\SGC\Muestras\mg100k_2.gdb\Muestras"
+xlsFile=r"C:\Users\APN\Documents\SGC\Muestras\LibroIndiceMuestras_27_11_2017.xls"
 
 print(getSheetName(xlsFile))
 
 ListaHojas = getSheetName(xlsFile)
 
 
-
 for hoja in ListaHojas:
+    print hoja
+    arcpy.ExcelToTable_conversion(xlsFile,os.path.dirname(GeodatabaseModelo)+os.sep+hoja+"_tabla",hoja)
+arcpy.env.workspace=os.path.dirname(GeodatabaseModelo)
 
-    arcpy.ExcelToTable_conversion(xlsFile,os.path.dirname(GeodatabaseModelo)+os.sep+hoja+"tabla",hoja)
-    tablaEntrada= os.path.dirname(GeodatabaseModelo)+os.sep+hoja+"tabla"
-    FeatureClassSalida=GeodatabaseModelo+os.sep+hoja
+listaTablas = arcpy.ListTables("*_tabla")
+
+for hoja in listaTablas:
+    tablaEntrada= os.path.dirname(GeodatabaseModelo)+os.sep+hoja
+    FeatureClassSalida=GeodatabaseModelo+os.sep+hoja.replace("_tabla","")
     camposEntrada=Campos(tablaEntrada)
     CamposSalida=Campos(FeatureClassSalida)
     longitudCamposSal=lenCampos(FeatureClassSalida)
-
     edit = arcpy.da.Editor(os.path.dirname(GeodatabaseModelo))
     #edit.startEditing(True,False)
     #edit.startOperation()
     cursorIns = arcpy.da.InsertCursor(FeatureClassSalida, CamposSalida)
-    print hoja
+    print(hoja)
     with arcpy.da.SearchCursor(tablaEntrada, camposEntrada) as cursor:
         #print cursor.fields
         for row in cursor:
@@ -115,11 +115,10 @@ for hoja in ListaHojas:
                 rowin.insert(0,pointCentroid)
                 rowin = tuple(rowin)
                 rowin=normalizarDatos(rowin,longitudCamposSal)
-                print rowin
+                print (rowin)
                 cursorIns.insertRow(rowin)
             except Exception as ex:
                 arcpy.AddMessage(ex.message)
-
     #print camposEntrada
     #print CamposSalida
     #edit.stopOperation()
