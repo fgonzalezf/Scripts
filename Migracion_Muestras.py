@@ -73,8 +73,9 @@ def Campos(Feat):
             Lista.append(fld.name)
     return Lista
 
-GeodatabaseModelo=r"C:\Users\APN\Documents\SGC\Muestras\mg100k_2.gdb\Muestras"
-xlsFile=r"C:\Users\APN\Documents\SGC\Muestras\LibroIndiceMuestras_27_11_2017.xls"
+GeodatabaseModelo=r"C:\Users\Equipo\Documents\Muestras\Pruebas_finales\Origen_Bogota\prueba3.gdb\Muestras"
+xlsFile=r"C:\Users\Equipo\Documents\Muestras\Pruebas_finales\LibroPrueba25.xls"
+LogSalida=os.path.dirname(GeodatabaseModelo)[:-4]+"_Log.txt"
 
 print(getSheetName(xlsFile))
 
@@ -83,12 +84,16 @@ ListaHojas = getSheetName(xlsFile)
 
 for hoja in ListaHojas:
     print hoja
+    arcpy.AddMessage("Exportando Tabla ...."+hoja)
     arcpy.ExcelToTable_conversion(xlsFile,os.path.dirname(GeodatabaseModelo)+os.sep+hoja+"_tabla",hoja)
 arcpy.env.workspace=os.path.dirname(GeodatabaseModelo)
 
 listaTablas = arcpy.ListTables("*_tabla")
 
+file = open(LogSalida,"w")
+
 for hoja in listaTablas:
+    arcpy.AddMessage("Cargando Tabla ..."+ hoja)
     tablaEntrada= os.path.dirname(GeodatabaseModelo)+os.sep+hoja
     FeatureClassSalida=GeodatabaseModelo+os.sep+hoja.replace("_tabla","")
     camposEntrada=Campos(tablaEntrada)
@@ -118,10 +123,16 @@ for hoja in listaTablas:
                 print (rowin)
                 cursorIns.insertRow(rowin)
             except Exception as ex:
+                file.write(repr(hoja).decode("utf-8")+"\n")
+                file.write(ex.message+"\n")
+                file.write(repr(rowin).decode("utf-8")+"\n")
+                file.write("\n")
                 arcpy.AddMessage(ex.message)
     #print camposEntrada
     #print CamposSalida
     #edit.stopOperation()
     #edit.stopEditing(True)
-    arcpy.Delete_management(tablaEntrada)
+    #arcpy.Delete_management(tablaEntrada)
+
+file.close()
 

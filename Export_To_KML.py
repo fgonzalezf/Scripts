@@ -1,4 +1,5 @@
-import arcpy, os, uuid
+import arcpy, os, uuid, locale
+locale.setlocale(locale.LC_ALL,"english")
 #points = arcpy.GetParameterAsText(0)
 layer = arcpy.GetParameterAsText(0)
 kmzName="KMZ_EXPORT"+str(uuid.uuid4()).replace("-","")[:10]+".kmz"
