@@ -73,8 +73,8 @@ def Campos(Feat):
             Lista.append(fld.name)
     return Lista
 
-GeodatabaseModelo=r"C:\Users\Equipo\Documents\Muestras\Pruebas_finales\Origen_Bogota\prueba3.gdb\Muestras"
-xlsFile=r"C:\Users\Equipo\Documents\Muestras\Pruebas_finales\LibroPrueba25.xls"
+GeodatabaseModelo=r"C:\Users\APN\Documents\SGC\Muestras\Origen_Bogota\mg100k.gdb\Muestras"
+xlsFile=r"C:\Users\APN\Documents\SGC\Muestras\LibroIndiceMuestras_27_11_2017 - copia.xls"
 LogSalida=os.path.dirname(GeodatabaseModelo)[:-4]+"_Log.txt"
 
 print(getSheetName(xlsFile))
@@ -132,7 +132,7 @@ for hoja in listaTablas:
     #print CamposSalida
     #edit.stopOperation()
     #edit.stopEditing(True)
-    #arcpy.Delete_management(tablaEntrada)
+    arcpy.Delete_management(tablaEntrada)
 
 file.close()
 
