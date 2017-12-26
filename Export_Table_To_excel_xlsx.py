@@ -5,7 +5,7 @@ from openpyxl import Workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl import load_workbook
 wb = Workbook()
-dest_filename = r'C:\Users\Fernando\Documents\Muestras\CARGUE\Origen_Bogota\Libro1.xlsx'
+dest_filename = r'C:\Users\Desarrollo\Documents\Muestras\Libro1.xlsx'
 wb.save(filename = dest_filename)
 def campos(Feat):
     listadoCampos=[]
@@ -24,7 +24,7 @@ def exportXLSX(Feat,ListFields,wb):
     wb = load_workbook(dest_filename)
     ws = wb.create_sheet(title=os.path.basename(Feat))
     print Feat
-    for col in range(1, len(ListFields)):
+    for col in range(0, len(ListFields)):
             dv=None
             if ListFields[col][1]=="String":
                 dv = DataValidation(type="textLength", operator="lessThanOrEqual", formula1=ListFields[col][2])
@@ -61,8 +61,8 @@ def exportXLSX(Feat,ListFields,wb):
             #dv.ranges.append()
             for row in range(2,3):
                 #ws.cell(column=col, row=row).number_format=""
-                print ws.cell(column=col, row=row).coordinate + ":" + ws.cell(column=col, row=row).coordinate[:-1] + "60000"
-                dv.ranges.append(ws.cell(column=col, row=row).coordinate+":"+ws.cell(column=col, row=row).coordinate[:-1]+"60000")
+                print ws.cell(column=col, row=row).coordinate + ":" + ws.cell(column=col, row=row).coordinate[:-1] + "65600"
+                dv.ranges.append(ws.cell(column=col, row=row).coordinate+":"+ws.cell(column=col, row=row).coordinate[:-1]+"65600")
             ws.add_data_validation(dv)
     wb.save(filename = dest_filename)
 
@@ -71,7 +71,7 @@ def exportXLSX(Feat,ListFields,wb):
 
 
 
-arcpy.env.workspace = r"C:\Users\Fernando\Documents\Muestras\CARGUE\Origen_Bogota\mg100k.gdb\Muestras"
+arcpy.env.workspace = r"C:\Users\Desarrollo\Documents\Muestras\Origen_Bogota\mg100k.gdb\Muestras"
 featureclasses = arcpy.ListFeatureClasses()
 
 for fc in featureclasses:
