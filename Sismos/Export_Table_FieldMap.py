@@ -83,6 +83,7 @@ fmMagnitud.outputField = f_name
 fms.addFieldMap(fmRegion)
 fms.addFieldMap(fmFecha)
 fms.addFieldMap(fmEstado)
+
 fms.addFieldMap(fmLongitud)
 fms.addFieldMap(fmLatitud)
 fms.addFieldMap(fmMunicipios)

@@ -9,11 +9,13 @@ def to_unicode_or_bust(obj, encoding='utf-8'):
         if not isinstance(obj, unicode):
             obj = unicode(obj, encoding)
     return obj
+
 def getSheetName(file_name):
     pointSheetObj = []
     TeamPointWorkbook = xl.open_workbook(file_name)
     pointSheets = TeamPointWorkbook.sheet_names()
     return pointSheets
+
 def normalizarDatos(row,longitud):
     row=list(row)
     for i in range(len(row)):
@@ -73,8 +75,8 @@ def Campos(Feat):
             Lista.append(fld.name)
     return Lista
 
-GeodatabaseModelo=r"C:\Users\APN\Documents\SGC\Muestras\Origen_Bogota\mg100k.gdb\Muestras"
-xlsFile=r"C:\Users\APN\Documents\SGC\Muestras\LibroIndiceMuestras_27_11_2017 - copia.xls"
+GeodatabaseModelo=sys.argv[1]
+xlsFile=sys.argv[2]
 LogSalida=os.path.dirname(GeodatabaseModelo)[:-4]+"_Log.txt"
 
 print(getSheetName(xlsFile))
