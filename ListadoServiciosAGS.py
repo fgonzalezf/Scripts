@@ -8,16 +8,10 @@ import arcpy
 
 services_directory = 'http://ergit.presidencia.gov.co/arcgis/rest/services/'
 ags = restapi.ArcServer(services_directory)
-
 #tabla= r"E:\Users\fgonzalezf\Documents\Listado_Servicios\Listado.mdb\Listado"
-
-
 #rows = arcpy.SearchCursor(tabla)
-
-
-
 # connect to ArcGIS Server instance
-
+print restapi.getHelp()
 X=0
 doc = dominate.document(title='Listado servicios')
 with doc:
