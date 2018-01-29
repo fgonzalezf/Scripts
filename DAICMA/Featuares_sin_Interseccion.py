@@ -1,8 +1,8 @@
 import arcpy, os ,sys
 
-capaEntrada =r"C:\Users\APN\Documents\APN\GDB\Bk_GDB.gdb\DAICMA\Areas_Canceladas"
-capaInterseccion=r"C:\Users\APN\Documents\APN\GDB\Bk_GDB.gdb\DAICMA\Area_Peligrosa"
-excelSalida=r"C:\Users\APN\Documents\APN\GDB\Excel_Areas_Canceladas_Sin_Areas_Peligrosas.xls"
+capaEntrada =r"D:\BackUpMisDocumentos\Cuenta de Cobro\Cuenta_de_Cobro_Enero_2018\GDB\Bk_GDB.gdb\DAICMA\Areas_Despejadas"
+capaInterseccion=r"D:\BackUpMisDocumentos\Cuenta de Cobro\Cuenta_de_Cobro_Enero_2018\GDB\Bk_GDB.gdb\DAICMA\Area_Peligrosa"
+excelSalida=r"D:\BackUpMisDocumentos\Cuenta de Cobro\Cuenta_de_Cobro_Enero_2018\GDB\Excel_Areas_Despejadas_Sin_Areas_Peligrosas.xls"
 
 layerEntrada= arcpy.MakeFeatureLayer_management(capaEntrada,"layerEntrada")
 layerInterseccion= arcpy.MakeFeatureLayer_management(capaInterseccion,"layerInterseccion")

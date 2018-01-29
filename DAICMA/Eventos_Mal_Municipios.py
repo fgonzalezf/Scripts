@@ -1,8 +1,8 @@
 #-*- coding: latin-1 -*-
 import arcpy,os,sys
 
-DatasetEntrada= r"C:\Users\APN\Documents\GDB\Bk_GDB.gdb\DAICMA"
-excelRuta=r"C:\Users\APN\Documents\GDB"
+DatasetEntrada= r"D:\BackUpMisDocumentos\Cuenta de Cobro\Cuenta_de_Cobro_Enero_2018\GDB\Bk_GDB.gdb\DAICMA"
+excelRuta=r"D:\BackUpMisDocumentos\Cuenta de Cobro\Cuenta_de_Cobro_Enero_2018\GDB"
 
 Municipios=DatasetEntrada+os.sep+"Municipios"
 Eventos= DatasetEntrada+os.sep+"Eventos"

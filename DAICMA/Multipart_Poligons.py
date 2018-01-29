@@ -1,15 +1,15 @@
 import arcpy,os, sys
 
-arcpy.env.workspace = r"C:\Users\APN\Documents\APN\GDB\Bk_GDB.gdb\DAICMA"
+arcpy.env.workspace = r"D:\BackUpMisDocumentos\Cuenta de Cobro\Cuenta_de_Cobro_Enero_2018\GDB\Bk_GDB.gdb\DAICMA"
 
 fcList = arcpy.ListFeatureClasses()
 
 
 for fc in fcList:
     print fc
-    if fc!="Sectores" and fc!="Eventos" and fc!="Municipios" and fc!="Departamento" and fc!="Zonas"and fc!="Estudios_No_Tecnicos_Punto" and fc!="Estudios_Tecnicos_Punto":
+    if fc!="Colombia" and fc!="Sectores" and fc!="Eventos" and fc!="Municipios" and fc!="Departamento" and fc!="Zonas"and fc!="Estudios_No_Tecnicos_Punto" and fc!="Estudios_Tecnicos_Punto":
         fields=[]
-        if fc=="Estudios_Tecnicos":
+        if fc=="Estudios_Tecnicos" or fc=="Areas_Despejadas" :
             fields=["SHAPE@","FeatureID","hazreduc_localid"]
         elif fc=="Estudios_No_Tecnicos":
             fields=["SHAPE@","FeatureID","hazreduc_localid"]
