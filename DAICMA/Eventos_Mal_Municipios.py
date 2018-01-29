@@ -1,12 +1,16 @@
 #-*- coding: latin-1 -*-
 import arcpy,os,sys
 
-DatasetEntrada= r"D:\BackUpMisDocumentos\Cuenta de Cobro\Cuenta_de_Cobro_Enero_2018\GDB\Bk_GDB.gdb\DAICMA"
-excelRuta=r"D:\BackUpMisDocumentos\Cuenta de Cobro\Cuenta_de_Cobro_Enero_2018\GDB"
+from openpyxl import Workbook
+
+DatasetEntrada= r"C:\Users\Desarrollo\Documents\APN\Bk_GDB.gdb\DAICMA"
+excelRuta=r"C:\Users\Desarrollo\Documents\APN"
 
 Municipios=DatasetEntrada+os.sep+"Municipios"
 Eventos= DatasetEntrada+os.sep+"Eventos"
 X=0
+
+ListaFilas=[["Label 1 Municipio","Municipio 2","Identificador IMsma","Label 2 Municipio","Municipio 2"]]
 with arcpy.da.SearchCursor(Municipios, ["NOMBRE_ENT"]) as cursor:
 
     for row in cursor:
@@ -19,8 +23,17 @@ with arcpy.da.SearchCursor(Municipios, ["NOMBRE_ENT"]) as cursor:
                 if row2[0].strip()!=row[0].strip():
                     X=X+1
                     print str(X)+";"+"Municipio Atributo: "+";"+ row2[0].strip()+";"+row2[1].strip()+";"+"Municipio Geografico: "+";"+ row[0]
+                    temp = ["Municipio Atributo: " , row2[0].strip(), row2[1].strip(),"Municipio Geografico: ", row[0]]
+                    ListaFilas.append(temp)
         arcpy.Delete_management("layerMunicipio")
         arcpy.Delete_management("Eventos_Layer")
 
 
+book = Workbook()
+sheet = book.active
 
+listaDef = tuple(ListaFilas)
+for row in listaDef:
+    sheet.append(row)
+
+book.save(excelRuta+os.sep+'iterbycols.xlsx')
