@@ -1,12 +1,13 @@
-import arcpy,os, sys
+import arcpy, os , sys
 from openpyxl import Workbook
 
-arcpy.env.workspace = r"C:\Users\Desarrollo\Documents\APN\Bk_GDB.gdb\DAICMA"
-excelRuta=r"C:\Users\Desarrollo\Documents\APN"
+arcpy.env.workspace = sys.argv[1]
+excelRuta=sys.argv[2]
 fcList = arcpy.ListFeatureClasses()
+book = Workbook()
 
-ListaFilas=[["Label 1","FeatuareID","Label 2","Identificador IMSMA"]]
 for fc in fcList:
+    ListaFilas = [["Label 1", "FeatuareID", "Label 2", "Identificador IMSMA"]]
     print fc
     if fc!="Colombia" and fc!="Sectores" and fc!="Eventos" and fc!="Municipios" and fc!="Departamento" and fc!="Zonas"and fc!="Estudios_No_Tecnicos_Punto" and fc!="Estudios_Tecnicos_Punto":
         fields=[]
@@ -20,7 +21,7 @@ for fc in fcList:
             for row in cursor:
                 geometry = row[0]
                 if geometry.isMultipart == True:
-                    print "FeatureID: "+";"+row[1]+";"+"hazard_localid: "+ row[2]
+                    arcpy.AddMessage("FeatureID: "+";"+row[1]+";"+"hazard_localid: "+ row[2])
                     temp = ["FeatureID: ", row[1], "hazard_localid: ", row[2] ]
                     ListaFilas.append(temp)
 
@@ -29,13 +30,11 @@ for fc in fcList:
                         part = geometry.getPart(partnum)
                         #print arcpy.Polygon(part).pointCount
                         partnum += 1
+        if len(ListaFilas)>1:
+            sheet =book.create_sheet(fc)
+            listaDef = tuple(ListaFilas)
+            for row in listaDef:
+                sheet.append(row)
 
-book = Workbook()
-sheet = book.active
-
-listaDef = tuple(ListaFilas)
-for row in listaDef:
-    sheet.append(row)
-
-book.save(excelRuta+os.sep+'corbatines.xlsx')
+book.save(excelRuta)
 
