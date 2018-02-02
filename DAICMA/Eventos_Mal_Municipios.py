@@ -37,6 +37,7 @@ with arcpy.da.SearchCursor(Municipios, ["NOMBRE_ENT"]) as cursor:
         arcpy.Delete_management("layerMunicipio")
         arcpy.Delete_management("Eventos_Layer")
 X=0
+del cursorins
 
 with arcpy.da.SearchCursor(Municipios, ["NOMBRE_ENT"]) as cursor3:
     for row in cursor3:
@@ -67,12 +68,9 @@ with arcpy.da.SearchCursor(Municipios, ["NOMBRE_ENT"]) as cursor5:
         arcpy.SelectLayerByLocation_management("Eventos_Layer","INTERSECT","layerMunicipio")
         with arcpy.da.SearchCursor("Eventos_Layer", ["municipio","id_imsma_evento"]) as cursor6:
             for row2 in cursor6:
-                if row2[1].strip() not in row[0].strip():
                     X=X+1
-                    arcpy.AddMessage(str(X) + ";" + "Municipio Atributo: " + ";" + row2[1].strip() + ";" + row2[
-                        2].strip() + ";" + "Municipio Geografico: " + ";" + row[0])
+                    arcpy.AddMessage(str(X) + ";" + "Municipio Atributo: " + ";" + row2[0].strip() + ";" + row2[1].strip() + ";" + "Municipio Geografico: " + ";" + row[0])
                     temp = ["Municipio Atributo: " , row2[0].strip(), row2[1].strip(),"Municipio Geografico: ", row[0]]
-                    cursorins.insertRow(row2)
                     ListaFilas.append(temp)
         arcpy.Delete_management("layerMunicipio")
         arcpy.Delete_management("Eventos_Layer")
