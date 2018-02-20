@@ -1,11 +1,11 @@
 import arcpy, os,sys
 
 CarpetaEntrada=r"C:\Users\APN\Documents\APN\Migracion_Server\Zonas"
-CarpetaSalida=r"C:\Users\APN\Documents\APN\Migracion_Server\Zonas2"
+CarpetaSalida=r"C:\Users\APN\Documents\APN\Migracion_Server\Zonas4"
 arcpy.env.workspace=CarpetaEntrada
 
-pathin=r"C:\Users\maicolvelasquez\AppData\Roaming\Esri\Desktop10.2\ArcCatalog\SDE_VISORES.sde"
-pathOut=r"C:\Users\APN\Documents\APN\Migracion_Server\Scripts\GDB\Bk_GDB.gdb"
+pathin="C:\Users\maicolvelasquez\AppData\Roaming\Esri\Desktop10.2\ArcCatalog\SDE_VISORES.sde"
+pathOut="C:\Users\APN\Documents\APN\Migracion_Server\Scripts\GDB\Bk_GDB.gdb"
 
 ListaCarpetas=arcpy.ListWorkspaces("*", "Folder")
 
@@ -17,6 +17,6 @@ for folder in ListaCarpetas:
     for mxdfile in ListaMxd:
         print mxdfile
         mxd = arcpy.mapping.MapDocument(folder+ os.sep+ mxdfile)
-        mxd.findAndReplaceWorkspacePaths(pathin, pathOut)
+        mxd.findAndReplaceWorkspacePaths(pathin, pathOut,"false")
         mxd.saveACopy(CarpetaSalida+ os.sep +os.path.basename(folder)+ os.sep+ mxdfile,"10.1")
         del mxd
