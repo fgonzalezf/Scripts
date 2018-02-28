@@ -3,8 +3,6 @@ import arcpy,os,sys
 Actualizar=True
 Borrar=True
 
-
-
 def Campos(Feat,tipo,desc):
     Lista=[]
     ListaCampos=arcpy.ListFields(Feat)
@@ -49,12 +47,16 @@ def actualizarValores(Featin, FeatOut, fields,indx):
                         if keyvalue not in Controlvalores:
                             try:
                                 Numerador = Numerador + 1
-                                print "Actualizando Valor..."+ str(row2[indx])+ "....("+str(Numerador)+ " de "+str(count)+")"
-                                cursor2.updateRow(valoresEntrada[keyvalue])
-                                Controlvalores.append(keyvalue)
+                                conjRow=set(valoresEntrada[keyvalue])
+                                conjRow2=set(row2)
+                                final = conjRow - conjRow2
+                                #print final
+                                if len(final) > 0:
+                                    print "Actualizando Valor..."+ str(row2[indx])+ "....("+str(Numerador)+ " de "+str(count)+")"
+                                    cursor2.updateRow(valoresEntrada[keyvalue])
+                                    Controlvalores.append(keyvalue)
                             except Exception as e:
                                 print "Error..."+ e.message
-
 
         edit.stopOperation()
         edit.stopEditing("True")
@@ -76,6 +78,7 @@ def actualizarValores(Featin, FeatOut, fields,indx):
 
         edit.startEditing()
         edit.startOperation()
+        valoresEntrada = ValoresEntrada(Featin, fields)
         if Borrar == True:
             Controlvalores = []
             with arcpy.da.UpdateCursor(FeatOut, fields) as cursor2:
@@ -98,8 +101,8 @@ def actualizarValores(Featin, FeatOut, fields,indx):
         del valoresEntrada
         del valoresSalida
 
-IMSMAGDB=r"\\FARALLONES\coldaicma2017v4\map\IMSMA.gdb"
-GeodatabaseSalida=r"E:\Scripts\SDE.sde"
+IMSMAGDB=r"C:\Users\APN\Documents\APN\Pruebas_cargue\IMSMA.gdb"
+GeodatabaseSalida=r"C:\Users\APN\Documents\APN\Pruebas_cargue\Prueba1.gdb"
 
 print "Reparando Geometria"
 arcpy.env.workspace=IMSMAGDB
@@ -107,8 +110,7 @@ ListaFeaturesClass=arcpy.ListFeatureClasses()
 Tablas=[]
 for fc in ListaFeaturesClass:
     arcpy.RepairGeometry_management(fc,"True")
-    if fc !="Hazard_Reductions_point" and fc !="Hazards_point":
-        Tablas.append([IMSMAGDB+os.sep+fc,GeodatabaseSalida+os.sep+fc,GeodatabaseSalida])
+    Tablas.append([IMSMAGDB+os.sep+fc,GeodatabaseSalida+os.sep+fc,GeodatabaseSalida])
     
 
 print "Proceso Iniciado"
