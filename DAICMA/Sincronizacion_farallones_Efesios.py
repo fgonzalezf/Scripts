@@ -1,14 +1,14 @@
 import arcpy,os,sys
 
-GeodatabaseSalida=r"Z:\Pruebas_IMSMA\SDE.sde"
+GeodatabaseSalida=r"E:\Scripts\EFESIOS.sde"
 
 
 Capas = {}
-Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.dbo.Hazard_AP_APC_Polygons_I_Visor"] =r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Area_Peligrosa"
-Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.dbo.Area_AC_Visor"] =r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Areas_Canceladas"
-Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.dbo.POLY_VISOR_I_ENT"] =r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Estudios_No_Tecnicos"
-Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.dbo.POLY_VISOR_I_Despeje_ET"] =r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Estudios_Tecnicos"
-Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.dbo.Eventos_Visor"] =r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Eventos"
+Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Area_Peligrosa"] =r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Area_Peligrosa"
+Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Areas_Canceladas"] =r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Areas_Canceladas"
+Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Estudios_No_Tecnicos"] =r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Estudios_No_Tecnicos"
+Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Estudios_Tecnicos"] =r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Estudios_Tecnicos"
+Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Eventos"] =r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Eventos"
 
 
 

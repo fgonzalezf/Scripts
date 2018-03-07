@@ -1,5 +1,5 @@
-import arcpy,os,sys
-
+import arcpy ,os,sys
+arcpy.env.overwriteOutput=True
 Actualizar=True
 Borrar=True
 
@@ -101,32 +101,41 @@ def actualizarValores(Featin, FeatOut, fields,indx):
         del valoresEntrada
         del valoresSalida
 
-IMSMAGDB=r"C:\Users\APN\Documents\APN\Pruebas_cargue\IMSMA.gdb"
-GeodatabaseSalida=r"C:\Users\APN\Documents\APN\Pruebas_cargue\Prueba1.gdb"
+def exportarGDB(entrada,carpetaTemp):
+    arcpy.env.workspace=entrada
+    ListaFeat= arcpy.ListFeatureClasses()
+    arcpy.CreateFileGDB_management(carpetaTemp,"IMSMA.gdb")
+    arcpy.CreateFeatureDataset_management(carpetaTemp+os.sep+"IMSMA.gdb","IMSMA",r"E:\Scripts\Temp\GCS_WGS_1984.prj")
+    salida = carpetaTemp+os.sep+"IMSMA.gdb"+os.sep+"IMSMA"
+    for fc in ListaFeat:
+        arcpy.FeatureClassToFeatureClass_conversion(fc,salida,fc)
+    return salida
 
+
+IMSMAGDB=r"\\FARALLONES\coldaicma2017v4\map\IMSMA.gdb"
+GeodatabaseSalida=r"E:\Scripts\SDE.sde\SDE.DBO.CAPAS_IMSMA"
+carpeta = r"E:\Scripts\Temp"
 print "Reparando Geometria"
-arcpy.env.workspace=IMSMAGDB
+Entrada=exportarGDB(IMSMAGDB,carpeta)
+arcpy.env.workspace=Entrada
 ListaFeaturesClass=arcpy.ListFeatureClasses()
 Tablas=[]
 for fc in ListaFeaturesClass:
     arcpy.RepairGeometry_management(fc,"True")
-    Tablas.append([IMSMAGDB+os.sep+fc,GeodatabaseSalida+os.sep+fc,GeodatabaseSalida])
-    
+    Tablas.append([Entrada+os.sep+fc,GeodatabaseSalida+os.sep+fc,os.path.dirname(GeodatabaseSalida)])
 
 print "Proceso Iniciado"
+
 for tabla in Tablas:
-    Entrada=tabla[0]
     Salida=tabla[1]
     GeodatabaseSalida=tabla[2]
+    Entrada = tabla[0]
     CampoIdentificador="FeatureID"
-
     arcpy.env.workspace=GeodatabaseSalida
     desc = arcpy.Describe(Salida)
     tipo= desc.dataType
     print tipo
-
     print Campos(Entrada,tipo,desc)
     Fields=Campos(Entrada,tipo,desc)
     indx = Fields.index(CampoIdentificador)
-    
     actualizarValores(Entrada,Salida,Fields,indx)
