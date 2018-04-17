@@ -1,26 +1,29 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import arcpy,os,sys
+import mysql.connector
+
 
 Actualizar=True
 Borrar=True
 indx = 0
 
 
-def Campos(Feat,tipo):
-    Lista=[]
-    ListaCampos=arcpy.ListFields(Feat)
-    if tipo=="FeatureClass":
-        if desc.shapeType=="Point":
-            Lista.append('SHAPE@XY')
-        else:
-            Lista.append('SHAPE@')
-    for fld in ListaCampos:
-        if fld.editable==True and fld.type!="Geometry":
-            Lista.append(fld.name)
-    return Lista
+
+def listFieldsMySQL(tabla):
+    cnx = mysql.connector.connect(user='gaudi_arcgis',database='sgv',password='Arcgis_2017',host='172.25.3.88')
+    cursor = cnx.cursor()
+    query = ("DESCRIBE " + tabla )
+    cursor.execute(query)
+    listaFields=[]
+    for row in cursor:
+      listaFields.append(row[0])
+    cnx.close()
+    return listaFields
+
 
 def ValoresEntrada(Feat,fields):
+    cnx = mysql.connector.connect(user='gaudi_arcgis',database='sgv',password='Arcgis_2017',host='172.25.3.88')
     datos = {}
     tindx=0
     indx = 0
@@ -28,32 +31,47 @@ def ValoresEntrada(Feat,fields):
         if field==CampoIdentificador:
             indx=tindx
         tindx=tindx+1
-    with arcpy.da.SearchCursor(Feat, fields) as cursor:
-        for row in cursor:
-           datos[row[indx]] =row
+    cursor = cnx.cursor()
+    query = ("SELECT * FROM " + Feat)
+    cursor.execute(query)
+    listaFields=[]
+    for row in cursor:
+        datos[row[indx]] =row
+    cnx.close()
     return datos
 
 def ValoresEntradaTotales(Feat,fields):
+    cnx = mysql.connector.connect(user='gaudi_arcgis',database='sgv',password='Arcgis_2017',host='172.25.3.88')
     datos = {}
 
     identificador=""
-
-    with arcpy.da.SearchCursor(Feat, fields) as cursor:
-        for row in cursor:
-            identificador=""
-            for field in fields:
-                if row[fields.index(field)]== None:
-                    identificador=identificador+"_"+"None"
-                else:
-                    identificador=identificador+"_"+row[fields.index(field)]
+    cursor = cnx.cursor()
+    query = ("SELECT * FROM " + Feat)
+    cursor.execute(query)
+    for row in cursor:
+        identificador=""
+        for field in fields:
+            if row[fields.index(field)]== None:
+                identificador=identificador+"_"+"None"
+            else:
+                identificador=identificador+"_"+row[fields.index(field)]
             datos[identificador]=row
+    cnx.close()
     return datos
-
+def CountMysql(tabla):
+    cnx = mysql.connector.connect(user='gaudi_arcgis', database='sgv',password='Arcgis_2017',host='172.25.3.88')
+    cursor = cnx.cursor()
+    query ="select count(*) from "+ tabla
+    #query = ("DESCRIBE " + tabla )
+    cursor.execute(query)
+    count=0
+    for row in cursor:
+       count=row[0]
+    return count
 def actualizarValores(Featin, FeatOut, fields):
         valoresEntrada = ValoresEntradaTotales(Featin,fields)
         Numerador=0
-        result = arcpy.GetCount_management(Featin)
-        count = int(result.getOutput(0))
+        count = CountMysql(Featin)
         edit = arcpy.da.Editor (GeodatabaseSalida)
         edit.startEditing ()
         edit.startOperation()
@@ -128,28 +146,20 @@ def actualizarValores(Featin, FeatOut, fields):
 
 Tablas=[]
 
-Tablas.append([r"C:\Users\fgonzalezf\Desktop\Conexiones\epis.odc\.view_informes",r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde\EPIS.T_view_informes',r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde'])
-Tablas.append([r"C:\Users\fgonzalezf\Desktop\Conexiones\epis.odc\.view_contratos",r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde\EPIS.T_view_contratos',r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde'])
-Tablas.append([r"C:\Users\fgonzalezf\Desktop\Conexiones\epis.odc\.view_pozos",r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde\EPIS.T_view_pozos',r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde'])
-Tablas.append([r"C:\Users\fgonzalezf\Desktop\Conexiones\epis.odc\.view_sismica2d",r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde\EPIS.T_view_sismica2d',r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde'])
-Tablas.append([r"C:\Users\fgonzalezf\Desktop\Conexiones\epis.odc\.view_sismica3d",r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde\EPIS.T_view_sismica3d',r'C:\Users\fgonzalezf\Desktop\Conexiones\EPISODAPROD.sde'])
+Tablas.append(["view_informes",r'C:/temp/EPISODAPROD.sde/EPIS.T_view_informes',r'C:/temp/EPISODAPROD.sde'])
+Tablas.append(["view_contratos",r'C:/temp/EPISODAPROD.sde/EPIS.T_view_contratos',r'C:/temp/EPISODAPROD.sde'])
+Tablas.append(["view_pozos",r'C:/temp/EPISODAPROD.sde/EPIS.T_view_pozos',r'C:/temp/EPISODAPROD.sde'])
+Tablas.append(["view_sismica2d",r'C:/temp/EPISODAPROD.sde/EPIS.T_view_sismica2d',r'C:/temp/EPISODAPROD.sde'])
+Tablas.append(["view_sismica3d",r'C:/temp/EPISODAPROD.sde/EPIS.T_view_sismica3d',r'C:/temp/EPISODAPROD.sde'])
 
-ListaFeatures= arcpy.ListFeatureClasses()
-for fc in ListaFeatures:
-    arcpy.RepairGeometry_management(fc)
+
 for tabla in Tablas:
     Entrada=tabla[0]
     Salida=tabla[1]
     GeodatabaseSalida=tabla[2]
-
+    print GeodatabaseSalida
 
     CampoIdentificador=""
-    arcpy.env.workspace=GeodatabaseSalida
-    desc = arcpy.Describe(Salida)
-    tipo= desc.dataType
-    print tipo
 
-
-    print Campos(Entrada, tipo)
-    Fields=Campos(Entrada, tipo)
+    Fields=listFieldsMySQL(Entrada)
     actualizarValores(Entrada,Salida,Fields)
