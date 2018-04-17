@@ -91,4 +91,4 @@ fms.addFieldMap(fmProfundidad)
 fms.addFieldMap(fmMagnitud)
 
 # Create the output feature class, using the FieldMappings object
-arcpy.TableToTable_conversion(in_file, arcpy.env.workspace, out_file, field_mapping=fms)
+arcpy.TableToTable_conversion(in_file, "in_memory", out_file, field_mapping=fms)
