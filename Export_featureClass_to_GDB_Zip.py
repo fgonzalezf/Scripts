@@ -2,22 +2,19 @@ import zipfile
 import sys
 import os
 import glob
-import datetime
 
 import arcpy
 FeatureClass=sys.argv[1]
 CarpetaZip=sys.argv[2]
-#NombreZip=sys.argv[3]
 
-arcpy.env.overwriteOutput=True
+arcpy.CreatePersonalGDB_management(CarpetaZip,os.path.basename(FeatureClass)+".mdb","9.1")
 
-today = datetime.date.today()
-Nombre=str(today).replace("-","_")
+GDB=CarpetaZip+os.sep+os.path.basename(FeatureClass)+".mdb"
 
-wellsShapeFile=CarpetaZip+ os.sep+ NombreZip+"_"+Nombre+".shp"
-arcpy.FeatureClassToFeatureClass_conversion(FeatureClass,CarpetaZip, NombreZip+"_"+Nombre+".shp")
+wellsShapeFile=GDB
+arcpy.FeatureClassToFeatureClass_conversion(FeatureClass,GDB,os.path.basename(FeatureClass))
 
-wellsZipFile = CarpetaZip+os.sep+NombreZip+".zip"
+wellsZipFile = wellsShapeFile[:-4]+".zip"
 
 def zipShapefile(inShapefile, newZipFN):
     print 'Comprimiendo '+inShapefile+' to '+newZipFN
@@ -44,8 +41,5 @@ def zipShapefile(inShapefile, newZipFN):
     return True
 
 zipShapefile(wellsShapeFile,wellsZipFile)
-try:
-    arcpy.Delete_management(wellsShapeFile)
-except:
-    arcpy.AddMessage("no se puede borrar el shape")
 print "Terminado!"
+
