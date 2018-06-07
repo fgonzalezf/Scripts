@@ -1,12 +1,12 @@
 import arcpy, os, sys
 
-Geodatabase = r"C:\Users\Equipo\Documents\SGC\EPIS_Pruebas.gdb"
+Geodatabase = sys.argv[1]
 
 Tablas =[]
 
-Tablas.append(Geodatabase+os.sep+"EPIS"+os.sep+"SISMICA2D_EPIS_SGC")
-Tablas.append(Geodatabase+os.sep+"EPIS"+os.sep+"SISMICA3D_EPIS_SGC")
-Tablas.append(Geodatabase+os.sep+"EPIS"+os.sep+"POLIPROGRAMAS_2D")
+Tablas.append(Geodatabase+os.sep+"EPIS.EPIS"+os.sep+"EPIS.POLIPROGRAMAS_2D")
+Tablas.append(Geodatabase+os.sep+"EPIS.EPIS"+os.sep+"EPIS.SISMICA2D_EPIS_SGC")
+Tablas.append(Geodatabase+os.sep+"EPIS.EPIS"+os.sep+"EPIS.SISMICA3D_EPIS_SGC")
 
 for tabla in Tablas:
     try:
@@ -31,7 +31,7 @@ for tabla in Tablas:
             row[2] = row[0].extent.XMax
             row[3] = row[0].extent.YMin
             row[4]=row[0].extent.YMax
-            print (str(x)+ "...")
+            arcpy.AddMessage(str(x)+ "...")
             cursor.updateRow(row)
     edit.stopOperation()
     edit.stopEditing("True")

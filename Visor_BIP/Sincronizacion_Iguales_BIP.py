@@ -4,8 +4,8 @@ import arcpy,os,sys
 import mysql.connector
 
 
-Actualizar=True
-Borrar=True
+Actualizar=False
+Borrar=False
 indx = 0
 
 
@@ -72,8 +72,8 @@ def actualizarValores(Featin, FeatOut, fields):
         valoresEntrada = ValoresEntradaTotales(Featin,fields)
         Numerador=0
         count = CountMysql(Featin)
-        edit = arcpy.da.Editor (GeodatabaseSalida)
-        edit.startEditing ()
+        edit = arcpy.da.Editor(GeodatabaseSalida)
+        edit.startEditing()
         edit.startOperation()
         if Actualizar == True:
             Controlvalores = []
@@ -146,11 +146,11 @@ def actualizarValores(Featin, FeatOut, fields):
 
 Tablas=[]
 
-Tablas.append(["view_informes",r'C:/temp/EPISODAPROD.sde/EPIS.T_view_informes',r'C:/temp/EPISODAPROD.sde'])
+#Tablas.append(["view_informes",r'C:/temp/EPISODAPROD.sde/EPIS.T_view_informes',r'C:/temp/EPISODAPROD.sde'])
 Tablas.append(["view_contratos",r'C:/temp/EPISODAPROD.sde/EPIS.T_view_contratos',r'C:/temp/EPISODAPROD.sde'])
 Tablas.append(["view_pozos",r'C:/temp/EPISODAPROD.sde/EPIS.T_view_pozos',r'C:/temp/EPISODAPROD.sde'])
-Tablas.append(["view_sismica2d",r'C:/temp/EPISODAPROD.sde/EPIS.T_view_sismica2d',r'C:/temp/EPISODAPROD.sde'])
-Tablas.append(["view_sismica3d",r'C:/temp/EPISODAPROD.sde/EPIS.T_view_sismica3d',r'C:/temp/EPISODAPROD.sde'])
+#Tablas.append(["view_sismica2d",r'C:/temp/EPISODAPROD.sde/EPIS.T_view_sismica2d',r'C:/temp/EPISODAPROD.sde'])
+#Tablas.append(["view_sismica3d",r'C:/temp/EPISODAPROD.sde/EPIS.T_view_sismica3d',r'C:/temp/EPISODAPROD.sde'])
 
 
 for tabla in Tablas:
