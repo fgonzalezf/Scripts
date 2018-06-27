@@ -39,3 +39,4 @@ with arcpy.da.SearchCursor(ShapeFile, fields) as cursor:
 
 cur.close()
 f.close()
+
