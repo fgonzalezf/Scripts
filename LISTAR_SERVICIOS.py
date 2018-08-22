@@ -2,6 +2,8 @@ import httplib, urllib, json
 
 # For system tools
 import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 # For reading passwords without echoing
 import getpass
@@ -403,13 +405,21 @@ def main(argv=None):
                         jsonOBJStatus = json.loads(readData)
 
                         # Check for Map Cache
-                        isCached = jsonOBJ["properties"]["isCached"]
-                        if isCached == "true":
-                            cacheDir = str(jsonOBJ["properties"]["cacheDir"])
-                        else:
-                            cacheDir = jsonOBJ["properties"]["isCached"]
+                        try:
+                            isCached = jsonOBJ["properties"]["isCached"]
+                            if isCached == "true":
+                                cacheDir = str(jsonOBJ["properties"]["cacheDir"])
+                            else:
+                                cacheDir = jsonOBJ["properties"]["isCached"]
+                        except:
+                            pass
+                        ext=1
+                        try:
+                            ext=len(jsonOBJ["extensions"])
+                        except:
+                            pass
 
-                        if len(jsonOBJ["extensions"]) == 0:
+                        if ext == 0:
                             # Build the line to write to the output file
                             ln = str(jsonOBJ["serviceName"]) + "," + folder + "," + str(item["type"]) + "," + jsonOBJStatus['realTimeState'] + "," + str(jsonOBJ["minInstancesPerNode"]) + "," + str(jsonOBJ["maxInstancesPerNode"]) +"\n"
 ##                            ln = str(jsonOBJ["serviceName"]) + "," + folder + "," + str(item["type"]) + "," + jsonOBJStatus['realTimeState'] + "," + str(jsonOBJ["minInstancesPerNode"]) + "," + str(jsonOBJ["maxInstancesPerNode"]) + "," + "FeatServHolder" + "," + "Disabled" + "," + "Disabled" +"," + str(jsonOBJ["properties"]["maxRecordCount"]) + "," + str(jsonOBJ["clusterName"]) + "," + cacheDir + "," + "NA" + "," + str(jsonOBJ["properties"]["outputDir"]) +"\n"
