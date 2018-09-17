@@ -1,9 +1,10 @@
 import arcpy
-RutaConexion=r'Database Connections/SDE.sde'
-conexiones=[r'Database Connections/SDE.sde']
-LogReconciliacion=r"C:/Temp"
+RutaConexion=r'E:\Scripts\EFESIOS.sde'
+conexiones=[r'E:\Scripts\EFESIOS.sde']
+LogReconciliacion=r"C:\Temp\datos2.log"
 
 arcpy.env.workspace = RutaConexion
+arcpy.env.overwriteOutput= True
 workspace = arcpy.env.workspace
 userList = arcpy.ListUsers(RutaConexion)
 for user in userList:
@@ -16,7 +17,10 @@ versionList = arcpy.ListVersions(RutaConexion)
 for version in versionList:
     print version
 print "Reconciliando"
-arcpy.ReconcileVersions_management(RutaConexion, "ALL_VERSIONS", "sde.DEFAULT", versionList, "LOCK_ACQUIRED", "NO_ABORT", "BY_OBJECT", "FAVOR_TARGET_VERSION", "POST", "DELETE_VERSION",LogReconciliacion)
+try:
+    arcpy.ReconcileVersions_management(RutaConexion, "ALL_VERSIONS", "SDE.DEFAULT", versionList, "LOCK_ACQUIRED", "NO_ABORT", "BY_OBJECT", "FAVOR_TARGET_VERSION", "POST", "DELETE_VERSION",LogReconciliacion)
+except Exception as e:
+    print e.message
 print "Realizando Compress"
 arcpy.Compress_management(RutaConexion)
 arcpy.AcceptConnections(RutaConexion, True)

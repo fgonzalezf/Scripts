@@ -109,8 +109,8 @@ def actualizarValores(Featin, FeatOut, fields,indx):
         del valoresEntrada
         del valoresSalida
 
-IMSMAGDB=r"E:\Scripts\GDB_ZONAS\Zonas_01.gdb"
-GeodatabaseSalida=r"E:\Scripts\SDE.sde"
+IMSMAGDB=r"C:\Users\maicolvelasquez\Documents\Zonas_Sectores_07_2018.gdb\Zonas"
+GeodatabaseSalida=r"E:\Scripts\EFESIOS.sde"
 
 print "Reparando Geometria"
 arcpy.env.workspace=IMSMAGDB

@@ -5,10 +5,18 @@ GeodatabaseSalida=r"E:\Scripts\EFESIOS.sde"
 
 Capas = {}
 Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Area_Peligrosa"] =r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Area_Peligrosa"
+Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Area_Peligrosa_Punto"] =r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Area_Peligrosa_Punto"
 Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Areas_Canceladas"] =r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Areas_Canceladas"
+Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Areas_Canceladas_Punto"] =r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Areas_Canceladas_Punto"
 Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Estudios_No_Tecnicos"] =r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Estudios_No_Tecnicos"
+Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Estudios_No_Tecnicos_Punto"] =r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Estudios_No_Tecnicos_Punto"
 Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Estudios_Tecnicos"] =r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Estudios_Tecnicos"
+Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Estudios_Tecnicos_Punto"] =r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Estudios_Tecnicos_Punto"
 Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Eventos"] =r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Eventos"
+Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Sectores"] =r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Sectores"
+Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Zonas"] =r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Zonas"
+Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Municipios"] =r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Municipios"
+Capas[r"Z:\Pruebas_IMSMA\SDE.sde\SDE.DBO.DAICMA\SDE.DBO.Departamento"] =r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Departamento"
 
 
 
@@ -123,6 +131,14 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut,CampoUnico):
 for POLIGONO, PUNTOS in Capas.items():
     if os.path.basename(PUNTOS) == "SDE.DBO.Eventos":
         CampoUnico = "id_imsma_evento"
+    elif os.path.basename(PUNTOS) == "SDE.DBO.Sectores":
+        CampoUnico = "hazreduc_localid"
+    elif os.path.basename(PUNTOS) == "SDE.DBO.Zonas":
+        CampoUnico = "CODIGO_ZONA"
+    elif os.path.basename(PUNTOS) == "SDE.DBO.Municipios":
+        CampoUnico = "DANE"
+    elif os.path.basename(PUNTOS) == "SDE.DBO.Departamento":
+        CampoUnico = "COD_DEPART"
     else:
         CampoUnico = "FeatureID"
     print PUNTOS
