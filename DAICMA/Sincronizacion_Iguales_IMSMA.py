@@ -112,7 +112,7 @@ def exportarGDB(entrada,carpetaTemp):
     return salida
 
 
-IMSMAGDB=r"\\FARALLONES\coldaicma2017v4\map\IMSMA.gdb"
+IMSMAGDB=r"C:\Users\Administrator\Downloads\IMSMA.gdb"
 GeodatabaseSalida=r"E:\Scripts\SDE.sde\SDE.DBO.CAPAS_IMSMA"
 carpeta = r"E:\Scripts\Temp"
 print "Reparando Geometria"
