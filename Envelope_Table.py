@@ -4,8 +4,9 @@ import arcpy, os,sys
 reload(sys)
 arcpy.env.overwriteOutput=True
 sys.setdefaultencoding("utf-8")
-FeatEntrada=r"Database Connections\Consulta_Produccion.sde\MBIC.Mapa_Base_IGAC_100K\MBIC.Limite_Departamental"
-Tabla=r"C:\Users\fgonzalezf\Documents\Amenaza_Volcanica_Galeras_capas\Fenomenos\prueba1.mdb\Departamentos"
+FeatEntrada=r"C:\Users\fgonzalezf\Documents\Amenaza_Volcanica_Galeras_capas\Fenomenos\Prueba.gdb\F40_UC_UNICRO"
+Tabla=r"C:\Users\fgonzalezf\Documents\Amenaza_Volcanica_Galeras_capas\Fenomenos\Prueba.gdb\Unidades_Atlas"
+arcpy.env.overwriteOutput=True
 try:
     arcpy.CreateTable_management(os.path.dirname(Tabla),os.path.basename(Tabla))
 except:
@@ -18,7 +19,7 @@ Campos=[]
 for field in Fields:
     #Encabezados
 
-    if str(field.name)!='SHAPE' and str(field.name)!='OBJECTID'and str(field.name)!='SHAPE.AREA'and str(field.name)!='OVERRIDE' and str(field.name)!='RULEID'and str(field.name)!='SHAPE.LEN' :
+    if str(field.name)!='SHAPE' and str(field.name)!='OBJECTID' and str(field.name)!='OBJECTID_1'and str(field.name)!='SHAPE.AREA'and str(field.name)!='OVERRIDE' and str(field.name)!='RULEID'and str(field.name)!='SHAPE.LEN' :
         Campos.append(str(field.name))
         if field.type=="String":
             arcpy.AddField_management(Tabla,field.name,"TEXT","","",field.length)
