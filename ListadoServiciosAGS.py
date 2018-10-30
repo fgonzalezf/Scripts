@@ -1,34 +1,74 @@
 #!/usr/bin/python
 #-*- coding: utf-8 -*-
-import restapi
-import dominate
-from dominate.tags import *
+#import restapi
 from restapi import admin
-import arcpy
+import json
+import arcpy, os, sys
+from openpyxl import Workbook
+from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl import load_workbook
+wb = Workbook()
+dest_filename = r'C:\temp\Libro1.xlsx'
+wb.save(filename = dest_filename)
 
-services_directory = 'http://ergit.presidencia.gov.co/arcgis/rest/services/'
-ags = restapi.ArcServer(services_directory)
-#tabla= r"E:\Users\fgonzalezf\Documents\Listado_Servicios\Listado.mdb\Listado"
-#rows = arcpy.SearchCursor(tabla)
+wb = load_workbook(dest_filename)
+ws = wb.create_sheet(title="Servicios")
+ListFields=["ServiceName","Folder","RecycleInterval","RecycleStartTime","Type","Status","Min Instances","Max Instances"]
+
+url = 'srvags.sgc.gov.co/arcgis/rest/services' #server url
+usr = r'ingeominas\fgonzalezf'
+pw = 'Maidenfgf33'
+
 # connect to ArcGIS Server instance
-print restapi.getHelp()
-X=0
-doc = dominate.document(title='Listado servicios')
-with doc:
-    X=X+1
-    print X
-    with div():
-        attr(cls='body')
-        for row in ags.services:
-                br()
-                b(row.getValue("Nombre"))
-                br()
-                with p(row.getValue("Url")):
-                    attr(style = "font-size:13px")
+arcserver = admin.ArcServerAdmin(url, usr, pw)
+row=1
+
+def exportXLSX(ListFields,wb, row):
+    for service in arcserver.iter_services():
+        print service
+        #data = json.load(service)
+        for col in range(1, len(ListFields)+1):
+            if row==1:
+                if ListFields[col-1]=="ServiceName":
+                    ws.cell(column=col, row=row, value="{0}".format("ServiceName"))
+                elif ListFields[col-1]=="Folder":
+                    ws.cell(column=col, row=row, value="{0}".format("Folder"))
+                elif ListFields[col - 1] == "RecycleInterval":
+                    ws.cell(column=col, row=row, value="{0}".format("RecycleInterval"))
+                elif ListFields[col-1]=="RecycleStartTime":
+                    ws.cell(column=col, row=row, value="{0}".format("RecycleStartTime"))
+                elif ListFields[col-1] == "Type":
+                    ws.cell(column=col, row=row, value="{0}".format("Type"))
+                elif ListFields[col-1] == "Status":
+                    ws.cell(column=col, row=row, value="{0}".format("Status"))
+                elif ListFields[col-1] == "Min Instances":
+                    ws.cell(column=col, row=row, value="{0}".format("Min Instances"))
+                elif ListFields[col-1] == "Max Instances":
+                    ws.cell(column=col, row=row, value="{0}".format("Max Instances"))
+            else:
+                if ListFields[col-1]=="ServiceName":
+                    ws.cell(column=col, row=row, value="{0}".format(service["serviceName"].encode('utf-8')))
+                elif ListFields[col - 1] == "Folder":
+                    try:
+                        ws.cell(column=col, row=row, value="{0}".format(service["properties"]["filePath"].replace("E:\\arcgisserver\\directories\\arcgissystem\\arcgisinput\\","").split("\\")[0]))
+                    except Exception as e:
+                        print e.message
+                elif ListFields[col-1]=="RecycleInterval":
+                    ws.cell(column=col, row=row, value="{0}".format(service["recycleInterval"]))
+                elif ListFields[col-1]=="RecycleStartTime":
+                    ws.cell(column=col, row=row, value="{0}".format(service["recycleStartTime"]))
+                elif ListFields[col-1] == "Type":
+                    ws.cell(column=col, row=row, value="{0}".format(service["type"].encode('utf-8')))
+                elif ListFields[col-1] == "Status":
+                    ws.cell(column=col, row=row, value="{0}".format(service["configuredState"].encode('utf-8')))
+                elif ListFields[col-1] == "Min Instances":
+                    ws.cell(column=col, row=row, value="{0}".format(service["minInstancesPerNode"]))
+                elif ListFields[col-1] == "Max Instances":
+                    ws.cell(column=col, row=row, value="{0}".format(service["maxInstancesPerNode"]))
+        row = row + 1
+    wb.save(filename = dest_filename)
+
+exportXLSX(ListFields,wb, row)
 
 
-
-
-with open(r'E:\Users\fgonzalezf\Documents\Listado_Servicios\Listado2.html', 'w') as f:
-    f.write(doc.render().encode('latin-1'))
 

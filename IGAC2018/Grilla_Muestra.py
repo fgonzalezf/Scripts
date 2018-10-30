@@ -1,15 +1,28 @@
-import arcpy, os,sys
+import arcpy, os,sys,random
 
-CarpetaSalida=r""
+CarpetaSalida=r"C:\temp"
 Escala=10000
-NumeroMuestra=20
+NumeroMuestra=10
 Filas=5
 Columnas=5
 
-Planchas=r"C:\Users\APN\Documents\IGAC\Planchas_10K_Planas\Central.shp"
+Planchas=r"C:\Users\Desarrollo\Downloads\MagnaPro4\data\shp\Bogota\central_bogota.shp"
 plancha="8IIIB1"
-salida=r"C:\Users\APN\Documents\IGAC\Prueba.shp"
+salida=r"C:\temp"
 arcpy.env.overwriteOutput=True
+
+def CrearSalida(ruta,nombre):
+    sptref=arcpy.Describe(Planchas)
+    stref=sptref.spatialreference
+    return arcpy.CreateFeatureclass_management(ruta,nombre,"POLYGON","","","",stref)
+
+def FindIdentificador(Feat):
+    Identificador=""
+    ListaInit= arcpy.ListFields(Feat)
+    for field in ListaInit:
+        if field.type=="OID":
+            Identificador=field.name
+    return Identificador
 def QueryPlancha (Feat, plancha):
     fields=['SHAPE@WKT',"PLANCHA","SHAPE@"]
     with arcpy.da.SearchCursor(Feat, fields, """PLANCHA="""+"'"+plancha+"'") as cursor:
@@ -42,6 +55,22 @@ def CreateFishnet(coordenadas, featOut, filas, columnas):
                                             arcpy.Point(XminFish,YmaxFish)])))
     arcpy.CopyFeatures_management(features, featOut)
 
+def SeleccionMuestra (capa,numeroMuestra):
+    identificador= FindIdentificador(capa)
+    fields=[identificador]
+    Lista=[]
+    with arcpy.da.SearchCursor(capa, fields) as cursor:
+        for row in cursor:
+            Lista.append(row[0])
+    random.shuffle(Lista)
+    ListaAleatoria=Lista[:numeroMuestra]
+    #crear Query
+    campo=arcpy.AddFieldDelimiters(salida,identificador)
+    QueryAleatorio= campo+"in "+str(tuple(ListaAleatoria))
+    arcpy.Select_analysis(capa,CarpetaSalida+os.sep+"Grilla_aleatoria2",QueryAleatorio)
 
+Grilla=CrearSalida(CarpetaSalida,"Grilla2.shp")
 coord=QueryPlancha(Planchas,plancha)
-CreateFishnet(coord,salida,Filas,Columnas)
+CreateFishnet(coord,Grilla,Filas,Columnas)
+
+SeleccionMuestra(Grilla,NumeroMuestra)
