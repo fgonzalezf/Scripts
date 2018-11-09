@@ -2,11 +2,11 @@ import arcpy, os,sys,random
 
 CarpetaSalida=r"C:\temp"
 Escala=10000
-NumeroMuestra=10
-Filas=5
-Columnas=5
+NumeroMuestra=20
+Filas=10
+Columnas=15
 
-Planchas=r"C:\Users\Desarrollo\Downloads\MagnaPro4\data\shp\Bogota\central_bogota.shp"
+Planchas=r"C:\Users\APN\Documents\IGAC\Planchas_10K_Planas\central.shp"
 plancha="8IIIB1"
 salida=r"C:\temp"
 arcpy.env.overwriteOutput=True
@@ -68,6 +68,7 @@ def SeleccionMuestra (capa,numeroMuestra):
     campo=arcpy.AddFieldDelimiters(salida,identificador)
     QueryAleatorio= campo+"in "+str(tuple(ListaAleatoria))
     arcpy.Select_analysis(capa,CarpetaSalida+os.sep+"Grilla_aleatoria2",QueryAleatorio)
+    
 
 Grilla=CrearSalida(CarpetaSalida,"Grilla2.shp")
 coord=QueryPlancha(Planchas,plancha)
