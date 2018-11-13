@@ -3,8 +3,8 @@ import sys
 import os
 import glob
 import datetime
-
 import arcpy
+
 FeatureClass=r"E:\Scripts\Visor_BIP\EPIS_ODA_PROD.sde\EPIS.EPIS\EPIS.SISMICA2D_EPIS_SGC"
 CarpetaZip=r"E:\Archivos_Geoportal\EPIS"
 NombreZip="SISMICA2D_EPIS_SGC"
@@ -16,7 +16,6 @@ Nombre=str(today).replace("-","_")
 
 wellsShapeFile=CarpetaZip+ os.sep+ NombreZip+"_"+Nombre+".shp"
 arcpy.FeatureClassToFeatureClass_conversion(FeatureClass,CarpetaZip, NombreZip+"_"+Nombre+".shp")
-
 wellsZipFile = CarpetaZip+os.sep+NombreZip+".zip"
 
 def zipShapefile(inShapefile, newZipFN):

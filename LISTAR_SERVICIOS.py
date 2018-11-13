@@ -11,12 +11,12 @@ import getpass
 def main(argv=None):
 
     # Ask for admin/publisher user name and password
-    username = r"ingeominas\fgonzalezf"
-    password = "Maidenfgf33"
+    username = r"SitioSGC"
+    password = "sgc2015."
 
     # Ask for server name & port
-    serverName = "srvags.sgc.gov.co"
-    serverPort = 80
+    serverName = "172.25.2.142"
+    serverPort = 6443
 
     # Get the location and the name of the file to be created
     resultFile = r"C:\temp\SERVICIOS.csv"

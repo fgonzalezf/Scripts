@@ -17,7 +17,8 @@ for dataset in datasets:
     listfc = arcpy.ListFeatureClasses()
     for fc in listfc:
         arcpy.AddMessage(fc)
-        Fileprj.write(fc.encode("utf-8") + " , " + "FeatureClass" + "\n")
+        desc=arcpy.Describe(fc)
+        Fileprj.write(fc.encode("utf-8") + " , " + "FeatureClass" + ","+ desc.aliasName + "\n")
         try:
             listfields = arcpy.ListFields(fc)
             for field in listfields:
@@ -29,7 +30,8 @@ arcpy.env.workspace= geodatabase
 listFeatures = arcpy.ListFeatureClasses()
 for fc in listFeatures:
     arcpy.AddMessage(fc)
-    Fileprj.write(fc.encode("utf-8") + " , " + "FeatureClass" + "\n")
+    desc = arcpy.Describe(fc)
+    Fileprj.write(fc.encode("utf-8") + " , " + "FeatureClass" + ","+ desc.aliasName + "\n")
     try:
         listfields = arcpy.ListFields(fc)
         for field in listfields:
@@ -41,7 +43,8 @@ arcpy.env.workspace= geodatabase
 listtablas = arcpy.ListTables()
 for tab in listtablas:
     arcpy.AddMessage(tab)
-    Fileprj.write(tab.encode("utf-8") + " , " + "table" + "\n")
+    desc = arcpy.Describe(tab)
+    Fileprj.write(tab.encode("utf-8") + " , " + "table" + "," + desc.aliasName + "\n")
     try:
         listfields = arcpy.ListFields(tab)
         for field in listfields:
@@ -52,13 +55,13 @@ for tab in listtablas:
 arcpy.env.workspace= geodatabase
 listrasters = arcpy.ListRasters()
 for ras in listrasters:
+    desc = arcpy.Describe(ras)
     arcpy.AddMessage(ras)
-    Fileprj.write(ras.encode("utf-8") + " , " + "table" + "\n")
+    Fileprj.write(ras.encode("utf-8") + " , " + "table" + ","+ desc.aliasName + "\n")
     try:
         listfields = arcpy.ListFields(ras)
         for field in listfields:
             Fileprj.write(field.name.encode("utf-8") + " , " + field.type.encode("utf-8") + "\n")
     except Exception as e:
         arcpy.AddMessage( "Error..." + e.message)
-
 Fileprj.close()
