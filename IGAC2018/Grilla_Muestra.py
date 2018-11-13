@@ -11,6 +11,7 @@ campo=sys.argv[2]
 plancha=sys.argv[3]
 CarpetaSalida=sys.argv[4]
 Escala=int(sys.argv[5])
+Estratos=sys.argv[6]
 
 
 
@@ -83,10 +84,47 @@ def SeleccionMuestra (capa,numeroMuestra):
     campo=arcpy.AddFieldDelimiters(capa,identificador)
     QueryAleatorio= campo+"in "+str(tuple(ListaAleatoria))
     arcpy.Select_analysis(capa,outfc,QueryAleatorio)
-    
 
-Grilla=CrearSalida(CarpetaSalida,"Grilla2.shp")
+def EstratosMuestra (capaEstratos, capa):
+    listaareas=[]
+    fields = ["SHAPE@"]
+    areaTotal = 0
+    with arcpy.da.SearchCursor(capaEstratos, fields) as cursor:
+        for row in cursor:
+            listaareas.append(row[0].area)
+            areaTotal=areaTotal+row[0].area
+    #porcentaje redondeado a 5% 1 cuadro de grilla minimo
+    listPorcentaje=[]
+    for area in listaareas:
+        listPorcentaje.append(int(round((area/areaTotal)*NumeroMuestra)))
+    listIndx=0
+    with arcpy.da.SearchCursor(capaEstratos, fields) as cursor:
+        for row in cursor:
+            outfc =CarpetaSalida +os.sep+ "Grilla_aleatoria"+"_"+str(listIndx)+".shp"
+            salidainter = arcpy.MakeFeatureLayer_management(capa, "salida")
+            salida = arcpy.SelectLayerByLocation_management(salidainter, "WITHIN_CLEMENTINI", row)
+            identificador = FindIdentificador(salida)
+            fields = [identificador]
+            Lista = []
+            with arcpy.da.SearchCursor(salida, fields) as cursor:
+                for row in cursor:
+                    Lista.append(row[0])
+            random.shuffle(Lista)
+            ListaAleatoria = Lista[:listPorcentaje[listIndx]]
+
+            campo = arcpy.AddFieldDelimiters(salida, identificador)
+            QueryAleatorio = campo + "in " + str(tuple(ListaAleatoria))
+            arcpy.Select_analysis(salida, outfc, QueryAleatorio)
+            listIndx=listIndx+1
+
+
+
+
+
+Grilla=CrearSalida(CarpetaSalida,"Grilla_Completa.shp")
 coord=QueryPlancha(Planchas,plancha, campo)
 CreateFishnet(coord,Grilla,Filas,Columnas)
-
-SeleccionMuestra(Grilla,NumeroMuestra)
+if Estratos == "":
+    SeleccionMuestra(Grilla,NumeroMuestra)
+else:
+    EstratosMuestra(Estratos,Grilla)
