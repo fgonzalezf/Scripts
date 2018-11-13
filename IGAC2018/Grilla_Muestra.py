@@ -77,6 +77,7 @@ def SeleccionMuestra (capa,numeroMuestra):
         for row in cursor:
             Lista.append(row[0])
     random.shuffle(Lista)
+
     ListaAleatoria=Lista[:numeroMuestra]
     #crear Query
     campo=arcpy.AddFieldDelimiters(capa,identificador)

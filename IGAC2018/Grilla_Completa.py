@@ -13,6 +13,7 @@ def FindIdentificador(Feat):
             Identificador=field.name
     return Identificador
 
+
 def SeleccionMuestra (capa,numeroMuestra, limiteProyecto):
 
     #crear Query
