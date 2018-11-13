@@ -1,7 +1,7 @@
 import arcpy,os,sys
 
 Actualizar=True
-Borrar=True
+Borrar=False
 
 
 
@@ -109,8 +109,8 @@ def actualizarValores(Featin, FeatOut, fields,indx):
         del valoresEntrada
         del valoresSalida
 
-IMSMAGDB=r"C:\Users\maicolvelasquez\Documents\Zonas_Sectores_07_2018.gdb\Zonas"
-GeodatabaseSalida=r"E:\Scripts\EFESIOS.sde"
+IMSMAGDB=r"C:\Users\maicolvelasquez\Documents\Zonas\actualizacion_9_17_2018.gdb"
+GeodatabaseSalida=r"E:\Scripts\SDE.sde"
 
 print "Reparando Geometria"
 arcpy.env.workspace=IMSMAGDB
