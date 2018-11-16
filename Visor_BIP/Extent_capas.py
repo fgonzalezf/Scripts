@@ -1,12 +1,12 @@
 import arcpy, os, sys
 
-Geodatabase = sys.argv[1]
+Geodatabase = r"C:\Users\Desarrollo\Downloads\Nevado huila.mdb"
+carpetasalida=r"C:\Users\Desarrollo\Downloads"
 
 Tablas =[]
 
-Tablas.append(Geodatabase+os.sep+"EPIS.EPIS"+os.sep+"EPIS.POLIPROGRAMAS_2D")
-Tablas.append(Geodatabase+os.sep+"EPIS.EPIS"+os.sep+"EPIS.SISMICA2D_EPIS_SGC")
-Tablas.append(Geodatabase+os.sep+"EPIS.EPIS"+os.sep+"EPIS.SISMICA3D_EPIS_SGC")
+Tablas.append(Geodatabase+os.sep+"ucg_p_polygon_Magna")
+
 
 for tabla in Tablas:
     try:
@@ -15,7 +15,7 @@ for tabla in Tablas:
         arcpy.AddField_management(tabla, "Ymin", "DOUBLE", "", "", "", "Ymin Latitud Minima")
         arcpy.AddField_management(tabla, "Ymax", "DOUBLE", "", "", "", "Ymax LatitudMaxima")
     except Exception as e:
-        print ( "campos Ya creados..." + e.message())
+        print  "campos Ya creados..." + e.message
 
     edit = arcpy.da.Editor(Geodatabase)
     edit.startEditing()
@@ -35,4 +35,5 @@ for tabla in Tablas:
             cursor.updateRow(row)
     edit.stopOperation()
     edit.stopEditing("True")
+    arcpy.TableToExcel_conversion(tabla,carpetasalida+os.sep+tabla)
 

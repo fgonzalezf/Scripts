@@ -11,7 +11,8 @@ campo=sys.argv[2]
 plancha=sys.argv[3]
 CarpetaSalida=sys.argv[4]
 Escala=int(sys.argv[5])
-Estratos=sys.argv[6]
+boolestrato=sys.argv[6]
+Estratos=sys.argv[7]
 
 
 
@@ -20,9 +21,9 @@ Filas=10
 Columnas=15
 arcpy.env.overwriteOutput=True
 
+
 def CrearSalida(ruta,nombre):
-    sptref=arcpy.Describe(Planchas)
-    stref=sptref.spatialreference
+
     return arcpy.CreateFeatureclass_management(ruta,nombre,"POLYGON","","","",stref)
 
 def FindIdentificador(Feat):
@@ -45,8 +46,12 @@ def QueryPlancha (Feat, plancha, campo):
             return ([int(round(row[2].extent.XMin)),int(round(row[2].extent.YMin)),int(round(row[2].extent.XMax)),int(round(row[2].extent.YMax))])
 
 def CreateFishnet(coordenadas, featOut, filas, columnas):
+    arcpy.env.workspace = Planchas
+    sptref = arcpy.Describe(Planchas)
+    stref = sptref.spatialreference
     Largo = (coordenadas[2] - coordenadas[0])
     Alto = (coordenadas[3] - coordenadas[1])
+    arcpy.env.outputCoordinateSystem = stref
     LargoFish = (coordenadas[2]-coordenadas[0])/columnas
     AltoFish =(coordenadas[3]-coordenadas[1])/filas
     features = []
@@ -121,10 +126,10 @@ def EstratosMuestra (capaEstratos, capa):
 
 
 
-Grilla=CrearSalida(CarpetaSalida,"Grilla_Completa.shp")
+Grilla=CarpetaSalida+ os.sep+"Grilla_Completa.shp"
 coord=QueryPlancha(Planchas,plancha, campo)
 CreateFishnet(coord,Grilla,Filas,Columnas)
-if Estratos == "":
+if boolestrato == "false":
     SeleccionMuestra(Grilla,NumeroMuestra)
 else:
     EstratosMuestra(Estratos,Grilla)
