@@ -4,6 +4,7 @@ Grilla=r"C:\Users\Fernando\Downloads\INFORMACION PARA FERNANDO\INFORMACION PARA 
 Muetra=20
 CarpetaSalida=r"C:\temp"
 LimiteProyecto=r"C:\Users\Fernando\Downloads\INFORMACION PARA FERNANDO\INFORMACION PARA FERNANDO\GRILLAS\temp\Lim.shp"
+ExportarDGN="false"
 
 def FindIdentificador(Feat):
     Identificador=""
@@ -44,7 +45,7 @@ def SeleccionMuestra (capa,numeroMuestra, limiteProyecto):
     QueryAleatorio= campo+"in "+str(tuple(ListaAleatoria))
     arcpy.Select_analysis(salida,outfc ,QueryAleatorio)
 
-def exportarDGN(CapaEntrada,capasalida,Semilla):
+def exportarDGN(CapaEntrada,capasalida):
     pathArcgis = os.environ["AGSDESKTOPJAVA"]
     arcpy.ExportCAD_conversion(CapaEntrada,"DGN_V8",capasalida,"","",pathArcgis+os.sep+"ArcToolbox/Templates/template3d.dgn")
 
@@ -52,3 +53,5 @@ try:
     SeleccionMuestra(Grilla,Muetra,LimiteProyecto)
 except Exception as e:
     arcpy.AddError(e.message)
+try:
+    exportarDGN(Grilla, CarpetaSalida+os.sep+"Grilla_Aleatoria.dgn")
