@@ -44,6 +44,10 @@ def SeleccionMuestra (capa,numeroMuestra, limiteProyecto):
     QueryAleatorio= campo+"in "+str(tuple(ListaAleatoria))
     arcpy.Select_analysis(salida,outfc ,QueryAleatorio)
 
+def exportarDGN(CapaEntrada,capasalida,Semilla):
+    pathArcgis = os.environ["AGSDESKTOPJAVA"]
+    arcpy.ExportCAD_conversion(CapaEntrada,"DGN_V8",capasalida,"","",pathArcgis+os.sep+"ArcToolbox/Templates/template3d.dgn")
+
 try:
     SeleccionMuestra(Grilla,Muetra,LimiteProyecto)
 except Exception as e:
