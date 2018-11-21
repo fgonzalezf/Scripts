@@ -1,10 +1,18 @@
 import arcpy, os, sys, random
 
-Grilla=r"C:\Users\Fernando\Downloads\INFORMACION PARA FERNANDO\INFORMACION PARA FERNANDO\GRILLAS\2K\cuadr_bta.shp"
-Muetra=20
-CarpetaSalida=r"C:\temp"
-LimiteProyecto=r"C:\Users\Fernando\Downloads\INFORMACION PARA FERNANDO\INFORMACION PARA FERNANDO\GRILLAS\temp\Lim.shp"
-ExportarDGN="false"
+#Grilla=r"C:\Users\Fernando\Downloads\INFORMACION PARA FERNANDO\INFORMACION PARA FERNANDO\GRILLAS\2K\cuadr_bta.shp"
+#Muetra=20
+#CarpetaSalida=r"C:\temp"
+#LimiteProyecto=r"C:\Users\Fernando\Downloads\INFORMACION PARA FERNANDO\INFORMACION PARA FERNANDO\GRILLAS\temp\Lim.shp"
+#ExportarDGN="false"
+
+Grilla=sys.argv[1]
+Muetra=int(sys.argv[2])
+CarpetaSalida=sys.argv[3]
+LimiteProyecto=sys.argv[4]
+boolExportarDGN=sys.argv[5]
+
+arcpy.env.overwriteOutput=True
 
 def FindIdentificador(Feat):
     Identificador=""
@@ -16,14 +24,17 @@ def FindIdentificador(Feat):
 
 
 def SeleccionMuestra (capa,numeroMuestra, limiteProyecto):
-
+    arcpy.env.workspace = Grilla
+    sptref = arcpy.Describe(Grilla)
+    stref = sptref.spatialreference
+    arcpy.env.outputCoordinateSystem = stref
     #crear Query
     salida=None
     arcpy.env.workspace=CarpetaSalida
     if CarpetaSalida in (".mdb") or CarpetaSalida in (".gdb"):
-        outfc = arcpy.ValidateTableName("Grilla_aleatoria")
+        outfc = "Grilla_aleatoria"
     else:
-        outfc = arcpy.ValidateTableName("Grilla_aleatoria.shp")
+        outfc = "Grilla_aleatoria.shp"
 
 
     if limiteProyecto!="":
@@ -41,9 +52,12 @@ def SeleccionMuestra (capa,numeroMuestra, limiteProyecto):
     random.shuffle(Lista)
     ListaAleatoria = Lista[:numeroMuestra]
 
-    campo=arcpy.AddFieldDelimiters(salida,identificador)
+    campo=arcpy.AddFieldDelimiters(capa,identificador)
     QueryAleatorio= campo+"in "+str(tuple(ListaAleatoria))
     arcpy.Select_analysis(salida,outfc ,QueryAleatorio)
+    if boolExportarDGN == "true":
+        CapaAleatoria = CarpetaSalida + os.sep +  "Grilla_aleatoria.dgn"
+        exportarDGN(outfc, CapaAleatoria)
 
 def exportarDGN(CapaEntrada,capasalida):
     pathArcgis = os.environ["AGSDESKTOPJAVA"]
@@ -53,5 +67,3 @@ try:
     SeleccionMuestra(Grilla,Muetra,LimiteProyecto)
 except Exception as e:
     arcpy.AddError(e.message)
-try:
-    exportarDGN(Grilla, CarpetaSalida+os.sep+"Grilla_Aleatoria.dgn")

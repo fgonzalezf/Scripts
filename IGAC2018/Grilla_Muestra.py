@@ -10,9 +10,12 @@ Planchas=sys.argv[1]
 campo=sys.argv[2]
 plancha=sys.argv[3]
 CarpetaSalida=sys.argv[4]
-Escala=int(sys.argv[5])
-boolestrato=sys.argv[6]
-Estratos=sys.argv[7]
+
+boolestrato=sys.argv[5]
+Estratos=sys.argv[6]
+boolLimite=sys.argv[7]
+Limite=sys.argv[8]
+boolExportarDGN=sys.argv[9]
 
 
 
@@ -89,6 +92,10 @@ def SeleccionMuestra (capa,numeroMuestra):
     campo=arcpy.AddFieldDelimiters(capa,identificador)
     QueryAleatorio= campo+"in "+str(tuple(ListaAleatoria))
     arcpy.Select_analysis(capa,outfc,QueryAleatorio)
+    if boolExportarDGN == "true":
+        CapaAleatoria = CarpetaSalida + os.aep + "Grilla_Aleatoria.dgn"
+        exportarDGN(outfc, CapaAleatoria)
+
 
 def EstratosMuestra (capaEstratos, capa):
     listaareas=[]
@@ -116,20 +123,44 @@ def EstratosMuestra (capaEstratos, capa):
                     Lista.append(row[0])
             random.shuffle(Lista)
             ListaAleatoria = Lista[:listPorcentaje[listIndx]]
+            longitud=len(ListaAleatoria)
 
             campo = arcpy.AddFieldDelimiters(salida, identificador)
-            QueryAleatorio = campo + "in " + str(tuple(ListaAleatoria))
+            QueryAleatorio=""
+            if longitud == 1:
+                QueryAleatorio = campo + "=" + str(ListaAleatoria[0])
+            else:
+                QueryAleatorio = campo + "in " + str(tuple(ListaAleatoria))
+
             arcpy.Select_analysis(salida, outfc, QueryAleatorio)
+
+            if boolExportarDGN == "true":
+                CapaAleatoria = CarpetaSalida + os.sep +"_"+str(listIndx)+".dgn"
+                exportarDGN(outfc, CapaAleatoria)
             listIndx=listIndx+1
 
-
-
+def exportarDGN(CapaEntrada,capasalida):
+    pathArcgis = os.environ["AGSDESKTOPJAVA"]
+    arcpy.ExportCAD_conversion(CapaEntrada,"DGN_V8",capasalida,"","",pathArcgis+os.sep+"ArcToolbox/Templates/template3d.dgn")
 
 
 Grilla=CarpetaSalida+ os.sep+"Grilla_Completa.shp"
 coord=QueryPlancha(Planchas,plancha, campo)
 CreateFishnet(coord,Grilla,Filas,Columnas)
 if boolestrato == "false":
-    SeleccionMuestra(Grilla,NumeroMuestra)
+    if boolLimite == "true":
+        salidainter = arcpy.MakeFeatureLayer_management(Grilla, "salida")
+        salida = arcpy.SelectLayerByLocation_management(salidainter, "WITHIN_CLEMENTINI", Limite)
+    else:
+        salida = Grilla
+    SeleccionMuestra(salida,NumeroMuestra)
 else:
-    EstratosMuestra(Estratos,Grilla)
+    if boolLimite == "true":
+        salidainter = arcpy.MakeFeatureLayer_management(Grilla, "salida")
+        salida = arcpy.SelectLayerByLocation_management(salidainter, "WITHIN_CLEMENTINI", Limite)
+    else:
+        salida = Grilla
+    EstratosMuestra(Estratos,salida)
+
+
+
