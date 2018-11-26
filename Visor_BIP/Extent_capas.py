@@ -1,11 +1,13 @@
 import arcpy, os, sys
 
-Geodatabase = r"C:\Users\Desarrollo\Downloads\Nevado huila.mdb"
-carpetasalida=r"C:\Users\Desarrollo\Downloads"
+Geodatabase = r"C:\Users\APN\Downloads\Extent\Nuevo.mdb"
+carpetasalida=r"C:\Users\APN\Downloads\Extent"
 
 Tablas =[]
 
-Tablas.append(Geodatabase+os.sep+"ucg_p_polygon_Magna")
+Tablas.append(Geodatabase+os.sep+"Geologia")
+Tablas.append(Geodatabase+os.sep+"Ucg_p")
+Tablas.append(Geodatabase+os.sep+"UCG_P_polygon")
 
 
 for tabla in Tablas:
@@ -35,5 +37,5 @@ for tabla in Tablas:
             cursor.updateRow(row)
     edit.stopOperation()
     edit.stopEditing("True")
-    arcpy.TableToExcel_conversion(tabla,carpetasalida+os.sep+tabla)
+    arcpy.TableToExcel_conversion(tabla,carpetasalida+os.sep+os.path.basename(tabla)+".xls")
 
