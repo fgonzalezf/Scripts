@@ -39,7 +39,7 @@ def SeleccionMuestra (capa,numeroMuestra, limiteProyecto):
 
     if limiteProyecto!="":
         salidainter=arcpy.MakeFeatureLayer_management(capa,"salida")
-        salida = arcpy.SelectLayerByLocation_management(salidainter,"INTERSECT",limiteProyecto,"-10 METERS")
+        salida = arcpy.SelectLayerByLocation_management(salidainter,"WITHIN_CLEMENTINI",limiteProyecto)
     else:
         salida=capa
 

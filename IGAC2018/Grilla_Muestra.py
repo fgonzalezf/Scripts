@@ -17,9 +17,7 @@ boolLimite=sys.argv[7]
 Limite=sys.argv[8]
 boolExportarDGN=sys.argv[9]
 
-
-
-NumeroMuestra=20
+NumeroMuestra=int(sys.argv[9])
 Filas=10
 Columnas=15
 arcpy.env.overwriteOutput=True
