@@ -17,15 +17,13 @@ boolLimite=sys.argv[7]
 Limite=sys.argv[8]
 boolExportarDGN=sys.argv[9]
 
-NumeroMuestra=int(sys.argv[9])
+NumeroMuestra=int(sys.argv[10])
 Filas=10
 Columnas=15
 arcpy.env.overwriteOutput=True
 
 
-def CrearSalida(ruta,nombre):
 
-    return arcpy.CreateFeatureclass_management(ruta,nombre,"POLYGON","","","",stref)
 
 def FindIdentificador(Feat):
     Identificador=""
@@ -77,9 +75,9 @@ def SeleccionMuestra (capa,numeroMuestra):
     outfc=None
     arcpy.env.workspace = CarpetaSalida
     if CarpetaSalida in (".mdb") or CarpetaSalida in (".gdb"):
-        outfc = arcpy.ValidateTableName("Grilla_aleatoria")
+        outfc = "Grilla_aleatoria"
     else:
-        outfc = arcpy.ValidateTableName("Grilla_aleatoria.shp")
+        outfc = "Grilla_aleatoria.shp"
     with arcpy.da.SearchCursor(capa, fields) as cursor:
         for row in cursor:
             Lista.append(row[0])
@@ -91,7 +89,7 @@ def SeleccionMuestra (capa,numeroMuestra):
     QueryAleatorio= campo+"in "+str(tuple(ListaAleatoria))
     arcpy.Select_analysis(capa,outfc,QueryAleatorio)
     if boolExportarDGN == "true":
-        CapaAleatoria = CarpetaSalida + os.aep + "Grilla_Aleatoria.dgn"
+        CapaAleatoria = CarpetaSalida + os.sep + "Grilla_Aleatoria.dgn"
         exportarDGN(outfc, CapaAleatoria)
 
 
