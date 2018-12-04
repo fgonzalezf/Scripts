@@ -9,6 +9,10 @@ import time
 
 
 
+import os
+
+import win32serviceutil
+
 print "Escaner de puertos by braulio23\n"
 host = "localhost"
 puerto = 6080

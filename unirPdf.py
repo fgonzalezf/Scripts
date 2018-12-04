@@ -11,13 +11,11 @@ def append_pdf(input,output):
 output = PdfFileWriter()
 
 # AÃ±adimos los reportes, estos podemos cargarlos desde archivos temporales
-append_pdf(PdfFileReader(file(r"C:\Users\APN\Documents\SGC\Total\Ag\Ag Estadistica.pdf","rb")),output)
-append_pdf(PdfFileReader(file(r"C:\Users\APN\Documents\SGC\Total\Ag\Atlas_2016_Geoquimica Ag.pdf","rb")),output)
-append_pdf(PdfFileReader(file(r"C:\Users\APN\Documents\SGC\Total\Ag\Atlas_2016_Geoquimica_Ataque Ag.pdf","rb")),output)
-append_pdf(PdfFileReader(file(r"C:\Users\APN\Documents\SGC\Total\Ag\Atlas_2016_Geoquimica_Tecnicas Ag.pdf","rb")),output)
-append_pdf(PdfFileReader(file(r"C:\Users\APN\Documents\SGC\Total\Ag\Atlas_2016_Geoquimica_Distribucion_Muestras Ag.pdf","rb")),output)
+append_pdf(PdfFileReader(file(r"C:\Users\fgonzalezf\Documents\Hoja de Vida SGC\2017\2018\2.2Soportes_Laborales.pdf","rb")),output)
+append_pdf(PdfFileReader(file(r"C:\Users\fgonzalezf\Documents\Hoja de Vida SGC\2017\2018\contrato-2017_2018_SGC.pdf","rb")),output)
+
 
 # Escribimos la Salida Final del Reporte
-output.write(file(r"C:\Users\APN\Documents\SGC\Total\Ag\Ag.pdf","wb"))
+output.write(file(r"C:\Users\fgonzalezf\Documents\Hoja de Vida SGC\2017\2018\2.2Soportes_Laborales_actualizados.pdf","wb"))
 
 
