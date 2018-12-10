@@ -9,7 +9,9 @@ PoligonoProyecto=sys.argv[1]
 Escala=sys.argv[2]
 Muestra=int(sys.argv[3])
 CarpetaSalida=sys.argv[4]
-ExportarDGN=sys.argv[5]
+boolestrato=sys.argv[5]
+Estratos=sys.argv[6]
+ExportarDGN=sys.argv[7]
 
 arcpy.env.overwriteOutput=True
 
@@ -88,7 +90,47 @@ def SeleccionMuestra (capa,numeroMuestra, limiteProyecto):
     if ExportarDGN == "true":
         CapaAleatoria = CarpetaSalida + os.sep + "Grilla_aleatoria.dgn"
         exportarDGN(outfc, CapaAleatoria)
+def EstratosMuestra (capaEstratos, capa):
+    listaareas=[]
+    fields = ["SHAPE@"]
+    areaTotal = 0
+    with arcpy.da.SearchCursor(capaEstratos, fields) as cursor:
+        for row in cursor:
+            listaareas.append(row[0].area)
+            areaTotal=areaTotal+row[0].area
+    #porcentaje redondeado a 5% 1 cuadro de grilla minimo
+    listPorcentaje=[]
+    for area in listaareas:
+        listPorcentaje.append(int(round((area/areaTotal)*Muestra)))
+    listIndx=0
+    with arcpy.da.SearchCursor(capaEstratos, fields) as cursor:
+        for row in cursor:
+            outfc =CarpetaSalida +os.sep+ "Grilla_aleatoria"+"_"+str(listIndx)+".shp"
+            salidainter = arcpy.MakeFeatureLayer_management(capa, "salida")
+            salida = arcpy.SelectLayerByLocation_management(salidainter, "WITHIN_CLEMENTINI", row)
+            identificador = FindIdentificador(salida)
+            fields = [identificador]
+            Lista = []
+            with arcpy.da.SearchCursor(salida, fields) as cursor:
+                for row in cursor:
+                    Lista.append(row[0])
+            random.shuffle(Lista)
+            ListaAleatoria = Lista[:listPorcentaje[listIndx]]
+            longitud=len(ListaAleatoria)
 
+            campo = arcpy.AddFieldDelimiters(salida, identificador)
+            QueryAleatorio=""
+            if longitud == 1:
+                QueryAleatorio = campo + "=" + str(ListaAleatoria[0])
+            else:
+                QueryAleatorio = campo + "in " + str(tuple(ListaAleatoria))
+
+            arcpy.Select_analysis(salida, outfc, QueryAleatorio)
+
+            if ExportarDGN== "true":
+                CapaAleatoria = CarpetaSalida + os.sep +"_"+str(listIndx)+".dgn"
+                exportarDGN(outfc, CapaAleatoria)
+            listIndx=listIndx+1
 def exportarDGN(CapaEntrada,capasalida):
     pathArcgis = os.environ["AGSDESKTOPJAVA"]
     arcpy.ExportCAD_conversion(CapaEntrada,"DGN_V8",capasalida,"","",pathArcgis+os.sep+"ArcToolbox/Templates/template3d.dgn")
@@ -98,4 +140,9 @@ def exportarDGN(CapaEntrada,capasalida):
 Grilla=CarpetaSalida+os.sep+"Grilla_Completa.shp"
 coord=QueryPlancha(PoligonoProyecto)
 CreateFishnet(coord,Grilla,EscalaMetros[Escala])
-SeleccionMuestra(Grilla,Muestra,PoligonoProyecto)
+if boolestrato == "false":
+    SeleccionMuestra(Grilla,Muestra,PoligonoProyecto)
+else:
+    salidainter = arcpy.MakeFeatureLayer_management(Grilla, "salida")
+    salida = arcpy.SelectLayerByLocation_management(salidainter, "WITHIN_CLEMENTINI", PoligonoProyecto)
+    EstratosMuestra(Estratos,salida)

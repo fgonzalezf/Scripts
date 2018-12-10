@@ -169,7 +169,7 @@ try:
         Fileprj.write("Reporte de areas" + "\n")
         Fileprj.write("Area en Zona Plana: " + planoT+ " Ha" +"\n")
         Fileprj.write("Area en Zona Ondulada: " + onduladoT+ " Ha"+"\n")
-        Fileprj.write("Area en Zona Montañosa: " + montanosoT + " Ha"+"\n")
+        Fileprj.write("Area en Zona Monta?osa: " + montanosoT + " Ha"+"\n")
         Fileprj.close()
     except Exception as ex:
         arcpy.AddError( "Error en el proceso: "+ ex.message)
