@@ -38,6 +38,5 @@ for Dataset in ListaDatasets:
             if count > 0:
                 f.write("Feature Class Anotacion:  ....  " + fc+ "     "+ "Numero de Registros:  ... "+str(count) +"\n")
                 arcpy.AddMessage(fc)
-
 f.close()
 

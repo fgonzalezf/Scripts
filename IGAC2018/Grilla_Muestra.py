@@ -22,9 +22,6 @@ Filas=10
 Columnas=15
 arcpy.env.overwriteOutput=True
 
-
-
-
 def FindIdentificador(Feat):
     Identificador=""
     ListaInit= arcpy.ListFields(Feat)
