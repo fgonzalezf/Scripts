@@ -11,11 +11,11 @@ def append_pdf(input,output):
 output = PdfFileWriter()
 
 # AÃ±adimos los reportes, estos podemos cargarlos desde archivos temporales
-append_pdf(PdfFileReader(file(r"C:\Users\fgonzalezf\Documents\Hoja de Vida SGC\2017\2018\2.2Soportes_Laborales.pdf","rb")),output)
-append_pdf(PdfFileReader(file(r"C:\Users\fgonzalezf\Documents\Hoja de Vida SGC\2017\2018\contrato-2017_2018_SGC.pdf","rb")),output)
+append_pdf(PdfFileReader(file(r"C:\Users\fgonzalezf\Documents\Hoja de Vida SGC\2017\2018\1\2.1Soportes_Academicos.pdf","rb")),output)
+append_pdf(PdfFileReader(file(r"C:\Users\fgonzalezf\Documents\Hoja de Vida SGC\2017\2018\1\2.2Soportes_Laborales_actualizados.pdf","rb")),output)
 
 
 # Escribimos la Salida Final del Reporte
-output.write(file(r"C:\Users\fgonzalezf\Documents\Hoja de Vida SGC\2017\2018\2.2Soportes_Laborales_actualizados.pdf","wb"))
+output.write(file(r"C:\Users\fgonzalezf\Documents\Hoja de Vida SGC\2017\2018\1\Certificados_Laborales_Academicos.pdf","wb"))
 
 

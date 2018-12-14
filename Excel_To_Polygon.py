@@ -1,9 +1,12 @@
 import arcpy, os,sys
 
-ExcelEntrada= sys.argv[1]
-PesonalGeodatabase=sys.argv[2]
-NombreSalida=sys.argv[3]
-
+#ExcelEntrada= sys.argv[1]
+#PesonalGeodatabase=sys.argv[2]
+#NombreSalida=sys.argv[3]
+ExcelEntrada= r"C:\Users\fgonzalezf\Documents\APN\Poligonos\Poligono.xls"
+PesonalGeodatabase=r"C:\Users\fgonzalezf\Documents\APN\Poligonos\PoligonosSal.mdb"
+NombreSalida="prueba4"
+FeatSalida=r"C:\Users\fgonzalezf\Documents\APN\Poligonos\PoligonosSal.mdb\prueba3_1"
 arcpy.env.overwriteOutput=True
 
 #Valores unicos "Lista"
@@ -19,8 +22,25 @@ def ListFields (Tabla):
             ListaFinal.append(field.name)
     return ListaFinal
 
+def updateFeat(Entrada, Salida, uniqueField):
+    listaEntrada=unique_values(Entrada, uniqueField)
+    listaSalida=unique_values(Salida, uniqueField)
+    camposentradaConj = set(listaEntrada)
+    camposSalidaConj = set(listaSalida)
+    diferentes = camposentradaConj - camposSalidaConj
+    normalizado = list(diferentes)
+    if len(normalizado)>0:
+        campo = arcpy.AddFieldDelimiters(Entrada, uniqueField)
+        QueryCargar = campo + " in " + str(tuple(normalizado)).replace("u'","'")
+        arcpy.MakeFeatureLayer_management(Entrada,"Cargar",QueryCargar)
+        arcpy.Append_management("Cargar",Salida,"NO_TEST")
+
+
+
+
+
 Tabla=PesonalGeodatabase+os.sep+"TempTab"
-arcpy.ExcelToTable_conversion(ExcelEntrada,Tabla)
+arcpy.ExcelToTable_conversion(ExcelEntrada,Tabla,"Poligono")
 
 #Crear Feature poligono
 
@@ -78,4 +98,6 @@ if cur:
     del cur
 
 arcpy.Delete_management(Tabla)
+
+updateFeat(PesonalGeodatabase+os.sep+NombreSalida,FeatSalida,"ID_POLIGONO")
 
