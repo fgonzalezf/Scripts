@@ -1,4 +1,11 @@
 import arcpy, os,sys
+import arcpy, os, sys
+from openpyxl import Workbook
+from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl import load_workbook
+wb = Workbook()
+dest_filename = r'C:\Users\Desarrollo\Documents\Muestras\Libro1.xlsx'
+wb.save(filename = dest_filename)
 
 GeodatabaseTopo=r"C:\Users\APN\Documents\IGAC\INFORMACION PARA FERNANDO\10000\172IIIA1\172IIIA1_Depurada.gdb"
 GeodatabaseGeo=r"C:\Users\APN\Documents\IGAC\INFORMACION PARA FERNANDO\10000\172IIIA1_RS_2016_V1.mdb"
@@ -39,6 +46,51 @@ def recorreGeo (geodatabase):
                 if count > 0:
                     ListaCapasGeo.append(geodatabase+os.sep+dataset+os.sep+fc)
     return ListaCapasGeo
+def exportXLSX(Feat,ListFields):
+    wb = load_workbook(dest_filename)
+    ws = wb.create_sheet(title=os.path.basename(Feat))
+    print Feat
+    for col in range(0, len(ListFields)):
+            dv=None
+            if ListFields[col][1]=="String":
+                dv = DataValidation(type="textLength", operator="lessThanOrEqual", formula1=ListFields[col][2])
+                dv.error ='Valor Invalido'
+                dv.errorTitle = 'Error Texto'
+                dv.prompt = "Texto menor a "+ str(ListFields[col][2])
+                dv.promptTitle = ListFields[col][0]
+                #print "string"
+            elif ListFields[col][1]=="Double":
+                dv = DataValidation(type="decimal")
+                dv.error ='Valor Invalido'
+                dv.errorTitle = 'Error Valor Decimal'
+                dv.prompt = "Valor Decimal"
+                dv.promptTitle = ListFields[col][0]
+
+                #print "Double"
+            elif ListFields[col][1]=="SmallInteger" or ListFields[col][1]=="Integer":
+                dv = DataValidation(type="whole")
+                dv.error ='Valor Invalido'
+                dv.errorTitle = 'Error valor Entero'
+                dv.prompt = "Valor Entero"
+                dv.promptTitle = ListFields[col][0]
+
+                #print "Entero"
+            elif ListFields[col][1]=="Date":
+                dv = DataValidation(type="date")
+                dv.error ='Valor Invalido'
+                dv.errorTitle = 'Error valor Fecha'
+                dv.prompt = "Valor Fecha"
+                dv.promptTitle = ListFields[col][0]
+
+                #print "Date"
+            ws.cell(column=col, row=1, value="{0}".format(ListFields[col][0].encode('utf-8')))
+            #dv.ranges.append()
+            for row in range(2,3):
+                #ws.cell(column=col, row=row).number_format=""
+                print ws.cell(column=col, row=row).coordinate + ":" + ws.cell(column=col, row=row).coordinate[:-1] + "65600"
+                dv.ranges.append(ws.cell(column=col, row=row).coordinate+":"+ws.cell(column=col, row=row).coordinate[:-1]+"65600")
+            ws.add_data_validation(dv)
+    wb.save(filename = dest_filename)
 
 codigos= {("2306","2101"):"Area de desecho",
 ("2325","2102"):"Cementerio",
