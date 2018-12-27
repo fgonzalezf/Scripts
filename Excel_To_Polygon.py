@@ -3,8 +3,8 @@ import arcpy, os,sys
 #ExcelEntrada= sys.argv[1]
 #PesonalGeodatabase=sys.argv[2]
 #NombreSalida=sys.argv[3]
-ExcelEntrada= r"C:\Users\fgonzalezf\Documents\APN\Poligonos\Poligono.xls"
-PesonalGeodatabase=r"C:\Users\fgonzalezf\Documents\APN\Poligonos\PoligonosSal.mdb"
+ExcelEntrada= r"C:\Temp\Poligono.xls"
+PesonalGeodatabase=r"C:\Temp\Nueva.mdb"
 NombreSalida="prueba4"
 FeatSalida=r"C:\Users\fgonzalezf\Documents\APN\Poligonos\PoligonosSal.mdb\prueba3_1"
 arcpy.env.overwriteOutput=True
@@ -40,7 +40,7 @@ def updateFeat(Entrada, Salida, uniqueField):
 
 
 Tabla=PesonalGeodatabase+os.sep+"TempTab"
-arcpy.ExcelToTable_conversion(ExcelEntrada,Tabla,"Poligono")
+arcpy.ExcelToTable_conversion(ExcelEntrada,Tabla)
 
 #Crear Feature poligono
 
