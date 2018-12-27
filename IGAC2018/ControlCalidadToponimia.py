@@ -4,7 +4,7 @@ from openpyxl import Workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl import load_workbook
 wb = Workbook()
-dest_filename = r'C:\Users\Desarrollo\Documents\Muestras\Libro1.xlsx'
+dest_filename = r'C:\Temp\Libro1.xlsx'
 wb.save(filename = dest_filename)
 
 GeodatabaseTopo=r"C:\Users\APN\Documents\IGAC\INFORMACION PARA FERNANDO\10000\172IIIA1\172IIIA1_Depurada.gdb"
@@ -47,50 +47,26 @@ def recorreGeo (geodatabase):
                     ListaCapasGeo.append(geodatabase+os.sep+dataset+os.sep+fc)
     return ListaCapasGeo
 def exportXLSX(Feat,ListFields):
-    wb = load_workbook(dest_filename)
+    wb = Workbook()
     ws = wb.create_sheet(title=os.path.basename(Feat))
     print Feat
-    for col in range(0, len(ListFields)):
-            dv=None
-            if ListFields[col][1]=="String":
-                dv = DataValidation(type="textLength", operator="lessThanOrEqual", formula1=ListFields[col][2])
-                dv.error ='Valor Invalido'
-                dv.errorTitle = 'Error Texto'
-                dv.prompt = "Texto menor a "+ str(ListFields[col][2])
-                dv.promptTitle = ListFields[col][0]
-                #print "string"
-            elif ListFields[col][1]=="Double":
-                dv = DataValidation(type="decimal")
-                dv.error ='Valor Invalido'
-                dv.errorTitle = 'Error Valor Decimal'
-                dv.prompt = "Valor Decimal"
-                dv.promptTitle = ListFields[col][0]
+    with arcpy.da.SearchCursor(Feat, ListFields) as cursor:
+        X=0
+        for row in cursor:
+            for col in range(0, len(ListFields)):
+                try:
+                    ws.cell(column=col, row=X, value=row[col])
+                except:
+                    pass
+            X=X+1
 
-                #print "Double"
-            elif ListFields[col][1]=="SmallInteger" or ListFields[col][1]=="Integer":
-                dv = DataValidation(type="whole")
-                dv.error ='Valor Invalido'
-                dv.errorTitle = 'Error valor Entero'
-                dv.prompt = "Valor Entero"
-                dv.promptTitle = ListFields[col][0]
-
-                #print "Entero"
-            elif ListFields[col][1]=="Date":
-                dv = DataValidation(type="date")
-                dv.error ='Valor Invalido'
-                dv.errorTitle = 'Error valor Fecha'
-                dv.prompt = "Valor Fecha"
-                dv.promptTitle = ListFields[col][0]
-
-                #print "Date"
-            ws.cell(column=col, row=1, value="{0}".format(ListFields[col][0].encode('utf-8')))
-            #dv.ranges.append()
-            for row in range(2,3):
-                #ws.cell(column=col, row=row).number_format=""
-                print ws.cell(column=col, row=row).coordinate + ":" + ws.cell(column=col, row=row).coordinate[:-1] + "65600"
-                dv.ranges.append(ws.cell(column=col, row=row).coordinate+":"+ws.cell(column=col, row=row).coordinate[:-1]+"65600")
-            ws.add_data_validation(dv)
     wb.save(filename = dest_filename)
+
+def compararPuntos (buffer, capaEntrada, capaSalida, fields):
+    featSalida= "in_memory\salida"
+    join= arcpy.SpatialJoin_analysis(capaEntrada,capaSalida,featSalida,"JOIN_ONE_TO_ONE","KEEP_COMMON","","INTERSECT",buffer)
+    exportXLSX(featSalida,fields)
+
 
 codigos= {("2306","2101"):"Area de desecho",
 ("2325","2102"):"Cementerio",
@@ -338,5 +314,15 @@ codigos= {("2306","2101"):"Area de desecho",
 ("8400","9215"):"Punta",
 ("8431","9215"):"Punta"}
 
-print recorrerTopo(GeodatabaseTopo)
-print recorreGeo(GeodatabaseGeo)
+fields=["IDE","ENT_GEO","TOPONIMO","NOMBRE_GEOGRAFICO"]
+
+toponimia= recorrerTopo(GeodatabaseTopo)
+print toponimia
+vectores =recorreGeo(GeodatabaseGeo)
+print vectores
+for fctop in toponimia:
+    if "IB" == os.path.basename(fctop):
+        for fcvec in vectores:
+            if os.path.basename(fcvec)=="Construccion_P":
+                compararPuntos("10 METERS",fctop,fcvec,fields)
+
