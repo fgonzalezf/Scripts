@@ -3,12 +3,15 @@ import arcpy, os, sys
 from openpyxl import Workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl import load_workbook
+
+GeodatabaseTopo=sys.argv[1]
+GeodatabaseGeo=sys.argv[2]
+dest_filename=sys.argv[3]
+
 wb = Workbook()
-dest_filename = r'C:\Temp\Libro1.xlsx'
+
 wb.save(filename = dest_filename)
 
-GeodatabaseTopo=r"C:\Users\APN\Documents\IGAC\INFORMACION PARA FERNANDO\10000\172IIIA1\172IIIA1_Depurada.gdb"
-GeodatabaseGeo=r"C:\Users\APN\Documents\IGAC\INFORMACION PARA FERNANDO\10000\172IIIA1_RS_2016_V1.mdb"
 
 def CountMoreZero(Feat):
     X=0
@@ -325,5 +328,4 @@ for fctop in toponimia:
         for fcvec in vectores:
             if os.path.basename(fcvec)=="Construccion_P":
                 compararPuntos("10 METERS",fctop,fcvec,fields)
-
 

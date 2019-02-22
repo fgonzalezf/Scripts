@@ -44,12 +44,12 @@ def ValoresEntrada(Feat,index):
                 elif isinstance(row[x],(int, long ,float ,complex)):
                     sqlfinal =  sqlfinal + "," + str(row[x])
 
-
+def ValoresSalida (tabla, index):
 
             sqlex= sqlInicio+sqlfinal + ");"
             print sqlex
             datos[row[indx]] =row
-    return datos
+            return datos
 
 
 

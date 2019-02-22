@@ -20,7 +20,7 @@ def campos(Feat):
     return listadoCampos
 
 
-def exportXLSX(Feat,ListFields,wb):
+def exportXLSX(Feat,ListFields):
     wb = load_workbook(dest_filename)
     ws = wb.create_sheet(title=os.path.basename(Feat))
     print Feat

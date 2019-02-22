@@ -32,6 +32,7 @@ def updateFeat(Entrada, Salida, uniqueField):
     if len(normalizado)>0:
         campo = arcpy.AddFieldDelimiters(Entrada, uniqueField)
         QueryCargar = campo + " in " + str(tuple(normalizado)).replace("u'","'")
+        print QueryCargar
         arcpy.MakeFeatureLayer_management(Entrada,"Cargar",QueryCargar)
         arcpy.Append_management("Cargar",Salida,"NO_TEST")
 
