@@ -1,13 +1,33 @@
-import arcpy,os,sys
+import arcpy,os,sys,re, os,datetime,shutil
 import xlrd as xl
 
-ExcelEntrada =r"C:\Users\APN\Downloads\Prueba1\Plantilla_CENAM_datos.xlsx"
-GeodatabaseSalida=r"C:\Users\APN\Downloads\Prueba1\Prueba1_1.gdb"
+ExcelEntrada =arcpy.GetParameterAsText(0)
+GeodatabaseSalida=r"E:\Scripts\SDE.sde"
 
 
-
+# -*- coding: utf-8 -*-
 CampoUnico="ID"
+def convertDecimal(textoSexagesimal):
+    for y in textoSexagesimal:
 
+        if (y in ['0','1','2','3','4','5','6','7','8','9'," ","N","W"]):
+            temp=temp+y
+    Numeros=temp.split(" ")
+    decimal=0.0
+    if Numeros[3]=="N":
+        decimal = float(Numeros[0])+float(Numeros[1])/60+float(Numeros[2])/3600
+    else:
+        decimal = (-1)*float(Numeros[0]) - float(Numeros[1]) / 60 -float(Numeros[2]) / 3600
+    return float(decimal)
+
+def copiarRenombrar(rutaVieja):
+    carpetaNueva= r"E:\Reportes_CENAM_Excel"
+    fechaHoy =datetime.datetime.now()
+    strFecha=fechaHoy.strftime('%Y%m%d%H%M%S')
+    shutil.copy(rutaVieja,carpetaNueva)
+    os.rename(carpetaNueva+os.sep+os.path.basename(rutaVieja), carpetaNueva+os.sep+strFecha+".xlsx")
+    print strFecha
+    return carpetaNueva+os.sep+strFecha+".xlsx"
 
 def to_unicode_or_bust(obj, encoding='utf-8'):
     if isinstance(obj, basestring):
@@ -20,20 +40,22 @@ def getSheetName(file_name):
     TeamPointWorkbook = xl.open_workbook(file_name)
     pointSheets = TeamPointWorkbook.sheet_names()
     return pointSheets
+arcpy.AddMessage("Iniciando Migracion ...")
 
+ExcelEntrada=copiarRenombrar(ExcelEntrada)
 ListaHojas = getSheetName(ExcelEntrada)
 Tablas=[]
 for hoja in ListaHojas:
     tablatemp=[]
     if hoja == "Operaciones" or hoja == "Accidentes":
-        arcpy.ExcelToTable_conversion(ExcelEntrada,GeodatabaseSalida+os.sep+hoja+"tabla",hoja)
-        tablatemp.append(GeodatabaseSalida+os.sep+hoja+"tabla")
-        tablatemp.append(GeodatabaseSalida + os.sep + hoja )
+        arcpy.ExcelToTable_conversion(ExcelEntrada,"in_memory"+os.sep+hoja+"tabla",hoja)
+        tablatemp.append("in_memory"+os.sep+hoja+"tabla")
+        tablatemp.append(GeodatabaseSalida + os.sep + "SDE.DBO.CENAM"+ os.sep+"SDE.DBO."+ hoja )
         tablatemp.append(GeodatabaseSalida )
         Tablas.append(tablatemp)
 
 Actualizar=True
-Borrar=True
+Borrar=False
 
 def Campos(Feat):
     desc = arcpy.Describe(Feat)
@@ -95,7 +117,7 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                         if keyvalue not in Controlvalores:
                             try:
                                 Numerador = Numerador + 1
-                                print "Actualizando Valor..."+ str(row2[indxOut])+ "....("+str(Numerador)+ " de "+str(count)+")"
+                                arcpy.AddMessage( "Actualizando Valor..."+ str(row2[indxOut])+ "....("+str(Numerador)+ " de "+str(count)+")")
                                 rowin =valoresEntrada[keyvalue]
                                 rowin = list(rowin)
                                 pointCentroid= arcpy.Point(rowin[indxLogX], rowin[indxLatY])
@@ -106,7 +128,7 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                                 cursor2.updateRow(rowin)
                                 Controlvalores.append(keyvalue)
                             except Exception as e:
-                                print "Error..."+ e.message
+                                arcpy.AddMessage( "Error..."+ e.message)
 
         edit.stopOperation()
         edit.stopEditing("True")
@@ -119,7 +141,7 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
             Numerador= Numerador+1
             if keyvaluein not in valoresSalida:
                 try:
-                    print "Ingresando Valor..." + str(keyvaluein) + "....(" + str(Numerador) + " de " + str(count) + ")"
+                    arcpy.AddMessage( "Ingresando Valor..." + str(keyvaluein) + "....(" + str(Numerador) + " de " + str(count) + ")")
                     rowin = valoresEntrada[keyvaluein]
                     rowin=list(rowin)
                     pointCentroid= arcpy.Point(rowin[indxLogX], rowin[indxLatY])
@@ -130,7 +152,7 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                     cursor3.insertRow(rowin)
                 except  Exception as e:
 
-                    print  "Error1... "+ e.message
+                    arcpy.AddMessage(  "Error1... "+ e.message)
         edit.stopOperation()
         edit.stopEditing("True")
 
@@ -170,3 +192,5 @@ for tabla in Tablas:
     print "entrada: "+ str(FieldsIn)
     print "salida: "+ str(FieldsOut)
     actualizarValores(EntradaPol,SalidaPun,FieldsIn,FieldsOut)
+
+arcpy.AddMessage("Proceso Terminado ...")
