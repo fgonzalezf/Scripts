@@ -57,3 +57,6 @@ for key,value in uniqueValue.items():
         arcpy.AddMessage(str(key))
     except Exception as e:
         arcpy.AddMessage( "**********Error******** en el ID: "+ str(key) + "****" +e.message)
+
+
+

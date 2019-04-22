@@ -1,6 +1,6 @@
 import arcpy,os,sys
 
-Actualizar=False
+Actualizar=True
 Borrar=False
 
 
@@ -25,7 +25,7 @@ def normalizarCampos(camposEntrada, camposSalida):
     entrada=list(inter)
     salida=list(inter)
     entrada.insert(0, "SHAPE@")
-    salida.insert(0, "SHAPE@XY")
+    salida.insert(0, "SHAPE@")
     campos.append(entrada)
     campos.append(salida)
     return campos
@@ -109,8 +109,8 @@ def actualizarValores(Featin, FeatOut, fields,indx):
         del valoresEntrada
         del valoresSalida
 
-IMSMAGDB=r"C:\Users\maicolvelasquez\Documents\Zonas\actualizacion_9_17_2018.gdb"
-GeodatabaseSalida=r"E:\Scripts\SDE.sde"
+IMSMAGDB=r"E:\Scripts\Actualizacion_Sectores\Total\4_22_2019\Sectores.gdb"
+GeodatabaseSalida=r"E:\Scripts\Scripts\EFESIOS.sde"
 
 print "Reparando Geometria"
 arcpy.env.workspace=IMSMAGDB

@@ -1,0 +1,23 @@
+import arcpy,os
+
+Tabla=r"C:\Users\maicolvelasquez\Documents\MXD_Progreso\temp2.gdb\RPT_PROGRESO_Operacion"
+
+def Campos(Feat):
+
+    Lista = []
+    ListaCampos = arcpy.ListFields(Feat)
+    for fld in ListaCampos:
+        if fld.editable == True and fld.type != "Geometry":
+            Lista.append(fld.name)
+    return Lista
+
+
+fields= Campos(Tabla)
+with arcpy.da.UpdateCursor(Tabla, fields) as cursor2:
+    for row2 in cursor2:
+        for i in range(len(row2)):
+            if (row2[i] == "NULL"):
+                row2[i]= None
+            else:
+                row2[i]= row2[i]
+        cursor2.updateRow(row2)
