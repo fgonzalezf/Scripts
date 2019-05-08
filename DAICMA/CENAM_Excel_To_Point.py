@@ -1,11 +1,11 @@
+# -*- coding: utf-8 -*-
 import arcpy,os,sys,re, os,datetime,shutil
 import xlrd as xl
 
 ExcelEntrada =arcpy.GetParameterAsText(0)
+Actualizar=arcpy.GetParameterAsText(1)
 GeodatabaseSalida=r"E:\Scripts\SDE.sde"
 
-
-# -*- coding: utf-8 -*-
 CampoUnico="ID"
 def convertDecimal(textoSexagesimal):
     for y in textoSexagesimal:
@@ -54,7 +54,6 @@ for hoja in ListaHojas:
         tablatemp.append(GeodatabaseSalida )
         Tablas.append(tablatemp)
 
-Actualizar=True
 Borrar=False
 
 def Campos(Feat):
@@ -108,7 +107,7 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
         edit = arcpy.da.Editor (GeodatabaseSalida)
         edit.startEditing ()
         edit.startOperation()
-        if Actualizar == True:
+        if Actualizar == "true":
             Controlvalores = []
             with arcpy.da.UpdateCursor(FeatOut, fieldsOut) as cursor2:
                 for row2 in cursor2:
@@ -139,20 +138,33 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
         cursor3 = arcpy.da.InsertCursor(FeatOut, fieldsOut)
         for keyvaluein in valoresEntrada:
             Numerador= Numerador+1
-            if keyvaluein not in valoresSalida:
-                try:
-                    arcpy.AddMessage( "Ingresando Valor..." + str(keyvaluein) + "....(" + str(Numerador) + " de " + str(count) + ")")
-                    rowin = valoresEntrada[keyvaluein]
-                    rowin=list(rowin)
-                    pointCentroid= arcpy.Point(rowin[indxLogX], rowin[indxLatY])
-                    #del rowin[0]
-                    rowin.insert(0, pointCentroid)
-                    rowin=tuple(rowin)
-                    #print rowin
-                    cursor3.insertRow(rowin)
-                except  Exception as e:
-
-                    arcpy.AddMessage(  "Error1... "+ e.message)
+            if Actualizar == "false":
+                    try:
+                        arcpy.AddMessage( "Ingresando Valor..." + str(keyvaluein) + "....(" + str(Numerador) + " de " + str(count) + ")")
+                        rowin = valoresEntrada[keyvaluein]
+                        rowin=list(rowin)
+                        pointCentroid= arcpy.Point(rowin[indxLogX], rowin[indxLatY])
+                        #del rowin[0]
+                        rowin.insert(0, pointCentroid)
+                        rowin=tuple(rowin)
+                        #print rowin
+                        cursor3.insertRow(rowin)
+                    except  Exception as e:
+                        arcpy.AddMessage(  "Error1... "+ e.message)
+            elif Actualizar == "true":
+                if keyvaluein not in valoresSalida:
+                    try:
+                        arcpy.AddMessage( "Ingresando Valor..." + str(keyvaluein) + "....(" + str(Numerador) + " de " + str(count) + ")")
+                        rowin = valoresEntrada[keyvaluein]
+                        rowin=list(rowin)
+                        pointCentroid= arcpy.Point(rowin[indxLogX], rowin[indxLatY])
+                        #del rowin[0]
+                        rowin.insert(0, pointCentroid)
+                        rowin=tuple(rowin)
+                        #print rowin
+                        cursor3.insertRow(rowin)
+                    except  Exception as e:
+                        arcpy.AddMessage(  "Error1... "+ e.message)
         edit.stopOperation()
         edit.stopEditing("True")
 
