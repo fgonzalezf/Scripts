@@ -3,15 +3,25 @@
 #  Catalog window of ArcMap before running this script
 import arcpy,os
 # Define local variables
-wrkspc = r'C:\Users\fgonzalezf\Downloads\pruebas\MXD'
-con = r'C:\Users\fgonzalezf\Downloads\pruebas\arcpruonsrvagspru.sgc.gov.co(admin).ags'
+wrkspc = r'C:\\Users\\Desarrollo\\Downloads\\Servicios\\Publicacion2\\'
+con = r'C:\Users\Desarrollo\Downloads\Servicios\clusterpru.ags'
+arcpy.env.overwriteOutput=True
+rootDir = r'C:\Users\Desarrollo\Downloads\Servicios\Publicacion2'
+Servicios=[]
+for dirName, subdirList, fileList in os.walk(rootDir):
+    servicetemp=[]
 
+    for fname in fileList:
+        if fname[-3:] == "mxd":
+            servicetemp.append(dirName + os.sep + fname)
+            servicetemp.append(os.path.basename(dirName.split(".MapServer")[0]))
+            servicetemp.append(os.path.basename(os.path.dirname(dirName.split(".MapServer")[0])))
+            servicetemp.append(os.path.basename(os.path.dirname(dirName.split(".MapServer")[0])))
+            servicetemp.append(os.path.basename(os.path.dirname(dirName.split(".MapServer")[0])))
 
-Servicios=[['C://Users//fgonzalezf//Downloads//pruebas//MXD//Amenaza_Sismica//Periodo_Retorno_75.MapServer//Periodo_Retorno_75.mxd','Periodo_Retorno_75','Amenaza_Sismica','Amenaza_Sismica','Sismica'],
-           ['C://Users//fgonzalezf//Downloads//pruebas//MXD//Amenaza_Sismica//Periodo_Retorno_225.MapServer//Periodo_Retorno_225.mxd','Periodo_Retorno_225', 'Amenaza_Sismica','Amenaza_Sismica','Sismica'],
-           ['C://Users//fgonzalezf//Downloads//pruebas//MXD//Amenaza_Sismica//Periodo_Retorno_475.MapServer//Periodo_Retorno_475.mxd','Periodo_Retorno_475','Amenaza_Sismica','Amenaza_Sismica','Sismica'],
-           ['C://Users//fgonzalezf//Downloads//pruebas//MXD//Amenaza_Sismica//Periodo_Retorno_975.MapServer//Periodo_Retorno_975.mxd','Periodo_Retorno_975','Amenaza_Sismica','Amenaza_Sismica','Sismica'],
-           ['C://Users//fgonzalezf//Downloads//pruebas//MXD//Amenaza_Sismica//Periodo_Retorno_2475.MapServer//Periodo_Retorno_2475.mxd','Periodo_Retorno_2475','Amenaza_Sismica','Amenaza_Sismica','Sismica']]
+    if servicetemp!=[]:
+        Servicios.append(servicetemp)
+print Servicios
 for serv in Servicios:
     mapDoc = serv[0]
     # Provide path to connection file

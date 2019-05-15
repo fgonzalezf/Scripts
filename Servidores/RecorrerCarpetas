@@ -1,0 +1,8 @@
+import os
+rootDir = r'C:\Users\Desarrollo\Downloads\Servicios'
+for dirName, subdirList, fileList in os.walk(rootDir):
+    if dirName[-9:]=="MapServer":
+        print('Servicio: %s' % os.path.basename(dirName[:-10]))
+    for fname in fileList:
+        if fname[-3:]=="mxd":
+            print('\t%s' % dirName+os.sep+fname)

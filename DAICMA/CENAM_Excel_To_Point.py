@@ -2,9 +2,13 @@
 import arcpy,os,sys,re, os,datetime,shutil
 import xlrd as xl
 
-ExcelEntrada =arcpy.GetParameterAsText(0)
-Actualizar=arcpy.GetParameterAsText(1)
-GeodatabaseSalida=r"E:\Scripts\SDE.sde"
+#ExcelEntrada =arcpy.GetParameterAsText(0)
+#Actualizar=arcpy.GetParameterAsText(1)
+#GeodatabaseSalida=r"E:\Scripts\SDE.sde"
+
+ExcelEntrada =r"E:\APN\01 de Mayo.xlsx"
+Actualizar="false"
+GeodatabaseSalida=r"E:\APN\SQLEXPRESFGF.sde"
 
 CampoUnico="ID"
 def convertDecimal(textoSexagesimal):
@@ -21,7 +25,7 @@ def convertDecimal(textoSexagesimal):
     return float(decimal)
 
 def copiarRenombrar(rutaVieja):
-    carpetaNueva= r"E:\Reportes_CENAM_Excel"
+    carpetaNueva= r"E:\APN\excelprueba"
     fechaHoy =datetime.datetime.now()
     strFecha=fechaHoy.strftime('%Y%m%d%H%M%S')
     shutil.copy(rutaVieja,carpetaNueva)
@@ -100,6 +104,19 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
         indxIn=indexUnico(fieldsIn,CampoUnico)
         indxLogX=indexUnico(fieldsIn,"Longitud_decimales")
         indxLatY=indexUnico(fieldsIn,"Latitud_decimales")
+
+
+        indxdiain=indexUnico(fieldsIn,"DIA__DD_")
+        indxmesin=indexUnico(fieldsIn,"MES__MM_")
+        indxanioin = indexUnico(fieldsIn, u'A\xd1O__AAAA_')
+        indxdepin=indexUnico(fieldsIn, "DEPARTAMEN")
+        indxmunin = indexUnico(fieldsIn, "MUNICIPIO")
+        indxnomin = indexUnico(fieldsIn, "NOMBRES_APELLIDOS")
+
+
+
+        indxfechaout=indexUnico(fieldsIn, "FECHA___DD_MM_AAAA_")
+
         valoresEntrada = ValoresEntrada(Featin,fieldsIn,indxIn)
         Numerador=0
         result = arcpy.GetCount_management(Featin)
@@ -119,6 +136,16 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                                 arcpy.AddMessage( "Actualizando Valor..."+ str(row2[indxOut])+ "....("+str(Numerador)+ " de "+str(count)+")")
                                 rowin =valoresEntrada[keyvalue]
                                 rowin = list(rowin)
+                                rowin[indxdiain]= str(rowin[indxdiain])+"/"+str(rowin[indxmesin])+"/"+str(rowin[indxanioin])
+
+                                rowin[indxdepin]= str(rowin[indxdepin]) + "-" + str(rowin[indxmunin])
+                                if indxnomin!=-1:
+                                    rowin.insert(indxnomin+1,"")
+
+                                rowin.pop(indxmesin)
+                                rowin.pop(indxanioin)
+                                rowin.pop(indxmunin)
+
                                 pointCentroid= arcpy.Point(rowin[indxLogX], rowin[indxLatY])
                                 #del rowin[0]
                                 rowin.insert(0,pointCentroid)
@@ -143,6 +170,17 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                         arcpy.AddMessage( "Ingresando Valor..." + str(keyvaluein) + "....(" + str(Numerador) + " de " + str(count) + ")")
                         rowin = valoresEntrada[keyvaluein]
                         rowin=list(rowin)
+
+                        rowin[indxdiain] = str(rowin[indxdiain]) + "/" + str(rowin[indxmesin]) + "/" + str(
+                            rowin[indxanioin])
+
+                        rowin[indxdepin] = str(rowin[indxdepin]) + "-" + str(rowin[indxmunin])
+                        if indxnomin != -1:
+                            rowin.insert(indxnomin + 1, "")
+
+                        rowin.pop(indxmesin)
+                        rowin.pop(indxanioin)
+                        rowin.pop(indxmunin)
                         pointCentroid= arcpy.Point(rowin[indxLogX], rowin[indxLatY])
                         #del rowin[0]
                         rowin.insert(0, pointCentroid)
@@ -200,7 +238,7 @@ for tabla in Tablas:
     #print Campos(EntradaPol)
     FieldsIn=Campos(EntradaPol)
     FieldsOut=Campos(SalidaPun)
-    normalizarCampos(FieldsIn,FieldsOut)
+    #normalizarCampos(FieldsIn,FieldsOut)
     print "entrada: "+ str(FieldsIn)
     print "salida: "+ str(FieldsOut)
     actualizarValores(EntradaPol,SalidaPun,FieldsIn,FieldsOut)
