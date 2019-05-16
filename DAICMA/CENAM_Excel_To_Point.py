@@ -6,22 +6,28 @@ import xlrd as xl
 #Actualizar=arcpy.GetParameterAsText(1)
 #GeodatabaseSalida=r"E:\Scripts\SDE.sde"
 
-ExcelEntrada =r"E:\APN\01 de Mayo.xlsx"
+ExcelEntrada =r"E:\APN\plantilla\12 de Mayo.xlsx"
 Actualizar="false"
-GeodatabaseSalida=r"E:\APN\SQLEXPRESFGF.sde"
+GeodatabaseSalida=r"E:\APN\Cenam.gdb"
 
 CampoUnico="ID"
 def convertDecimal(textoSexagesimal):
-    for y in textoSexagesimal:
-
-        if (y in ['0','1','2','3','4','5','6','7','8','9'," ","N","W"]):
-            temp=temp+y
-    Numeros=temp.split(" ")
-    decimal=0.0
-    if Numeros[3]=="N":
-        decimal = float(Numeros[0])+float(Numeros[1])/60+float(Numeros[2])/3600
+    decimal = 0.0
+    temp=""
+    if isinstance(textoSexagesimal, float):
+        decimal= textoSexagesimal
     else:
-        decimal = (-1)*float(Numeros[0]) - float(Numeros[1]) / 60 -float(Numeros[2]) / 3600
+        for y in textoSexagesimal:
+
+            if (y in ['0','1','2','3','4','5','6','7','8','9'," ","N","W"]):
+                temp=temp+y
+        Numeros=temp.split(" ")
+
+        if Numeros[3]=="N":
+            decimal = float(Numeros[0])+float(Numeros[1])/60+float(Numeros[2])/3600
+        else:
+            decimal = (-1)*float(Numeros[0]) - float(Numeros[1]) / 60 -float(Numeros[2]) / 3600
+
     return float(decimal)
 
 def copiarRenombrar(rutaVieja):
@@ -54,7 +60,7 @@ for hoja in ListaHojas:
     if hoja == "Operaciones" or hoja == "Accidentes":
         arcpy.ExcelToTable_conversion(ExcelEntrada,"in_memory"+os.sep+hoja+"tabla",hoja)
         tablatemp.append("in_memory"+os.sep+hoja+"tabla")
-        tablatemp.append(GeodatabaseSalida + os.sep + "SDE.DBO.CENAM"+ os.sep+"SDE.DBO."+ hoja )
+        tablatemp.append(GeodatabaseSalida + os.sep + "CENAM"+ os.sep+ hoja )
         tablatemp.append(GeodatabaseSalida )
         Tablas.append(tablatemp)
 
@@ -71,7 +77,7 @@ def Campos(Feat):
         else:
             Lista.append('SHAPE@')
     for fld in ListaCampos:
-        if fld.editable==True and fld.type!="Geometry":
+        if fld.editable==True and fld.type!="Geometry" and fld.name!="RESUMEN_DE_LOS_HECHOS":
             Lista.append(fld.name)
     return Lista
 
@@ -102,16 +108,19 @@ def ValoresEntrada(Feat,fields,indexEnt):
 def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
         indxOut=indexUnico(fieldsOut,CampoUnico)
         indxIn=indexUnico(fieldsIn,CampoUnico)
-        indxLogX=indexUnico(fieldsIn,"Longitud_decimales")
-        indxLatY=indexUnico(fieldsIn,"Latitud_decimales")
+        indxLogX=indexUnico(fieldsIn,"Latitud_de")
+        indxLatY=indexUnico(fieldsIn,"Longitud_d")
 
 
-        indxdiain=indexUnico(fieldsIn,"DIA__DD_")
-        indxmesin=indexUnico(fieldsIn,"MES__MM_")
-        indxanioin = indexUnico(fieldsIn, u'A\xd1O__AAAA_')
-        indxdepin=indexUnico(fieldsIn, "DEPARTAMEN")
-        indxmunin = indexUnico(fieldsIn, "MUNICIPIO")
-        indxnomin = indexUnico(fieldsIn, "NOMBRES_APELLIDOS")
+        indxdiain=fieldsIn.index("DIA__DD_")
+        indxmesin=fieldsIn.index("MES__MM_")
+        indxanioin = fieldsIn.index( u'A\xd1O__AAAA_')
+        indxdepin = fieldsIn.index("DEPARTAMEN")
+        indxmunin = fieldsIn.index("MUNICIPIO")
+        try:
+            indxnomin = fieldsIn.index("NOMBRES_APELLIDOS")
+        except:
+            indxnomin = None
 
 
 
@@ -139,16 +148,17 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                                 rowin[indxdiain]= str(rowin[indxdiain])+"/"+str(rowin[indxmesin])+"/"+str(rowin[indxanioin])
 
                                 rowin[indxdepin]= str(rowin[indxdepin]) + "-" + str(rowin[indxmunin])
-                                if indxnomin!=-1:
+                                if indxnomin!=None:
                                     rowin.insert(indxnomin+1,"")
-
+                                pointCentroid = arcpy.Point(rowin[indxLogX], rowin[indxLatY])
+                                rowin.insert(0, pointCentroid)
                                 rowin.pop(indxmesin)
-                                rowin.pop(indxanioin)
-                                rowin.pop(indxmunin)
+                                rowin.pop(indxanioin-1)
+                                rowin.pop(indxmunin-2)
 
-                                pointCentroid= arcpy.Point(rowin[indxLogX], rowin[indxLatY])
+
                                 #del rowin[0]
-                                rowin.insert(0,pointCentroid)
+
                                 rowin = tuple(rowin)
                                 #print rowin
                                 cursor2.updateRow(rowin)
@@ -171,24 +181,26 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                         rowin = valoresEntrada[keyvaluein]
                         rowin=list(rowin)
 
-                        rowin[indxdiain] = str(rowin[indxdiain]) + "/" + str(rowin[indxmesin]) + "/" + str(
-                            rowin[indxanioin])
+                        rowin[indxdiain] = str(rowin[indxdiain]) + "/" + str(rowin[indxmesin]) + "/" + str(rowin[indxanioin])
 
                         rowin[indxdepin] = str(rowin[indxdepin]) + "-" + str(rowin[indxmunin])
-                        if indxnomin != -1:
-                            rowin.insert(indxnomin + 1, "")
+                        if indxnomin != None:
+                            rowin.insert(indxnomin, "")
 
+
+                        pointCentroid= arcpy.Point(convertDecimal(rowin[indxLogX]), convertDecimal(rowin[indxLatY]))
+                        rowin[indxLogX]=convertDecimal(rowin[indxLogX])
+                        rowin[indxLatY]=convertDecimal(rowin[indxLatY])
                         rowin.pop(indxmesin)
-                        rowin.pop(indxanioin)
-                        rowin.pop(indxmunin)
-                        pointCentroid= arcpy.Point(rowin[indxLogX], rowin[indxLatY])
+                        rowin.pop(indxanioin-1)
+                        rowin.pop(indxmunin-2)
                         #del rowin[0]
                         rowin.insert(0, pointCentroid)
                         rowin=tuple(rowin)
-                        #print rowin
+                        print rowin
                         cursor3.insertRow(rowin)
                     except  Exception as e:
-                        arcpy.AddMessage(  "Error1... "+ e.message)
+                        arcpy.AddMessage(  "Error3... "+ e.message)
             elif Actualizar == "true":
                 if keyvaluein not in valoresSalida:
                     try:
