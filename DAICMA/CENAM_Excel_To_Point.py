@@ -11,6 +11,15 @@ Actualizar="false"
 GeodatabaseSalida=r"E:\APN\Cenam.gdb"
 
 CampoUnico="ID"
+
+def maximoId(FeatIn):
+    idmax=0
+    with arcpy.da.SearchCursor(FeatIn, "ID") as cursor:
+        for row in cursor:
+            if idmax <= row[0]:
+                idmax=row[0]
+    return idmax
+
 def convertDecimal(textoSexagesimal):
     decimal = 0.0
     temp=""
@@ -117,6 +126,8 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
         indxanioin = fieldsIn.index( u'A\xd1O__AAAA_')
         indxdepin = fieldsIn.index("DEPARTAMEN")
         indxmunin = fieldsIn.index("MUNICIPIO")
+        indxIdin = fieldsIn.index("ID")
+        IDmax= maximoId(FeatOut)
         try:
             indxnomin = fieldsIn.index("NOMBRES_APELLIDOS")
         except:
@@ -145,16 +156,21 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                                 arcpy.AddMessage( "Actualizando Valor..."+ str(row2[indxOut])+ "....("+str(Numerador)+ " de "+str(count)+")")
                                 rowin =valoresEntrada[keyvalue]
                                 rowin = list(rowin)
-                                rowin[indxdiain]= str(rowin[indxdiain])+"/"+str(rowin[indxmesin])+"/"+str(rowin[indxanioin])
+                                rowin[indxdiain] = datetime.datetime(rowin[indxanioin], rowin[indxmesin],
+                                                                     rowin[indxdiain])
 
-                                rowin[indxdepin]= str(rowin[indxdepin]) + "-" + str(rowin[indxmunin])
-                                if indxnomin!=None:
-                                    rowin.insert(indxnomin+1,"")
-                                pointCentroid = arcpy.Point(rowin[indxLogX], rowin[indxLatY])
-                                rowin.insert(0, pointCentroid)
+                                rowin[indxdepin] = str(rowin[indxdepin]) + "-" + str(rowin[indxmunin])
+                                if indxnomin != None:
+                                    rowin.insert(indxnomin, "")
+                                pointCentroid = arcpy.Point(convertDecimal(rowin[indxLogX]),
+                                                            convertDecimal(rowin[indxLatY]))
+                                rowin[indxLogX] = convertDecimal(rowin[indxLogX])
+                                rowin[indxLatY] = convertDecimal(rowin[indxLatY])
                                 rowin.pop(indxmesin)
-                                rowin.pop(indxanioin-1)
-                                rowin.pop(indxmunin-2)
+                                rowin.pop(indxanioin - 1)
+                                rowin.pop(indxmunin - 2)
+                                # del rowin[0]
+                                rowin.insert(0, pointCentroid)
 
 
                                 #del rowin[0]
@@ -175,22 +191,22 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
         cursor3 = arcpy.da.InsertCursor(FeatOut, fieldsOut)
         for keyvaluein in valoresEntrada:
             Numerador= Numerador+1
+            IDmax =IDmax+1
             if Actualizar == "false":
                     try:
                         arcpy.AddMessage( "Ingresando Valor..." + str(keyvaluein) + "....(" + str(Numerador) + " de " + str(count) + ")")
                         rowin = valoresEntrada[keyvaluein]
                         rowin=list(rowin)
 
-                        rowin[indxdiain] = str(rowin[indxdiain]) + "/" + str(rowin[indxmesin]) + "/" + str(rowin[indxanioin])
+                        rowin[indxdiain] = datetime.datetime(rowin[indxanioin], rowin[indxmesin], rowin[indxdiain])
 
                         rowin[indxdepin] = str(rowin[indxdepin]) + "-" + str(rowin[indxmunin])
                         if indxnomin != None:
                             rowin.insert(indxnomin, "")
-
-
                         pointCentroid= arcpy.Point(convertDecimal(rowin[indxLogX]), convertDecimal(rowin[indxLatY]))
                         rowin[indxLogX]=convertDecimal(rowin[indxLogX])
                         rowin[indxLatY]=convertDecimal(rowin[indxLatY])
+                        rowin[indxIdin] =IDmax
                         rowin.pop(indxmesin)
                         rowin.pop(indxanioin-1)
                         rowin.pop(indxmunin-2)
@@ -207,8 +223,18 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                         arcpy.AddMessage( "Ingresando Valor..." + str(keyvaluein) + "....(" + str(Numerador) + " de " + str(count) + ")")
                         rowin = valoresEntrada[keyvaluein]
                         rowin=list(rowin)
-                        pointCentroid= arcpy.Point(rowin[indxLogX], rowin[indxLatY])
-                        #del rowin[0]
+                        rowin[indxdiain] = datetime.datetime(rowin[indxanioin], rowin[indxmesin], rowin[indxdiain])
+
+                        rowin[indxdepin] = str(rowin[indxdepin]) + "-" + str(rowin[indxmunin])
+                        if indxnomin != None:
+                            rowin.insert(indxnomin, "")
+                        pointCentroid = arcpy.Point(convertDecimal(rowin[indxLogX]), convertDecimal(rowin[indxLatY]))
+                        rowin[indxLogX] = convertDecimal(rowin[indxLogX])
+                        rowin[indxLatY] = convertDecimal(rowin[indxLatY])
+                        rowin.pop(indxmesin)
+                        rowin.pop(indxanioin - 1)
+                        rowin.pop(indxmunin - 2)
+                        # del rowin[0]
                         rowin.insert(0, pointCentroid)
                         rowin=tuple(rowin)
                         #print rowin
