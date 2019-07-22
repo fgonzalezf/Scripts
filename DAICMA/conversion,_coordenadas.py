@@ -15,7 +15,6 @@ def convertDecimal(textoSexagesimal):
     else:
         decimal = (-1)*float(Numeros[0]) - float(Numeros[1]) / 60 -float(Numeros[2]) / 3600
     return float(decimal)
-
 def copiarRenombrar(rutaVieja):
     carpetaNueva= r"C:\Temp"
     fechaHoy =datetime.datetime.now()

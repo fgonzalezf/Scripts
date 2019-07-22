@@ -17,7 +17,7 @@ ListFields=["ServiceName","Folder","RecycleInterval","RecycleStartTime","Type","
 
 url = 'srvags.sgc.gov.co/arcgis/rest/services' #server url
 usr = r'ingeominas\fgonzalezf'
-pw = 'Maidenfgf33'
+pw = 'Maidenfgf40'
 
 # connect to ArcGIS Server instance
 arcserver = admin.ArcServerAdmin(url, usr, pw)

@@ -1,8 +1,8 @@
 import arcpy, os, sys
 from openpyxl import load_workbook
 
-excel = r"C:\Users\APN\Documents\APN\MapaParlante\DOMINIOS.xlsx"
-Geodatabase=r"C:\Users\APN\Documents\APN\MapaParlante\MapaParlante.mdb"
+excel = r"C:\Users\APN\Downloads\Modelo_protestas\dominios.xlsx"
+Geodatabase=r"C:\Users\APN\Downloads\Modelo_protestas\Protestas.gdb"
 wb = load_workbook(filename = excel)
 
 arcpy.env.overwriteOutput=True
