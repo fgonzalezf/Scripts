@@ -35,11 +35,14 @@ def get_datasets(data):
     '''return a list of paths to datasets such as feature classes used by service'''
 
 
-    #if data['SVCManifest']['Databases']['SVCDatabase']['ByReference'] == 'false':
-            #return 'Service data has been copied'
+    if data['SVCManifest']['Databases']['SVCDatabase']['ByReference'] == 'false':
+            return 'Service data has been copied'
 
     service_items = []
-    datasets = data['SVCManifest']['Databases']['SVCDatabase']['Datasets']['SVCDataset']
+    try:
+        datasets = data['SVCManifest']['Databases']['SVCDatabase']['Datasets']['SVCDataset']
+    except:
+        datasets = data['SVCManifest']['Databases']['SVCDatabase']['Datasets']
     if isinstance(datasets,list):
             for ds in datasets:
                 service_items.append(ds['OnPremisePath'])
