@@ -1,20 +1,29 @@
 import arcpy,os, sys
 
-Geodatabase=r"C:\Users\APN\Documents\SGC\Muestras\Muestras.gdb"
-
-Excel=r"C:\Users\APN\Documents\APN\Visores\MuestrasTablas_Fernando_10_10_17_Final.xls"
+#Geodatabase=r"C:\Users\APN\Documents\SGC\Muestras\Muestras.gdb"
+Geodatabase=sys.argv[1]
+#Excel=r"C:\Users\APN\Documents\APN\Visores\MuestrasTablas_Fernando_10_10_17_Final.xls"
+Excel = sys.argv[2]
 arcpy.env.overwriteOutput=True
-hojas=["EstacionesGeologicas","DatosEstructurales",
-"SeccionDelgada","SeccionPulida","MuestraFinos",
-"ConcentradosBatea","AnalisisQuimicoRocaTotal","Gravas","Suelos",
-"Arcillas","EsquirlasRoca","Palinologia","Foraminiferos",
-"Amonites","Bivalvos","Braquiopodos","OtroTipoFosil"]
+hojas = sys.argv[3].split(";")
+dataset=sys.argv[4]
+sistemaref=sys.argv[5]
+tipoGeometria=sys.argv[6]
+#hojas=["EstacionesGeologicas","DatosEstructurales",
+#"SeccionDelgada","SeccionPulida","MuestraFinos",
+#"ConcentradosBatea","AnalisisQuimicoRocaTotal","Gravas","Suelos",
+#"Arcillas","EsquirlasRoca","Palinologia","Foraminiferos",
+#"Amonites","Bivalvos","Braquiopodos","OtroTipoFosil"]
 
-arcpy.CreateFeatureDataset_management(Geodatabase,"Muestras","MAGNA")
-PathDataset= Geodatabase+ os.sep+ "Muestras"
+arcpy.CreateFeatureDataset_management(Geodatabase,dataset,sistemaref)
+PathDataset= Geodatabase+ os.sep+ dataset
 def crearPunto(Nombre):
-    arcpy.CreateFeatureclass_management(PathDataset,Nombre,"Point")
-    Rutafeature = PathDataset+ os.sep+ Nombre
+    if tipoGeometria!="table":
+        arcpy.CreateFeatureclass_management(PathDataset,Nombre,tipoGeometria)
+        Rutafeature = PathDataset+ os.sep+ Nombre
+    else:
+        arcpy.CreateTable_management(Geodatabase,Nombre)
+        Rutafeature = Geodatabase+ os.sep + Nombre
     return Rutafeature
 
 for hoja in hojas:
@@ -46,17 +55,18 @@ for hoja in hojas:
                 Longitud = ""
             else:
                 Longitud = str(row[3])
-            print ("Capa: "+ CapaPunto)
-            print ("Nombre: " + row[0])
-            print ("Tipo: " + Tipo)
-            print ("Longitud: " + Longitud)
-            print ("Alias: " + row[1])
-            print ("Nulo: " + Nulo)
+            arcpy.AddMessage("Capa: "+ CapaPunto)
+            arcpy.AddMessage("Nombre: " + row[0])
+            arcpy.AddMessage ("Tipo: " + Tipo)
+            arcpy.AddMessage ("Longitud: " + Longitud)
+            arcpy.AddMessage ("Alias: " + row[1])
+            arcpy.AddMessage ("Nulo: " + Nulo)
             if row[0]!="":
                 try:
                     arcpy.AddField_management(CapaPunto,row[0],Tipo,"","",Longitud,row[1],Nulo)
                 except Exception as ex:
-                    print ("Error..."+ ex.message)
+                    arcpy.AddError ("Error..."+ ex.message)
+    arcpy.Delete_management(Tabla)
 
 
 

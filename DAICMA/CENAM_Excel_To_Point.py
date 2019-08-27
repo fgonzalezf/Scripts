@@ -72,7 +72,7 @@ for hoja in ListaHojas:
     if hoja == "Operaciones" or hoja == "Accidentes":
         arcpy.ExcelToTable_conversion(ExcelEntrada,"in_memory"+os.sep+hoja+"tabla",hoja)
         tablatemp.append("in_memory"+os.sep+hoja+"tabla")
-        tablatemp.append(GeodatabaseSalida + os.sep + "CENAM"+ os.sep+ hoja )
+        tablatemp.append(GeodatabaseSalida + os.sep + "SDE.DBO.CENAM"+ os.sep+ "SDE.DBO."+hoja )
         tablatemp.append(GeodatabaseSalida )
         Tablas.append(tablatemp)
 
@@ -120,8 +120,8 @@ def ValoresEntrada(Feat,fields,indexEnt):
 def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
         indxOut=indexUnico(fieldsOut,CampoUnico)
         indxIn=indexUnico(fieldsIn,CampoUnico)
-        indxLogX=indexUnico(fieldsIn,"Latitud_decimales")
-        indxLatY=indexUnico(fieldsIn,"Longitud_decimales")
+        indxLogX=indexUnico(fieldsIn,"Longitud_decimales")
+        indxLatY=indexUnico(fieldsIn,"Latitud_decimales")
 
 
         indxdiain=fieldsIn.index("DIA__DD_")
@@ -159,7 +159,7 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                                 arcpy.AddMessage( "Actualizando Valor..."+ str(row2[indxOut])+ "....("+str(Numerador)+ " de "+str(count)+")")
                                 rowin =valoresEntrada[keyvalue]
                                 rowin = list(rowin)
-                                rowin[indxdiain] = datetime.datetime(rowin[indxanioin], rowin[indxmesin],
+                                rowin[indxdiain] = datetime.date(rowin[indxanioin], rowin[indxmesin],
                                                                      rowin[indxdiain])
 
                                 rowin[indxdepin] = rowin[indxdepin] + "-" + rowin[indxmunin]
@@ -201,7 +201,7 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                         rowin = valoresEntrada[keyvaluein]
                         rowin=list(rowin)
 
-                        rowin[indxdiain] = datetime.datetime(rowin[indxanioin], rowin[indxmesin], rowin[indxdiain])
+                        rowin[indxdiain] = datetime.date(rowin[indxanioin], rowin[indxmesin], rowin[indxdiain])
 
                         rowin[indxdepin] = rowin[indxdepin] + "-" + rowin[indxmunin]
                         if indxnomin != None:
@@ -226,7 +226,7 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                         arcpy.AddMessage( "Ingresando Valor..." + str(keyvaluein) + "....(" + str(Numerador) + " de " + str(count) + ")")
                         rowin = valoresEntrada[keyvaluein]
                         rowin=list(rowin)
-                        rowin[indxdiain] = datetime.datetime(rowin[indxanioin], rowin[indxmesin], rowin[indxdiain])
+                        rowin[indxdiain] = datetime.date(rowin[indxanioin], rowin[indxmesin], rowin[indxdiain])
 
                         rowin[indxdepin] = rowin[indxdepin] + "-" + rowin[indxmunin]
                         if indxnomin != None:
