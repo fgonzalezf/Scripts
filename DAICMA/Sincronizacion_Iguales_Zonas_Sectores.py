@@ -109,7 +109,7 @@ def actualizarValores(Featin, FeatOut, fields,indx):
         del valoresEntrada
         del valoresSalida
 
-IMSMAGDB=r"E:\Scripts\Actualizacion_Sectores\Total\4_22_2019\Sectores.gdb"
+IMSMAGDB=r"C:\Users\miltongarcia\Downloads\Actualizacion_28_5_2019\Total\Sectores.gdb"
 GeodatabaseSalida=r"E:\Scripts\Scripts\EFESIOS.sde"
 
 print "Reparando Geometria"
