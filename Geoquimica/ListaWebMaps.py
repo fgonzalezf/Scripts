@@ -2,7 +2,7 @@ import csv
 import time
 from IPython.display import display, HTML
 import json
-import pandas
+#import pandas
 import logging
 log = logging.getLogger()
 
@@ -10,7 +10,7 @@ from arcgis.mapping import WebMap
 from arcgis.mapping import WebScene
 from arcgis.gis import GIS
 
-gis = GIS("https://ergit.presidencia.gov.co/arcpre/home", "", "")
+gis = GIS("https://ergit.presidencia.gov.co/arcpre/home", "adminportal", "Cartografia17")
 
 CHECK_ALL_ITEMS = True
 CHECK_WEBMAPS = True
