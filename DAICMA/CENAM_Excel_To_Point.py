@@ -174,8 +174,6 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                                 rowin.pop(indxmunin - 2)
                                 # del rowin[0]
                                 rowin.insert(0, pointCentroid)
-
-
                                 #del rowin[0]
 
                                 rowin = tuple(rowin)
@@ -237,10 +235,10 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                         rowin.pop(indxmesin)
                         rowin.pop(indxanioin - 1)
                         rowin.pop(indxmunin - 2)
-                        # del rowin[0]
+                        del rowin[0]
                         rowin.insert(0, pointCentroid)
                         rowin=tuple(rowin)
-                        #print rowin
+                        print rowin
                         cursor3.insertRow(rowin)
                     except  Exception as e:
                         arcpy.AddMessage(  "Error1... "+ e.message)

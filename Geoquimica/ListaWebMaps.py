@@ -2,7 +2,7 @@ import csv
 import time
 from IPython.display import display, HTML
 import json
-#import pandas
+import pandas
 import logging
 log = logging.getLogger()
 
@@ -10,7 +10,7 @@ from arcgis.mapping import WebMap
 from arcgis.mapping import WebScene
 from arcgis.gis import GIS
 
-gis = GIS("https://ergit.presidencia.gov.co/arcpre/home", "adminportal", "Cartografia17")
+gis = GIS("https://sgcolombiano.maps.arcgis.com", "fgonzalezf_SGColombiano", "Maidenfgf1")
 
 CHECK_ALL_ITEMS = True
 CHECK_WEBMAPS = True
@@ -22,7 +22,7 @@ def get_items_to_check():
     organization, or will yield items in specific groups.
     """
     if CHECK_ALL_ITEMS:
-        for user in gis.users.search():
+        for user in gis.users.search("vparada_SGColombiano"):
             for item in user.items(max_items=999999999):
                 # For the user's root folder
                 yield item
@@ -39,3 +39,9 @@ def get_items_to_check():
 for item in get_items_to_check():
     if item.type=="Web Map":
         print(item.title)
+        try:
+            layers= item.get_data(try_json=True)["operationalLayers"]
+            for lyr in layers:
+                print(lyr["url"])
+        except:
+            pass
