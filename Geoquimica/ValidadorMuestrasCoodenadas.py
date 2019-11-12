@@ -46,6 +46,8 @@ def indexUnico(CamposEntradaind,index):
             return x
         x=x+1
 
+
+
 CampoUnico="ID_MUESTRA"
 
 #arcpy.FeatureClassToFeatureClass_conversion(TablaGeografica,"in_memory","puntos")
@@ -82,6 +84,8 @@ for keyvaluein in valoresEntradaBogota:
             pointBogota = arcpy.Point(rowin[indxLogX], rowin[indxLatY])
             origen = rowin[indxOrigen]
             pointWgs84=arcpy.PointGeometry(pointBogota, arcpy.SpatialReference(origen)).projectAs(arcpy.SpatialReference(4326))
+            transformations = arcpy.ListTransformations(arcpy.SpatialReference(origen), arcpy.SpatialReference(4326), pointWgs84.extent)
+            print transformations
             rowin[indxWGS84ELON]=pointWgs84.centroid.X
             rowin[indxWGS84NLAT] = pointWgs84.centroid.Y
             # del rowin[0]
@@ -117,6 +121,8 @@ for keyvaluein in valoresEntradaBogota:
             origen = rowin[indxOrigen]
             pointWgs84=arcpy.PointGeometry(pointBogota, arcpy.SpatialReference(origen)).projectAs(arcpy.SpatialReference(4326))
             # del rowin[0]
+            transformations = arcpy.ListTransformations(arcpy.SpatialReference(origen), arcpy.SpatialReference(4326), pointWgs84.extent)
+            print transformations
             rowin[indxWGS84ELON] = pointWgs84.centroid.X
             rowin[indxWGS84NLAT] = pointWgs84.centroid.Y
             rowin.pop(0)
