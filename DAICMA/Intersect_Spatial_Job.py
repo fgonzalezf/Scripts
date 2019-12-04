@@ -17,7 +17,7 @@ arcpy.DeleteFeatures_management(Cresguardosint)
 #arcpy.SpatialJoin_analysis(FeatIn , FeatJoin ,FeatOut,"JOIN_ONE_TO_ONE","KEEP_ALL","","INTERSECT")
 FeatOutC = """in_memory\\consejos"""
 FeatOutR = """in_memory\\resguardos"""
-arcpy.Intersect_analysis([Cmunicipios,Cconsejos],FeatOutC)
+arcpy.Intersect_analysis([Cmunicipios,Cconsejos],FeatOutC,"",1.5)
 arcpy.Intersect_analysis([Cmunicipios,Cresguardos],FeatOutR)
 
 
