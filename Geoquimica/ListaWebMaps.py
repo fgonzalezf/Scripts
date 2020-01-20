@@ -10,7 +10,7 @@ from arcgis.mapping import WebMap
 from arcgis.mapping import WebScene
 from arcgis.gis import GIS
 
-gis = GIS("https://sgcolombiano.maps.arcgis.com", "fgonzalezf_SGColombiano", "Maidenfgf1")
+gis = GIS("https://sgcolombiano.maps.arcgis.com", "vparada_SGColombiano", "Arcgisonline2019*")
 
 CHECK_ALL_ITEMS = True
 CHECK_WEBMAPS = True
@@ -39,9 +39,9 @@ def get_items_to_check():
 for item in get_items_to_check():
     if item.type=="Web Map":
         print(item.title)
-        try:
-            layers= item.get_data(try_json=True)["operationalLayers"]
-            for lyr in layers:
-                print(lyr["url"])
-        except:
-            pass
+        #try:
+            #layers= item.get_data(try_json=True)["operationalLayers"]
+            #for lyr in layers:
+                #print(lyr["url"])
+        #except:
+            #pass
