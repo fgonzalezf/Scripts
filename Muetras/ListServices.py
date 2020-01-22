@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 import json, urllib2, sys
 reload(sys)
-sys.setdefaultencoding("utf-8")
+sys.setdefaultencoding('UTF8')
 
 server = "srvags.sgc.gov.co"
 port = ""
