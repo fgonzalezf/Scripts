@@ -28,77 +28,14 @@ arcpy.Append_management(FeatOutC,Cconsejosint,"NO_TEST")
 arcpy.Append_management(FeatOutR,Cresguardosint,"NO_TEST")
 
 fields=["Afectacion_No_Eventos","SHAPE@","Afectacion_No_Eventos_CR","Afectacion_No_Eventos_IN"]
-X=0
-with arcpy.da.UpdateCursor(Cconsejosint, fields) as cursor:
-    for row in cursor:
-        arcpy.MakeFeatureLayer_management(Ceventos,"EventsTemp","""estatus = 'Abierto'""")
-        arcpy.SelectLayerByLocation_management("EventsTemp","INTERSECT",row[1],"","NEW_SELECTION")
-        result = arcpy.GetCount_management("EventsTemp")
-        count = int(result.getOutput(0))
-        row[0]=count
-        arcpy.Delete_management("EventsTemp")
-        X=X+1
-        print(X)
-        cursor.updateRow(row)
-X=0
-with arcpy.da.UpdateCursor(Cresguardosint, fields) as cursor:
-    for row in cursor:
-        arcpy.MakeFeatureLayer_management(Ceventos,"EventsTemp","""estatus = 'Abierto'""")
-        arcpy.SelectLayerByLocation_management("EventsTemp","INTERSECT",row[1],"","NEW_SELECTION")
-        result = arcpy.GetCount_management("EventsTemp")
-        count = int(result.getOutput(0))
-        row[0]=count
-        arcpy.Delete_management("EventsTemp")
-        X=X+1
-        print(X)
-        cursor.updateRow(row)
-X=0
-with arcpy.da.UpdateCursor(Cconsejosint, fields) as cursor:
-    for row in cursor:
-        arcpy.MakeFeatureLayer_management(Ceventos,"EventsTemp","""estatus = 'Cerrado'""")
-        arcpy.SelectLayerByLocation_management("EventsTemp","INTERSECT",row[1],"","NEW_SELECTION")
-        result = arcpy.GetCount_management("EventsTemp")
-        count = int(result.getOutput(0))
-        row[2]=count
-        arcpy.Delete_management("EventsTemp")
-        X=X+1
-        print(X)
-        cursor.updateRow(row)
-X=0
-with arcpy.da.UpdateCursor(Cresguardosint, fields) as cursor:
-    for row in cursor:
-        arcpy.MakeFeatureLayer_management(Ceventos,"EventsTemp","""estatus = 'Cerrado'""")
-        arcpy.SelectLayerByLocation_management("EventsTemp","INTERSECT",row[1],"","NEW_SELECTION")
-        result = arcpy.GetCount_management("EventsTemp")
-        count = int(result.getOutput(0))
-        row[2]=count
-        arcpy.Delete_management("EventsTemp")
-        X=X+1
-        print(X)
-        cursor.updateRow(row)
-X=0
-with arcpy.da.UpdateCursor(Cconsejosint, fields) as cursor:
-    for row in cursor:
-        arcpy.MakeFeatureLayer_management(Ceventos,"EventsTemp","""estatus = 'Recolección de información'""")
-        arcpy.SelectLayerByLocation_management("EventsTemp","INTERSECT",row[1],"","NEW_SELECTION")
-        result = arcpy.GetCount_management("EventsTemp")
-        count = int(result.getOutput(0))
-        row[3]=count
-        arcpy.Delete_management("EventsTemp")
-        X=X+1
-        print(X)
-        cursor.updateRow(row)
-X=0
-with arcpy.da.UpdateCursor(Cresguardosint, fields) as cursor:
-    for row in cursor:
-        arcpy.MakeFeatureLayer_management(Ceventos,"EventsTemp","""estatus =  'Recolección de información'""")
-        arcpy.SelectLayerByLocation_management("EventsTemp","INTERSECT",row[1],"","NEW_SELECTION")
-        result = arcpy.GetCount_management("EventsTemp")
-        count = int(result.getOutput(0))
-        row[3]=count
-        arcpy.Delete_management("EventsTemp")
-        X=X+1
-        print(X)
-        cursor.updateRow(row)
+TablaTempConsejosAbiertos = """in_memory\\estadisticasConsejosAbiertos"""
+TablaTempResguardosAbiertos = """in_memory\\estadisticasResguardosAbiertos"""
+TablaTempConsejosCerrados = """in_memory\\estadisticasConsejosCerrados"""
+TablaTempResguardosCerrados = """in_memory\\estadisticasResguardosCerrados"""
+TablaTempConsejosRecoleccion = """in_memory\\estadisticasConsejosRecoleccion"""
+TablaTempResguardosRecoleccion = """in_memory\\estadisticasResguardosRecoleccion"""
+
+arcpy.TabulateIntersection_analysis(FeatOutC,"ObjectID",Ceventos,TablaTempConsejos,)
+
 del FeatOutC
 del FeatOutR
