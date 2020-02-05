@@ -1,10 +1,12 @@
-from arcgis.gis import GIS
-gis = GIS("http://srvags.sgc.gov.co/arcprod/", "portaladmin","portalSGC2018")
+from arcgis.gis import server
+server1 = server.Server("http://srvags.sgc.gov.co/arcgis/admin",gis=None,username=r"ingeominas\fgonzalezf",password="Maidenfgf45")
 
-gis_servers = gis.admin.servers.list()
-server1 = gis_servers[0]
-servicios = server1.services.list()
-Carpetas = server1.services.folders
+folders= server1.services.folders
 
-print (server1)
-print (Carpetas)
+for folder in folders:
+    servicesFolder=server1.services.list(folder)
+    for serviceF in servicesFolder:
+        extensiones=serviceF.properties.extensions
+        for ext in extensiones:
+            print (ext.properties.name)
+print(folders)
