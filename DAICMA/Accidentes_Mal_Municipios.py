@@ -3,12 +3,13 @@ import arcpy,os,sys
 
 from openpyxl import Workbook
 
-DatasetEntrada= r"E:\Scripts\GDB_ZONAS\CENAM_BK.gdb\CENAM"
-excelRuta=r"C:\Users\APN\Documents\APN\GDB\Scripts\GDB\excel2.xlsx"
+arcpy.env.overwriteOutput=True
+DatasetEntrada= r"E:\Scripts\GDB_ZONAS\Eventos_15_1_2020.gdb\DAICMA"
+excelRuta=r"C:\temp\excel2.xlsx"
 
-Municipios=r"E:\Scripts\GDB_ZONAS\CENAM_BK.gdb\Municipios_Geo"
-Eventos= DatasetEntrada+os.sep+"Accidentes"
-EventosTemp=DatasetEntrada+os.sep+"AccidentesTemp"
+Municipios=r"E:\Scripts\GDB_ZONAS\Eventos_15_1_2020.gdb\DAICMA\Municipios"
+Eventos= DatasetEntrada+os.sep+"Eventos"
+EventosTemp=DatasetEntrada+os.sep+"EventosTemp"
 arcpy.env.overwriteOutput = True
 arcpy.CreateFeatureclass_management(DatasetEntrada,"AccidentesTemp","POINT")
 arcpy.AddField_management(EventosTemp,"ID","TEXT","","","250")
@@ -22,12 +23,12 @@ with arcpy.da.SearchCursor(Municipios, ["COD_DANE"]) as cursor:
 
     for row in cursor:
         #print "NOMBRE_ENT ='"+row[0].encode('latin-1').decode('latin-1')+"'"
-        layerMunicipio=arcpy.MakeFeatureLayer_management(Municipios,"layerMunicipio","COD_DANE ='"+str(row[0]))
+        layerMunicipio=arcpy.MakeFeatureLayer_management(Municipios,"layerMunicipio","COD_DANE ="+str(row[0]))
         Eventos_Layer=arcpy.MakeFeatureLayer_management(Eventos,"Eventos_Layer")
         arcpy.SelectLayerByLocation_management("Eventos_Layer","INTERSECT","layerMunicipio")
-        with arcpy.da.SearchCursor("Eventos_Layer", ["SHAPE@XY","COD_DANE","id_imsma_evento"]) as cursor2:
+        with arcpy.da.SearchCursor("Eventos_Layer", ["SHAPE@XY","cod_dane_muni","id_imsma_evento"]) as cursor2:
             for row2 in cursor2:
-                if row2[1].strip() not in row[0].strip():
+                if str(int(row2[1])) not in str(int(row[0])):
                     X=X+1
                     temprow =list(row2)
                     temprow.append(row[0])
@@ -51,7 +52,7 @@ with arcpy.da.SearchCursor(Municipios, ["NOMBRE_ENT"]) as cursor3:
         arcpy.SelectLayerByLocation_management("Eventos_Layer", "INTERSECT", "layerMunicipio","500 METERS")
         with arcpy.da.UpdateCursor("Eventos_Layer", ["SHAPE@XY", "municipio", "id_imsma_evento"]) as cursor4:
             for row2 in cursor4:
-                if row2[1].strip() in row[0].strip():
+                if row2[1].strip() in row[0]:
                     X = X + 1
                     arcpy.AddMessage(str(X) + "..Eventos_Borrados")
                     cursor4.deleteRow()
