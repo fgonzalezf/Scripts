@@ -1,16 +1,29 @@
-import arcpy
+import arcpy,sys,os
 arcpy.env.overwriteOutput=True
 
-TablaGeografica= r"Database Connections\BDGQ.sde\BDGQ.SINSHAPE"
-ConexionSDE=r"Database Connections\BDGQ.sde"
+ConexionSDE=sys.argv[1]
+Tabla=sys.argv[2]
+GeodatabaseSalida = sys.argv[3]
+
+if arcpy.Exists(GeodatabaseSalida+os.sep+"GeomuestrasNulas"):
+    arcpy.Delete_management(GeodatabaseSalida+os.sep+"GeomuestrasNulas")
+
+#TablaGeografica= r"Database Connections\BDGQ.sde\BDGQ.SINSHAPE"
+#ConexionSDE=r"Database Connections\BDGQ.sde"
 sr = arcpy.SpatialReference("WGS 1984")
+TablaGeografica=GeodatabaseSalida+os.sep+Tabla
+
+arcpy.AddMessage("""SELECT *  FROM """+Tabla+ """ WHERE WGS84_LAT IS NULL AND (BOGOTA_ESTE IS NOT NULL AND BOGOTA_ORIGEN IS NOT NULL)""")
 
 layerSinBogota = arcpy.MakeQueryLayer_management(ConexionSDE,"layerSinBogota",
-                                                    """SELECT *  FROM sinshape WHERE WGS84_LAT IS NULL AND (BOGOTA_ESTE IS NOT NULL AND BOGOTA_ORIGEN IS NOT NULL)"""
+                                                    """SELECT *  FROM """+Tabla+ """ WHERE WGS84_LAT IS NULL AND (BOGOTA_ESTE IS NOT NULL AND BOGOTA_ORIGEN IS NOT NULL)"""
                                                     ,"OBJECTID","POINT","4326", sr)
 
 layerSinMagna = arcpy.MakeQueryLayer_management(ConexionSDE,"layerSinMagna",
-                                                    """SELECT *  FROM sinshape WHERE WGS84_LAT IS NULL AND (MAGNA_NORTE IS NOT NULL AND MAGNA_ORIGEN IS NOT NULL)"""
+                                                    """SELECT *  FROM """+Tabla+ """ WHERE WGS84_LAT IS NULL AND (MAGNA_NORTE IS NOT NULL AND MAGNA_ORIGEN IS NOT NULL)"""
+                                                    ,"OBJECTID","POINT","4326", sr)
+layerSinUTM = arcpy.MakeQueryLayer_management(ConexionSDE,"layerSinUTM",
+                                                    """SELECT *  FROM """+Tabla+ """ WHERE WGS84_LAT IS NULL AND (UTM_NORTE IS NOT NULL AND UTM_ORIGEN IS NOT NULL)"""
                                                     ,"OBJECTID","POINT","4326", sr)
 
 
@@ -78,14 +91,12 @@ for keyvaluein in valoresEntradaBogota:
 
     if keyvaluein not in valoresSalida:
         try:
-            print "Ingresando Valor..." + str(keyvaluein) + "....(" + str(Numerador) + " de " + str(count) + ")"
+            arcpy.AddMessage("Ingresando Valor..." + str(keyvaluein) + "....(" + str(Numerador) + " de " + str(count) + ")")
             rowin = valoresEntradaBogota[keyvaluein]
             rowin = list(rowin)
             pointBogota = arcpy.Point(rowin[indxLogX], rowin[indxLatY])
             origen = rowin[indxOrigen]
             pointWgs84=arcpy.PointGeometry(pointBogota, arcpy.SpatialReference(origen)).projectAs(arcpy.SpatialReference(4326))
-            transformations = arcpy.ListTransformations(arcpy.SpatialReference(origen), arcpy.SpatialReference(4326), pointWgs84.extent)
-            print transformations
             rowin[indxWGS84ELON]=pointWgs84.centroid.X
             rowin[indxWGS84NLAT] = pointWgs84.centroid.Y
             # del rowin[0]
@@ -95,8 +106,7 @@ for keyvaluein in valoresEntradaBogota:
             # print rowin
             cursor.insertRow(rowin)
         except  Exception as e:
-
-            print  "Error... " + e.message
+            arcpy.AddMessage("Error... " + e.message)
 
 indxOut=indexUnico(fieldsIn,CampoUnico)
 indxIn=indexUnico(fieldsIn,CampoUnico)
@@ -114,15 +124,13 @@ for keyvaluein in valoresEntradaBogota:
 
     if keyvaluein not in valoresSalida:
         try:
-            print "Ingresando Valor..." + str(keyvaluein) + "....(" + str(Numerador) + " de " + str(count) + ")"
+            arcpy.AddMessage("Ingresando Valor..." + str(keyvaluein) + "....(" + str(Numerador) + " de " + str(count) + ")")
             rowin = valoresEntradaBogota[keyvaluein]
             rowin = list(rowin)
             pointBogota = arcpy.Point(rowin[indxLogX], rowin[indxLatY])
             origen = rowin[indxOrigen]
             pointWgs84=arcpy.PointGeometry(pointBogota, arcpy.SpatialReference(origen)).projectAs(arcpy.SpatialReference(4326))
             # del rowin[0]
-            transformations = arcpy.ListTransformations(arcpy.SpatialReference(origen), arcpy.SpatialReference(4326), pointWgs84.extent)
-            print transformations
             rowin[indxWGS84ELON] = pointWgs84.centroid.X
             rowin[indxWGS84NLAT] = pointWgs84.centroid.Y
             rowin.pop(0)
@@ -131,8 +139,44 @@ for keyvaluein in valoresEntradaBogota:
             # print rowin
             cursor.insertRow(rowin)
         except  Exception as e:
+            arcpy.AddMessage("Error... " + e.message)
 
-            print  "Error... " + e.message
+indxOut=indexUnico(fieldsIn,CampoUnico)
+indxIn=indexUnico(fieldsIn,CampoUnico)
+indxLogX=indexUnico(fieldsIn,"UTM_ESTE")
+indxLatY=indexUnico(fieldsIn,"UTM_NORTE")
+indxOrigen=indexUnico(fieldsIn,"UTM_ORIGEN")
+indxWGS84ELON=indexUnico(fieldsIn,"WGS84_LON")
+indxWGS84NLAT=indexUnico(fieldsIn,"WGS84_LAT")
+valoresEntradaBogota=ValoresEntrada(layerSinUTM,fieldsIn,CampoUnico)
+count=len(valoresEntradaBogota)
+valoresSalida=ValoresEntrada(puntosLayer,fieldsIn,CampoUnico)
+Numerador=0
+for keyvaluein in valoresEntradaBogota:
+    Numerador = Numerador + 1
+
+    if keyvaluein not in valoresSalida:
+        try:
+            arcpy.AddMessage("Ingresando Valor..." + str(keyvaluein) + "....(" + str(Numerador) + " de " + str(count) + ")")
+            rowin = valoresEntradaBogota[keyvaluein]
+            rowin = list(rowin)
+            pointBogota = arcpy.Point(rowin[indxLogX], rowin[indxLatY])
+            origen = rowin[indxOrigen]
+            pointWgs84=arcpy.PointGeometry(pointBogota, arcpy.SpatialReference(origen)).projectAs(arcpy.SpatialReference(4326))
+            # del rowin[0]
+            rowin[indxWGS84ELON] = pointWgs84.centroid.X
+            rowin[indxWGS84NLAT] = pointWgs84.centroid.Y
+            rowin.pop(0)
+            rowin.insert(0, pointWgs84)
+            rowin = tuple(rowin)
+            # print rowin
+            cursor.insertRow(rowin)
+        except  Exception as e:
+            arcpy.AddMessage("Error... " + e.message)
 
 #exportar temporal
-arcpy.FeatureClassToFeatureClass_conversion(puntosLayer,r"C:\temp\Prueba1\Bk_04_22_2019.gdb","temp")
+arcpy.FeatureClassToFeatureClass_conversion(puntosLayer,GeodatabaseSalida,"GeomuestrasNulas")
+
+del layerSinBogota
+del layerSinMagna
+del layerSinUTM
