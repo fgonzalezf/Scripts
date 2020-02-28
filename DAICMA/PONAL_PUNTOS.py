@@ -171,7 +171,7 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                                 rowin[indxLatY] = convertDecimal(rowin[indxLatY])
                                 rowin.pop(indxmesin)
                                 rowin.pop(indxanioin - 1)
-                                rowin.pop(indxmunin - 2)
+                                #rowin.pop(indxmunin - 2)
                                 # del rowin[0]
                                 rowin.insert(0, pointCentroid)
                                 #del rowin[0]
@@ -210,7 +210,7 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                         rowin[indxIdin] =IDmax
                         rowin.pop(indxmesin)
                         rowin.pop(indxanioin-1)
-                        rowin.pop(indxmunin-2)
+                        #rowin.pop(indxmunin-2)
                         #del rowin[0]
                         rowin.insert(0, pointCentroid)
                         rowin=tuple(rowin)
