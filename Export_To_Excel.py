@@ -5,24 +5,26 @@ import arcpy, os, uuid,locale
 
 layer = arcpy.GetParameterAsText(0)
 
-kmzName="KMZEXPORT"+str(uuid.uuid4()).replace("-","")[:10]+".xls"
+kmzName=layer.split("\\")[-1]+str(uuid.uuid4()).replace("-","")[:10]+".xls"
 
-salida ="\\\\Srvarcgis10\\kmlsismos"+os.sep+kmzName
+salida ="\\\\EFESIOS\\ExcelExport"+os.sep+kmzName
 
-salidalayer ="\\\\Srvarcgis10\\kmlsismos"+os.sep+"Layer"+str(uuid.uuid4()).replace("-","")[:10]+".lyr"
+#salidalayer ="\\\\EFESIOS\\ExcelExport"+os.sep+"Layer"+str(uuid.uuid4()).replace("-","")[:10]+".lyr"
 
-arcpy.AddMessage(salidalayer)
+arcpy.AddMessage(kmzName)
 
-arcpy.MakeFeatureLayer_management(layer,"LayerConvert")
+arcpy.AddMessage(layer)
 
-arcpy.SaveToLayerFile_management("LayerConvert",salidalayer)
-
-urlsalida="http://srvags.sgc.gov.co/Archivos_Geoportal/KMLSISMOS/"+kmzName
+urlsalida="http://ergit.presidencia.gov.co/ExportExcel/"+kmzName
 
 locale.setlocale(locale.LC_ALL,"american")
 
-arcpy.TableToExcel_conversion(salidalayer,salida)
+arcpy.TableToExcel_conversion(layer,salida)
 
 arcpy.AddMessage(urlsalida)
 
-arcpy.SetParameterAsText(1,urlsalida)
+descarga = """<a href="""+urlsalida+""">Excel de Salida</a>"""
+
+arcpy.AddMessage(descarga)
+
+arcpy.SetParameterAsText(1,descarga)

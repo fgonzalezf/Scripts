@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 import arcpy, os,sys
 
-GeodatabaseEntrada = r"C:\Users\APN\Downloads\Inerseccion_resguardos\Eeventos_20_01_2020.gdb"
+GeodatabaseEntrada = r"E:\Scripts\EFESIOS.sde"
 
 
-Ceventos = r"C:\Users\APN\Downloads\Inerseccion_resguardos\Eeventos_20_01_2020.gdb\DAICMA\Eventos"
-Cmunicipios = r"C:\Users\APN\Downloads\Inerseccion_resguardos\Eeventos_20_01_2020.gdb\DAICMA\Municipios"
-Cconsejos = r"C:\Users\APN\Downloads\Inerseccion_resguardos\Eeventos_20_01_2020.gdb\RESGUARDOS_INDIGENAS\Consejos_Comunitarios_Negros"
-Cresguardos = r"C:\Users\APN\Downloads\Inerseccion_resguardos\Eeventos_20_01_2020.gdb\RESGUARDOS_INDIGENAS\Resguardos_Indigenas"
-Czonas=r"C:\Users\APN\Downloads\Inerseccion_resguardos\Eeventos_20_01_2020.gdb\DAICMA\Zonas"
+Ceventos = r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Eventos"
+Cmunicipios = r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Municipios"
+Cconsejos = r"E:\Scripts\EFESIOS.sde\SDE.DBO.RESGUARDOS_INDIGENAS\SDE.DBO.Consejos_Comunitarios_Negros"
+Cresguardos = r"E:\Scripts\EFESIOS.sde\SDE.DBO.RESGUARDOS_INDIGENAS\SDE.DBO.Resguardos_Indigenas"
+Czonas=r"E:\Scripts\EFESIOS.sde\SDE.DBO.DAICMA\SDE.DBO.Zonas"
 
 Cconsejosint = GeodatabaseEntrada+ os.sep+"Geoprocesos"+os.sep+ "Consejos_Afectacion"
 Cresguardosint = GeodatabaseEntrada+ os.sep+"Geoprocesos"+os.sep+ "Resguardos_Afectacion"
