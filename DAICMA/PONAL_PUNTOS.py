@@ -6,7 +6,7 @@ import xlrd as xl
 #Actualizar=arcpy.GetParameterAsText(1)
 #GeodatabaseSalida=r"E:\Scripts\SDE.sde"
 
-ExcelEntrada =r"E:\Scripts\PONAL\Plantilla_Ponal_V3.xlsx"
+ExcelEntrada =arcpy.GetParameterAsText(0)
 Actualizar="false"
 GeodatabaseSalida=r"E:\Scripts\SDE.sde"
 carpetaNueva= r"E:\Scripts\Temp\ExcelPonal"
