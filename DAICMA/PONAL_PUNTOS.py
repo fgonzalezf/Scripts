@@ -6,10 +6,10 @@ import xlrd as xl
 #Actualizar=arcpy.GetParameterAsText(1)
 #GeodatabaseSalida=r"E:\Scripts\SDE.sde"
 
-ExcelEntrada =arcpy.GetParameterAsText(0)
-Actualizar=arcpy.GetParameterAsText(1)
+ExcelEntrada =r"E:\Scripts\PONAL\Plantilla_Ponal_V3.xlsx"
+Actualizar="false"
 GeodatabaseSalida=r"E:\Scripts\SDE.sde"
-carpetaNueva= r"E:\Reportes_CENAM_Excel\Excel"
+carpetaNueva= r"E:\Scripts\Temp\ExcelPonal"
 
 arcpy.env.overwriteOutput=True
 
@@ -72,7 +72,7 @@ for hoja in ListaHojas:
     if hoja == "Operaciones" or hoja == "Accidentes":
         arcpy.ExcelToTable_conversion(ExcelEntrada,"in_memory"+os.sep+hoja+"tabla",hoja)
         tablatemp.append("in_memory"+os.sep+hoja+"tabla")
-        tablatemp.append(GeodatabaseSalida + os.sep + "SDE.DBO.CENAM"+ os.sep+ "SDE.DBO."+hoja )
+        tablatemp.append(GeodatabaseSalida + os.sep + "SDE.DBO.PONAL"+ os.sep+ "SDE.DBO."+hoja+"_PONAL" )
         tablatemp.append(GeodatabaseSalida )
         Tablas.append(tablatemp)
 
@@ -120,8 +120,8 @@ def ValoresEntrada(Feat,fields,indexEnt):
 def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
         indxOut=indexUnico(fieldsOut,CampoUnico)
         indxIn=indexUnico(fieldsIn,CampoUnico)
-        indxLogX=indexUnico(fieldsIn,"Longitud_decimales")
-        indxLatY=indexUnico(fieldsIn,"Latitud_decimales")
+        indxLogX=indexUnico(fieldsIn,"LONGITUD_DECIMALES")
+        indxLatY=indexUnico(fieldsIn,"LATITUD_DECIMALES")
 
 
         indxdiain=fieldsIn.index("DIA__DD_")
@@ -138,7 +138,7 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
 
 
 
-        indxfechaout=indexUnico(fieldsIn, "FECHA___DD_MM_AAAA_")
+        indxfechaout=indexUnico(fieldsIn, "FECHA")
 
         valoresEntrada = ValoresEntrada(Featin,fieldsIn,indxIn)
         Numerador=0
@@ -171,7 +171,7 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                                 rowin[indxLatY] = convertDecimal(rowin[indxLatY])
                                 rowin.pop(indxmesin)
                                 rowin.pop(indxanioin - 1)
-                                rowin.pop(indxmunin - 2)
+                                #rowin.pop(indxmunin - 2)
                                 # del rowin[0]
                                 rowin.insert(0, pointCentroid)
                                 #del rowin[0]
@@ -210,7 +210,7 @@ def actualizarValores(Featin, FeatOut, fieldsIn, fieldsOut):
                         rowin[indxIdin] =IDmax
                         rowin.pop(indxmesin)
                         rowin.pop(indxanioin-1)
-                        rowin.pop(indxmunin-2)
+                        #rowin.pop(indxmunin-2)
                         #del rowin[0]
                         rowin.insert(0, pointCentroid)
                         rowin=tuple(rowin)
